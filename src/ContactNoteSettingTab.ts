@@ -16,7 +16,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // Contact Note Settings
-    new Setting(containerEl).setName("Contact Note").setHeading();
+    new Setting(containerEl).setName("Contacts file identification").setHeading();
 
     new Setting(containerEl)
       .setName("Identify contacts by folder")
@@ -36,7 +36,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       new Setting(containerEl)
         .setName("Contacts folder path")
         .setDesc(
-          'Path to the folder containing contact notes, relative to the vault root (e.g. "Contacts" or "People/Contacts").'
+          'Path to the folder containing contact notes, relative to the vault root (e.g. "contacts" or "people/contacts").'
         )
         .addText((text) =>
           text
@@ -53,7 +53,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
         .setDesc('Tag used to identify contact notes. Omit the leading "#" (e.g. "contact").')
         .addText((text) =>
           text
-            .setPlaceholder("contact")
+            .setPlaceholder("Contact")
             .setValue(this.plugin.settings.tag)
             .onChange(async (value) => {
               this.plugin.settings.tag = value;
@@ -63,7 +63,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
     }
 
     // Contact List view settings
-    new Setting(containerEl).setName("Contact List").setHeading();
+    new Setting(containerEl).setName("Contact list").setHeading();
 
     new Setting(containerEl)
       .setName("Contact list title")
@@ -81,7 +81,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Show last name first in list")
-      .setDesc('When enabled, names in the contact list are shown as "Last, First Middle" instead of the resolved display name.')
+      .setDesc('When enabled, names in the contact list are shown as "last, first middle" instead of the resolved display name.')
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.lastNameFirst).onChange(async (value) => {
           this.plugin.settings.lastNameFirst = value;
@@ -133,7 +133,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
         .setName("")
         .addText((text) =>
           text
-            .setPlaceholder("frontmatter key")
+            .setPlaceholder("Frontmatter key")
             .setValue(filter.property)
             .onChange(async (value) => {
               filters[i].property = value;
@@ -143,11 +143,11 @@ export class ContactNoteSettingTab extends PluginSettingTab {
         )
         .addDropdown((dd) =>
           dd
-            .addOption("contains", "contains")
-            .addOption("is", "is")
-            .addOption("exists", "exists")
-            .addOption("is true", "is true")
-            .addOption("is false", "is false")
+            .addOption("contains", "Contains")
+            .addOption("is", "Is")
+            .addOption("exists", "Exists")
+            .addOption("is true", "Is true")
+            .addOption("is false", "Is false")
             .setValue(filter.operator)
             .onChange(async (value) => {
               filters[i].operator = value as FrontmatterFilter["operator"];
@@ -163,7 +163,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       if (!noValueOperators.includes(filter.operator)) {
         setting.addText((text) =>
           text
-            .setPlaceholder("value")
+            .setPlaceholder("Value")
             .setValue(filter.value)
             .onChange(async (value) => {
               filters[i].value = value;

@@ -50,14 +50,14 @@ export default class ContactNotePlugin extends Plugin {
 
     // Ribbon
     this.addRibbonIcon("book-user", "Open contact list", () => {
-      this.activateContactListView();
+      void this.activateContactListView();
     });
 
     // Command
     this.addCommand({
       id: "open-contact-list",
       name: "Open contact list",
-      callback: () => this.activateContactListView(),
+      callback: () => { void this.activateContactListView(); },
     });
 
     // Markdown Post Processor
@@ -123,6 +123,8 @@ export default class ContactNotePlugin extends Plugin {
 //#region Settings
 
   async loadSettings() {
+    // Disabling eslint as this is an issue triggered by Obsidian's API
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 
@@ -209,6 +211,8 @@ export default class ContactNotePlugin extends Plugin {
 
     const tags: string[] = [];
 
+    // Disabling eslint as this is an issue triggered by Obsidian's API
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const fmTags = cache.frontmatter?.tags;
     if (Array.isArray(fmTags)) {
       tags.push(...fmTags.map((t: unknown) => String(t).replace(/^#/, "").toLowerCase()));
@@ -226,9 +230,9 @@ export default class ContactNotePlugin extends Plugin {
   private async enforceContactFileName(file: TFile, frontmatter: Record<string, unknown> | undefined | null): Promise<void> {
     if (!frontmatter) return;
 
-    const firstName = String(frontmatter.firstName ?? "").trim();
-    const middleName = String(frontmatter.middleName ?? "").trim();
-    const lastName = String(frontmatter.lastName ?? "").trim();
+    const firstName = frontmatter.firstName !== null && typeof frontmatter.firstName === "string" ? String(frontmatter.firstName).trim() : "";
+    const middleName = frontmatter.middleName !== null && typeof frontmatter.middleName === "string" ? String(frontmatter.middleName).trim() : "";
+    const lastName = frontmatter.lastName !== null && typeof frontmatter.lastName === "string" ? String(frontmatter.lastName).trim() : "";
 
     if (!firstName || !lastName) return;
 
@@ -261,7 +265,7 @@ export default class ContactNotePlugin extends Plugin {
       if (!contact.lastName) missingFields.push("lastName");
       const errorEl = el.createDiv({ cls: "contact-note-error" });
       errorEl.createEl("strong", { text: "Contact note is missing required fields: " });
-      errorEl.createEl("span", { text: missingFields.join(", ") });
+      errorEl.createSpan({ text: missingFields.join(", ") });
       errorEl.createEl("p", { text: "Add these properties to the frontmatter to display this contact." });
       return;
     }
@@ -277,13 +281,13 @@ export default class ContactNotePlugin extends Plugin {
     const { workspace } = this.app;
     const existing = workspace.getLeavesOfType(VIEW_TYPE_CONTACT_LIST);
     if (existing.length > 0) {
-      workspace.revealLeaf(existing[0]);
+      await workspace.revealLeaf(existing[0]);
       return;
     }
     const leaf = workspace.getRightLeaf(false);
     if (leaf) {
       await leaf.setViewState({ type: VIEW_TYPE_CONTACT_LIST, active: true });
-      workspace.revealLeaf(leaf);
+      await workspace.revealLeaf(leaf);
     }
   }
 

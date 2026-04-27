@@ -45,7 +45,7 @@ export function buildContactCard(
   if (clickable) {
     card.addClass("is-clickable");
     card.addEventListener("click", () => {
-      app.workspace.getLeaf(false).openFile(contact.file);
+      void app.workspace.getLeaf(false).openFile(contact.file);
     });
   }
 
@@ -68,15 +68,15 @@ export function buildContactCard(
   const infoEl = card.createDiv({ cls: "contact-note-info" });
 
   if (displayName) {
-    infoEl.createEl("div", { cls: "contact-note-name", text: displayName });
+    infoEl.createDiv({ cls: "contact-note-name", text: displayName });
   }
 
   if (!condensed && contact.title) {
-    infoEl.createEl("div", { cls: "contact-note-title", text: contact.title });
+    infoEl.createDiv({ cls: "contact-note-title", text: contact.title });
   }
 
   if (!condensed && contact.company) {
-    infoEl.createEl("div", { cls: "contact-note-company", text: contact.company });
+    infoEl.createDiv({ cls: "contact-note-company", text: contact.company });
   }
 
   // Details: Socials, Emails, and Phones
@@ -90,7 +90,7 @@ export function buildContactCard(
       const socialsEl = detailsEl.createDiv({ cls: "contact-note-socials" });
       for (const social of contact.socials) {
         const row = socialsEl.createDiv({ cls: "contact-note-detail-row" });
-        const iconEl = row.createEl("span", { cls: "contact-note-detail-icon" });
+        const iconEl = row.createSpan({ cls: "contact-note-detail-icon" });
         const svgPath = getSocialIcon(social.name);
         if (svgPath) {
           const svg = iconEl.createSvg("svg", { attr: { role: "img", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" } });
@@ -102,7 +102,7 @@ export function buildContactCard(
         if (url) {
           row.createEl("a", { cls: "contact-note-detail-value", text: social.handle, href: url });
         } else {
-          row.createEl("span", { cls: "contact-note-detail-value", text: social.handle });
+          row.createSpan({ cls: "contact-note-detail-value", text: social.handle });
         }
       }
     }
@@ -112,7 +112,7 @@ export function buildContactCard(
       const emailsEl = detailsEl.createDiv({ cls: "contact-note-emails" });
       for (const email of contact.emails) {
         const row = emailsEl.createDiv({ cls: "contact-note-detail-row" });
-        const emailIcon = row.createEl("span", { cls: "contact-note-detail-icon" });
+        const emailIcon = row.createSpan({ cls: "contact-note-detail-icon" });
         setIcon(emailIcon, "mail");
         row.createEl("a", { cls: "contact-note-detail-value", text: email, href: `mailto:${email}` });
       }
@@ -123,7 +123,7 @@ export function buildContactCard(
       const phonesEl = detailsEl.createDiv({ cls: "contact-note-phones" });
       for (const phone of contact.phones) {
         const row = phonesEl.createDiv({ cls: "contact-note-detail-row" });
-        const phoneIcon = row.createEl("span", { cls: "contact-note-detail-icon" });
+        const phoneIcon = row.createSpan({ cls: "contact-note-detail-icon" });
         setIcon(phoneIcon, "phone");
         row.createEl("a", {
           cls: "contact-note-detail-value",

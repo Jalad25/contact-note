@@ -107,7 +107,7 @@ export class Contact {
       for (const item of frontmatter.socials) {
         if (item && typeof item === "object") {
           for (const [name, handle] of Object.entries(item as Record<string, unknown>)) {
-            const h = handle == null ? "" : String(handle).trim();
+            const h = typeof handle === "string" ? handle.trim() : "";
             if (!h) continue;
             this.socials.push(new Social(name.toLowerCase(), h));
           }
@@ -139,14 +139,15 @@ export class Contact {
 //#region Utilities
 
 function trimStr(v: unknown): string {
-  if (v == null) return "";
-  const s = String(v).trim();
-  return s;
+  if (typeof v !== "string") return "";
+  return v.trim();
 }
 
 function parseStrArr(v: unknown): string[] {
   if (!v) return [];
-  return Array.isArray(v) ? v.map(String) : [String(v)];
+  if (Array.isArray(v)) return v.filter((item): item is string => typeof item === "string");
+  if (typeof v !== "string") return [];
+  return [v];
 }
 
 //#endregion

@@ -30,7 +30,7 @@ export class ContactListView extends ItemView {
     return "book-user";
   }
 
-  async onOpen(): Promise<void> {
+  onOpen(): Promise<void> {
     this.initContacts();
 
     this.registerEvent(
@@ -85,9 +85,12 @@ export class ContactListView extends ItemView {
     );
 
     this.render();
+    return Promise.resolve();
   }
 
-  async onClose(): Promise<void> {}
+  onClose(): Promise<void> {
+    return Promise.resolve();
+  }
 
   reinit(): void {
     this.initContacts();
@@ -105,7 +108,7 @@ export class ContactListView extends ItemView {
   }
 
   render(): void {
-    const container = this.contentEl as HTMLElement;
+    const container = this.contentEl;
     container.empty();
     container.addClass("contact-note-list-view");
     if (this.plugin.settings.condensedList) {
@@ -169,7 +172,7 @@ export class ContactListView extends ItemView {
   }
 
   private renderCards(): void {
-    const container = this.contentEl as HTMLElement;
+    const container = this.contentEl;
     container.querySelectorAll(".contact-note-card, .contact-note-list-empty")
       .forEach((el) => el.remove());
 
@@ -247,7 +250,7 @@ export class NewContactModal extends Modal {
           .setCta()
           .onClick(() => {
             this.close();
-            this.plugin.createNewContact(firstName.trim(), lastName.trim());
+            void this.plugin.createNewContact(firstName.trim(), lastName.trim());
           })
       );
   }
@@ -280,6 +283,7 @@ function matchesFilter(fm: Record<string, unknown>, filter: FrontmatterFilter): 
           return filter.operator === "is" ? s === val : s.includes(val);
         });
       }
+      if (typeof raw !== "string") return false;
       const s = String(raw).toLowerCase();
       return filter.operator === "is" ? s === val : s.includes(val);
     }
