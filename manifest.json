@@ -1,0 +1,10 @@
+{
+  "id": "contact-note",
+  "name": "Contact Note",
+  "version": "1.0.0",
+  "minAppVersion": "1.12.7",
+  "description": "Manage and browse contacts stored as notes, with auto-generated contact cards and a searchable list view.",
+  "author": "Jalad",
+  "authorUrl": "https://jalad.ncc-1701.enterprises",
+  "isDesktopOnly": false
+}
