@@ -136,6 +136,10 @@
 
 /* #region Contact List View */
 
+.is-mobile .contact-note-list-view {
+  margin-top: 45px !important;
+}
+
 /* Header */
 .contact-note-list-header {
   display: flex;

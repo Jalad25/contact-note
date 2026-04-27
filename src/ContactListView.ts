@@ -125,13 +125,13 @@ export class ContactListView extends ItemView {
     });
     const btnGroup = headerEl.createDiv({ cls: "contact-note-header-btns" });
 
-    const newBtn = btnGroup.createEl("button", { cls: "contact-note-header-btn" });
+    const newBtn = btnGroup.createEl("button", { cls: "contact-note-header-btn clickable-icon" });
     setIcon(newBtn, "user-plus");
     newBtn.setAttribute("aria-label", "New contact");
     newBtn.addEventListener("click", () => new NewContactModal(this.plugin).open());
 
     // Search
-    const searchBtn = btnGroup.createEl("button", { cls: "contact-note-header-btn" });
+    const searchBtn = btnGroup.createEl("button", { cls: "contact-note-header-btn clickable-icon" });
     setIcon(searchBtn, "search");
     searchBtn.setAttribute("aria-label", "Search contacts");
     if (this.showSearch) searchBtn.addClass("is-active");
