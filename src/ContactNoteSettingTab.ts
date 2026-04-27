@@ -16,7 +16,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // Contact Note Settings
-    new Setting(containerEl).setName("Contacts file identification").setHeading();
+    new Setting(containerEl).setName("Contact file identification").setHeading();
 
     new Setting(containerEl)
       .setName("Identify contacts by folder")

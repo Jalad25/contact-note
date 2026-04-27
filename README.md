@@ -14,7 +14,16 @@ An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards fro
 - Default list filters based on any frontmatter property
 - Contacts identified by folder or tag
 
-## Manual Installation
+## Installation
+
+### Obsidian Community Plugins
+
+1. Open Obsidian and go to **Settings → Community plugins**.
+2. If restricted mode is on, click **Turn on community plugins**.
+3. Click **Browse** and search for **Contact Note**.
+4. Click **Install**, then **Enable**.
+
+### Manual
 
 1. Download `main.js`, `manifest.json`, and `styles.css` from the latest release.
 2. In your vault, create the folder `.obsidian/plugins/contact-note/` if it does not already exist.
@@ -148,7 +157,7 @@ Click any letter in the alphabet bar to filter contacts whose last name starts w
 
 ![Settings](screenshots/settings.png)
 
-### Contact Note
+### Contact File Identification
 
 | Setting | Description | Default |
 |---|---|---|
@@ -164,7 +173,7 @@ Click any letter in the alphabet bar to filter contacts whose last name starts w
 | Show last name first in list | When enabled, names in the list are shown as `Last, First Middle`. Does not affect the contact card. | Enabled |
 | Condensed list view | When enabled, each card in the list shows only the photo and name. | Enabled |
 
-### Default list filters
+### Default List Filters
 
 Add one or more filter conditions to limit which contacts appear in the list view. All conditions must match for a contact to be shown (AND logic).
 
@@ -172,11 +181,11 @@ Each condition targets a frontmatter property by key and supports the following 
 
 | Operator | Value required | Description |
 |---|---|---|
-| `contains` | Yes | Property value contains the given string, or array includes a matching item. |
-| `is` | Yes | Property value exactly equals the given string. |
-| `exists` | No | Property is present and has a non-empty value. |
-| `is true` | No | Property value is `true` (boolean or string). |
-| `is false` | No | Property value is `false` (boolean or string). |
+| `Contains` | Yes | Property value contains the given string, or array includes a matching item. |
+| `Is` | Yes | Property value exactly equals the given string. |
+| `Exists` | No | Property is present and has a non-empty value. |
+| `Is true` | No | Property value is `true` (boolean or string). |
+| `Is false` | No | Property value is `false` (boolean or string). |
 
 Filters apply to any frontmatter property, including custom fields not used by the plugin.
 
@@ -213,7 +222,7 @@ Contributions are welcome. Please open an issue to discuss significant changes b
 npm run lint
 ```
 
-ESLint with `@typescript-eslint` is configured via `.eslintrc`. Run lint before submitting a pull request. The `node_modules/` directory and built `main.js` are excluded via `.eslintignore`.
+ESLint 10 with [`eslint-plugin-obsidianmd`](https://github.com/obsidianmd/eslint-plugin-obsidianmd) is configured via `eslint.config.mjs`. Run lint before submitting a pull request.
 
 ### Production build
 
