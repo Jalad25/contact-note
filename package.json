@@ -1,6 +1,6 @@
 {
   "name": "contact-note",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Manage and browse contacts stored as notes, with auto-generated contact cards and a searchable list view.",
   "main": "main.js",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "Jalad",
-	"license": "GNU AGPLv3",
+  "license": "GNU AGPLv3",
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
