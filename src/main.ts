@@ -123,8 +123,7 @@ export default class ContactNotePlugin extends Plugin {
 //#region Settings
 
   async loadSettings() {
-    // Disabling eslint as this is an issue triggered by Obsidian's API
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Disabling eslint as this is an issue triggered by Obsidian's API. Triggers locally
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
   }
 
@@ -211,8 +210,7 @@ export default class ContactNotePlugin extends Plugin {
 
     const tags: string[] = [];
 
-    // Disabling eslint as this is an issue triggered by Obsidian's API
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Disabling eslint as this is an issue triggered by Obsidian's API. Triggers locally
     const fmTags = cache.frontmatter?.tags;
     if (Array.isArray(fmTags)) {
       tags.push(...fmTags.map((t: unknown) => String(t).replace(/^#/, "").toLowerCase()));
