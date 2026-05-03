@@ -2,7 +2,11 @@
   <img src="assets/PluginBanner.png" alt="Contact Note" align="center" width=800>
 </p>
 
+<!--FOR THE FUTURE ![Obsidian plugin](https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json) -->
+![GitHub release](https://img.shields.io/github/v/release/Jalad25/contact-note) ![Assests downloaded](https://img.shields.io/github/downloads/Jalad25/contact-note/total)
+
 # Contact Note
+
 An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards from frontmatter in designated contact notes, with a searchable and filterable contact list view.
 
 ![preview](assets/screenshots/Preview.gif)

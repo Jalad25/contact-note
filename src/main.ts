@@ -11,7 +11,7 @@ import { ContactNoteSettingTab } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
 
-export const VIEW_TYPE_CONTACT_LIST = "contact-note-list";
+//#region Types
 
 export interface FrontmatterFilter {
   property: string;
@@ -29,6 +29,12 @@ export interface ContactNoteSettings {
   defaultFilters: FrontmatterFilter[];
 }
 
+//#endregion
+
+//#region Constants/Defaults
+
+export const VIEW_TYPE_CONTACT_LIST = "contact-note-list";
+
 export const DEFAULT_SETTINGS: ContactNoteSettings = {
   useFolder: true,
   folderPath: "Contacts",
@@ -38,6 +44,8 @@ export const DEFAULT_SETTINGS: ContactNoteSettings = {
   lastNameFirst: true,
   defaultFilters: [],
 };
+
+//#endregion
 
 export default class ContactNotePlugin extends Plugin {
   settings!: ContactNoteSettings;
@@ -208,7 +216,6 @@ export default class ContactNotePlugin extends Plugin {
     if (this.settings.useFolder) {
       const folder = normalizePath(this.settings.folderPath);
       if (!folder) return false;
-      console.log(file.path === folder || file.path.startsWith(folder + "/"));
       return file.path === folder || file.path.startsWith(folder + "/");
     }
 
@@ -232,7 +239,6 @@ export default class ContactNotePlugin extends Plugin {
       tags.push(...cache.tags.map((t) => t.tag.replace(/^#/, "").toLowerCase()));
     }
 
-    console.log(tags.includes(tag));
     return tags.includes(tag);
   }
 
