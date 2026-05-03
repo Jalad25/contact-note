@@ -9,13 +9,13 @@ An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards fro
 
 ## Features
 
-- Renders a contact card in reading mode for any note identified as a contact
-- Sidebar contact list view with search, alphabet filter, and condensed mode
-- Create new contacts from the list view with an auto-generated frontmatter template
-- Enforces file naming in `First [Middle] Last` format automatically
-- Supports multiple emails, phone numbers, and social media profiles per contact
-- Default list filters based on any frontmatter property
-- Contacts identified by folder or tag
+- **Contact Card in Note**: Renders a contact card in reading mode for any note identified as a contact.
+- **Contact List View**: Creates a contact list view from the list of available contact notes with search, alphabet filter, and different viewing modes.
+- **Contact Note Template**: Create new contacts from the list view with an auto-generated frontmatter template.
+- **Contact File Naming Enforcement**: Enforces file naming in `First [Middle] Last` format automatically.
+- **Multiple Values for Certain Frontmatter Properties**: Supports multiple emails, phone numbers, and social media profiles per contact.
+- **Default Filters**: Create default list filters based on any frontmatter property!
+- **Contact Note Identification**: Contacts identified by folder or tag.
 
 ## Installation
 

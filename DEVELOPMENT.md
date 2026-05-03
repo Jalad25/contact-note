@@ -1,6 +1,6 @@
 # Development
 
-This document outlines the how to set up a local development environment and the internals of the plugin for contributors. For end-user documentation, see [README.md](./README.md). For contribution process, see [CONTRIBUTING.md](./CONTRIBUTING.md).
+This document outlines the how to set up a local development environment and the internals of the plugin for contributors. For end-user documentation, see [README.md](./README.md). For the contribution process, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## Prerequisites
 
@@ -13,14 +13,14 @@ This document outlines the how to set up a local development environment and the
 
 ### 1. Clone the Repository
 
-Clone or fork the repository directly into your vault's plugin folder:
+Clone the repository directly into your vault's plugin folder:
 
 ```bash
-git clone https://github.com/Jalad25/contact-note.git <vault>/.obsidian/plugins/contact-note
+git clone <repository> <vault>/.obsidian/plugins/contact-note
 cd <vault>/.obsidian/plugins/contact-note
 ```
 
-Replace `<vault>` with the path to your Obsidian vault.
+Replace `<vault>` with the path to your Obsidian vault and `<repository>` with the link to your fork of the repository.
 
 ### 2. Install Dependencies
 
@@ -74,19 +74,18 @@ The files required for a release are:
 ```
 contact-note/
 ├── src/
-│   ├── main.ts                    # Plugin entry point: settings, commands, event handlers
-│   ├── Contact.ts                 # Contact data model parsed from note frontmatter
-│   ├── ContactCard.ts             # Builds the contact card DOM element
+│   ├── main.ts                    # Plugin entry point
+│   ├── Contact.ts                 # Contact data model
+│   ├── ContactCard.ts             # Contact card builder
 │   ├── ContactListView.ts         # Sidebar list view
 │   └── ContactNoteSettingTab.ts   # Settings tab UI
-├── screenshots/                   # Images used in README and documentation
-├── styles.css                     # All plugin styles
+├── styles.css                     # Plugin styles
 ├── manifest.json                  # Obsidian plugin manifest
-├── versions.json                  # Compatibility map of plugin versions to Obsidian versions
-├── package.json                   # npm package manifest and scripts
-├── tsconfig.json                  # TypeScript configuration
-├── esbuild.config.mjs             # esbuild configuration
-└── eslint.config.mjs              # ESLint configuration
+├── versions.json                  # Plugin/Obsidian version map
+├── package.json                   # npm manifest and scripts
+├── tsconfig.json                  # TypeScript config
+├── esbuild.config.mjs             # esbuild config
+└── eslint.config.mjs              # ESLint config
 ```
 
 ## Testing
@@ -105,6 +104,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, including how to f
 
 ## Releasing
 
+> [!IMPORTANT] 
 > Releasing is restricted to project maintainers.
 
 The release process is automated through two GitHub Actions workflows:
@@ -125,7 +125,7 @@ If the workflows are unavailable, the release can be performed manually:
 5. Push the tag: `git push origin <version>`. This will still trigger the release workflow if it is operational; if not, continue to step 6.
 6. Create a GitHub release attaching `main.js`, `manifest.json`, and `styles.css`.
 
-## Troubleshooting
+## Troubleshooting Common Issues
 
 ### Plugin does not appear in Obsidian
 

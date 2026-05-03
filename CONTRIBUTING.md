@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for your interest in contributing! This document outlines the process for contributing to the project. For architecture and internals, see [DEVELOPMENT.md](./DEVELOPMENT.md).
+Thank you for your interest in contributing! This document outlines the process for contributing to the project. For end-user documentation, see [README.md](./README.md). For architecture and internals, see [DEVELOPMENT.md](./DEVELOPMENT.md).
 
 ## Code of Conduct
 
@@ -32,7 +32,7 @@ For usage questions, configuration help, or sharing how you use the plugin, plea
 
 - **Open an issue or discussion** for non-trivial changes so we can agree on the approach. Small fixes (typos, doc improvements, obvious bugs) can skip this.
 - **Scope each pull request to one issue, bug, or feature**. Bundled changes are harder to review.
-- **Consider whether your changes needs new dependencies**. If a change requires a new dependency, mention why in the issue first.
+- **Consider whether your changes need new dependencies**. If a change requires a new dependency, mention why in the issue first.
 
 ### Once you are ready to code...
 
