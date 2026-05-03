@@ -97,7 +97,10 @@ export default class ContactNotePlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on("layout-change", () => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (!view || !view.file || !this.isContactFile(view.file)) return;
+        if (!view || !view.file || !this.isContactFile(view.file)) {
+          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass("contact-note");
+          return;
+        }
         view.contentEl.querySelector(".markdown-reading-view")?.addClass("contact-note");
       })
     );
@@ -105,7 +108,10 @@ export default class ContactNotePlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on("active-leaf-change", () => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (!view || !view.file || !this.isContactFile(view.file)) return;
+        if (!view || !view.file || !this.isContactFile(view.file)) {
+          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass("contact-note");
+          return;
+        }
         view.contentEl.querySelector(".markdown-reading-view")?.addClass("contact-note");
       })
     );
@@ -113,7 +119,10 @@ export default class ContactNotePlugin extends Plugin {
     this.registerEvent(
       this.app.workspace.on("file-open", () => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
-        if (!view || !view.file || !this.isContactFile(view.file)) return;
+        if (!view || !view.file || !this.isContactFile(view.file)) {
+          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass("contact-note");
+          return;
+        };
         view.contentEl.querySelector(".markdown-reading-view")?.addClass("contact-note");
       })
     );
