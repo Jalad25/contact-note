@@ -1,11 +1,11 @@
 <p align="center">
-  <img src=".github/assets/Banner.png" alt="Contact Note" align="center">
+  <img src="assets/PluginBanner.png" alt="Contact Note" align="center" width=800>
 </p>
 
 # Contact Note
 An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards from frontmatter in designated contact notes, with a searchable and filterable contact list view.
 
-![preview](.github/assets/screenshots/Preview.gif)
+![preview](assets/screenshots/Preview.gif)
 
 ## Features
 
@@ -57,7 +57,7 @@ A new note will be created with a pre-populated frontmatter template and opened 
 
 ## Contact Card
 
-![Contact card](.github/assets/screenshots/contact-card.png)
+![Contact card](assets/screenshots/contact-card.png)
 
 In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, email addresses, phone numbers, and social media profiles.
 
@@ -143,7 +143,7 @@ Platforms not in this list will still display the handle as plain text without a
 
 ## Contact List View
 
-![ContactList](.github/assets/screenshots/contact-list.png)
+![ContactList](assets/screenshots/contact-list.png)
 
 Open the contact list view from the ribbon icon or the **Open contact list** command.
 
