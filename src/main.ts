@@ -199,6 +199,7 @@ export default class ContactNotePlugin extends Plugin {
     if (this.settings.useFolder) {
       const folder = normalizePath(this.settings.folderPath);
       if (!folder) return false;
+      console.log(file.path === folder || file.path.startsWith(folder + "/"));
       return file.path === folder || file.path.startsWith(folder + "/");
     }
 
@@ -222,6 +223,7 @@ export default class ContactNotePlugin extends Plugin {
       tags.push(...cache.tags.map((t) => t.tag.replace(/^#/, "").toLowerCase()));
     }
 
+    console.log(tags.includes(tag));
     return tags.includes(tag);
   }
 

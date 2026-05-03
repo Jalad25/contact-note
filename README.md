@@ -1,8 +1,11 @@
-# Contact Note
+<p align="center">
+  <img src=".github/assets/Banner.png" alt="Contact Note" align="center">
+</p>
 
+# Contact Note
 An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards from frontmatter in designated contact notes, with a searchable and filterable contact list view.
 
-![preview](screenshots/Preview.gif)
+![preview](.github/assets/screenshots/Preview.gif)
 
 ## Features
 
@@ -32,28 +35,40 @@ An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards fro
 
 ## Usage
 
-### Identifying contact notes
+### Identifying Contact Notes
 
 A note is treated as a contact note in one of two ways, configured in settings:
 
 - **By folder**: any note inside a specified folder (e.g. `Contacts/`) is a contact note.
 - **By tag**: any note tagged with a specified tag (e.g. `#contact`) is a contact note.
 
-### Creating a contact
+### Creating a Contact Note
 
-To manually create a new contact, create a new note with at least the `firstName` and `lastName` frontmatter properties in either the path of contact notes or with the contact tag specified in the plugin settings. For a list of all frontmatter properties recognized by the plugin, see [Frontmatter reference](#frontmatter-reference) below. 
+To manually create a new contact, create a new note with at least the `firstName` and `lastName` frontmatter properties in either the path of contact notes or with the contact tag specified in the plugin settings. For a list of all frontmatter properties recognized by the plugin, see [Frontmatter Reference](#frontmatter-reference) below. 
 
 To create a new contact using the plugin's template, click the **+** button in the top-right corner of the contact list view to open the new contact dialog. Enter a first and last name and click **Create**.
 
 A new note will be created with a pre-populated frontmatter template and opened automatically.
 
-### Contact card
+> [!IMPORTANT]
+> The plugin automatically renames contact notes to match the format `First [Middle] Last` whenever the `firstName`, `middleName`, or `lastName` frontmatter values change. Manual renames are also corrected.
+>
+> If a file with the target name already exists, the rename is skipped and a notice is shown. Add a middle name to disambiguate.
 
-![Contact card](screenshots/contact-card.png)
+## Contact Card
+
+![Contact card](.github/assets/screenshots/contact-card.png)
 
 In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, email addresses, phone numbers, and social media profiles.
 
-## Frontmatter reference
+### Display Name Resolution
+
+The display name is resolved in the following order:
+
+1. `displayName` if set
+2. `firstName` + `middleName` + `lastName`
+
+## Frontmatter Reference
 
 All fields are optional except `firstName` and `lastName`.
 
@@ -94,19 +109,6 @@ socials:
 ---
 ```
 
-### Display name resolution
-
-The display name is resolved in the following order:
-
-1. `displayName` if set
-2. `firstName` + `middleName` + `lastName`
-
-### File naming
-
-The plugin automatically renames contact notes to match the format `First [Middle] Last` whenever the `firstName`, `middleName`, or `lastName` frontmatter values change. Manual renames are also corrected.
-
-If a file with the target name already exists, the rename is skipped and a notice is shown. Add a middle name to disambiguate.
-
 ### Socials
 
 Social profiles are defined as a list of single-key objects under the `socials` frontmatter field. The key is the platform name and the value is the handle (the `@` prefix is optional).
@@ -139,9 +141,9 @@ Supported platforms:
 
 Platforms not in this list will still display the handle as plain text without a link.
 
-## Contact list view
+## Contact List View
 
-![ContactList](screenshots/contact-list.png)
+![ContactList](.github/assets/screenshots/contact-list.png)
 
 Open the contact list view from the ribbon icon or the **Open contact list** command.
 
@@ -149,13 +151,11 @@ Open the contact list view from the ribbon icon or the **Open contact list** com
 
 Click the **search icon** in the header to show the search bar. The search filters by first name, last name, middle name, and display name.
 
-### Alphabet filter
+### Alphabet Filter
 
 Click any letter in the alphabet bar to filter contacts whose last name starts with that letter. Click the same letter again to clear the filter.
 
-## Settings reference
-
-![Settings](screenshots/settings.png)
+## Settings Reference
 
 ### Contact File Identification
 
@@ -191,57 +191,9 @@ Filters apply to any frontmatter property, including custom fields not used by t
 
 ## Contributing
 
-Contributions are welcome. Please open an issue to discuss significant changes before submitting a pull request.
+Contributions of all kinds are welcome!
 
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v24 or later recommended)
-- A local Obsidian vault for testing
-
-### Setup
-
-1. Clone or fork the repository into your vault's plugin folder:
-   ```
-   <vault>/.obsidian/plugins/contact-note/
-   ```
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Start the development build (watches for changes and rebuilds automatically):
-   ```
-   npm run dev
-   ```
-4. In Obsidian, go to **Settings → Community plugins**, disable and re-enable **Contact Note** to pick up the rebuilt `main.js`.
-
-   > Tip: The [Hot Reload](https://github.com/pjeby/hot-reload) community plugin can reload the plugin automatically on file change.
-
-### Linting
-
-```
-npm run lint
-```
-
-ESLint 10 with [`eslint-plugin-obsidianmd`](https://github.com/obsidianmd/eslint-plugin-obsidianmd) is configured via `eslint.config.mjs`. Run lint before submitting a pull request.
-
-### Production build
-
-```
-npm run build
-```
-
-This runs a TypeScript type-check (`tsc`) followed by an optimized esbuild bundle. The output is `main.js` in the project root. The files needed for a release are `main.js`, `manifest.json`, and `styles.css`.
-
-### Project structure
-
-| Path | Description |
-|---|---|
-| `src/main.ts` | Plugin entry point: settings, commands, event handlers |
-| `src/Contact.ts` | `Contact` data model parsed from note frontmatter |
-| `src/ContactCard.ts` | Builds the contact card DOM element |
-| `src/ContactListView.ts` | Sidebar list view |
-| `src/ContactNoteSettingTab.ts` | Settings tab UI |
-| `styles.css` | All plugin styles |
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
 
 ## License
 

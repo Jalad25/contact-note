@@ -1,0 +1,147 @@
+# Development
+
+This document outlines the how to set up a local development environment and the internals of the plugin for contributors. For end-user documentation, see [README.md](./README.md). For contribution process, see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## Prerequisites
+
+- **[Node.js](https://nodejs.org/)**: v24 or later recommended
+- **[npm](https://www.npmjs.com/)**: bundled with Node.js
+- **[Git](https://git-scm.com/)**: latest version
+- **[Obsidian](https://obsidian.md/)**: 1.11.4 or later for API's `SecretStorage` / `SecretComponent` classes and a local vault for testing. Older versions will not load the plugin.
+
+## Getting Started
+
+### 1. Clone the Repository
+
+Clone or fork the repository directly into your vault's plugin folder:
+
+```bash
+git clone https://github.com/Jalad25/contact-note.git <vault>/.obsidian/plugins/contact-note
+cd <vault>/.obsidian/plugins/contact-note
+```
+
+Replace `<vault>` with the path to your Obsidian vault.
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the Development Build
+
+```bash
+npm run dev
+```
+
+This starts esbuild in watch mode. It will rebuild `main.js` automatically whenever source files change.
+
+### 4. Enable the Plugin in Obsidian
+
+1. Open Obsidian.
+2. Go to **Settings → Community plugins**.
+3. Enable **Contact Note**.
+4. After making changes, reload Obsidian to pick up the rebuilt `main.js`. Either:
+   - Open the developer console with `Ctrl+Shift+I` / `Cmd+Option+I` and press `F5` (or `Ctrl/Cmd+R`) to reload the window, or
+   - Disable and re-enable the plugin in **Settings → Community plugins**.
+
+> **Tip:** The [Hot Reload](https://github.com/pjeby/hot-reload) community plugin can reload the plugin automatically whenever `main.js` changes, removing the need to reload manually.
+
+## Linting
+
+```
+npm run lint
+```
+
+ESLint 10 with [`eslint-plugin-obsidianmd`](https://github.com/obsidianmd/eslint-plugin-obsidianmd) is configured via `eslint.config.mjs`. Run lint before submitting a pull request.
+
+## Production Build
+
+```bash
+npm run build
+```
+
+This performs a TypeScript type-check (`tsc -skipLibCheck`) followed by an optimized esbuild bundle. The output is `main.js` in the project root.
+
+The files required for a release are:
+
+- `main.js`
+- `manifest.json`
+- `styles.css`
+
+## Project Structure
+
+```
+contact-note/
+├── src/
+│   ├── main.ts                    # Plugin entry point: settings, commands, event handlers
+│   ├── Contact.ts                 # Contact data model parsed from note frontmatter
+│   ├── ContactCard.ts             # Builds the contact card DOM element
+│   ├── ContactListView.ts         # Sidebar list view
+│   └── ContactNoteSettingTab.ts   # Settings tab UI
+├── screenshots/                   # Images used in README and documentation
+├── styles.css                     # All plugin styles
+├── manifest.json                  # Obsidian plugin manifest
+├── versions.json                  # Compatibility map of plugin versions to Obsidian versions
+├── package.json                   # npm package manifest and scripts
+├── tsconfig.json                  # TypeScript configuration
+├── esbuild.config.mjs             # esbuild configuration
+└── eslint.config.mjs              # ESLint configuration
+```
+
+## Testing
+
+Currently, the project relies on manual testing within an Obsidian vault. When making changes, please verify:
+
+- The plugin loads without errors (check the developer console with `Ctrl+Shift+I` / `Cmd+Option+I`).
+- Existing contact notes still render correctly.
+- Settings persist across reloads.
+- The contact list view updates correctly when notes are added, modified, or deleted.
+- Both folder-based and tag-based contact identification work.
+
+## Submitting Changes
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, including how to file bugs and feature requests using the issue templates under [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/).
+
+## Releasing
+
+> Releasing is restricted to project maintainers.
+
+The release process is automated through two GitHub Actions workflows:
+
+1. **Trigger the version bump workflow.** Go to **Actions → Bump version → Run workflow** and enter the new version (e.g. `1.1.0`), following [Semantic Versioning](https://semver.org/). The workflow updates `manifest.json`, `package.json`, and `versions.json`, commits the changes, and pushes a matching git tag.
+2. **The release workflow runs automatically.** Pushing the tag triggers [`release.yml`](.github/workflows/release.yml), which validates that the tag matches `manifest.json`, builds the production bundle, and creates a GitHub release with `main.js`, `manifest.json`, and `styles.css` attached.
+
+No local steps are required.
+
+### Manual fallback
+
+If the workflows are unavailable, the release can be performed manually:
+
+1. Update the version in `manifest.json` and `package.json` to the new version number, following [Semantic Versioning](https://semver.org/).
+2. Update `versions.json` to map the new plugin version to the minimum required Obsidian version.
+3. Run `npm run build` to produce the production bundle.
+4. Commit the version bump and tag the release: `git tag -a <version> -m "<version>"`.
+5. Push the tag: `git push origin <version>`. This will still trigger the release workflow if it is operational; if not, continue to step 6.
+6. Create a GitHub release attaching `main.js`, `manifest.json`, and `styles.css`.
+
+## Troubleshooting
+
+### Plugin does not appear in Obsidian
+
+- Verify the plugin folder is at `<vault>/.obsidian/plugins/contact-note/`.
+- Make sure `main.js`, `manifest.json`, and `styles.css` are present in that folder.
+- Toggle **Restricted mode** off in **Settings → Community plugins**.
+
+### Changes are not reflected after rebuild
+
+- Open the developer console (`Ctrl+Shift+I` / `Cmd+Option+I`) and press `F5` (or `Ctrl/Cmd+R`) to reload the window.
+- Disable and re-enable the plugin in **Settings → Community plugins**.
+- Restart Obsidian.
+
+## Useful Resources
+
+- [Obsidian Plugin Developer Docs](https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin)
+- [Obsidian API reference](https://github.com/obsidianmd/obsidian-api)
+- [Obsidian Sample Plugin](https://github.com/obsidianmd/obsidian-sample-plugin)
+- [eslint-plugin-obsidianmd](https://github.com/obsidianmd/eslint-plugin)
