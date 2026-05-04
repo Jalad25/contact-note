@@ -4,7 +4,7 @@ This document outlines the how to set up a local development environment and the
 
 ## Prerequisites
 
-- **[Node.js](https://nodejs.org/)**: v24 or later recommended
+- **[Node.js](https://nodejs.org/)**: v22 or later recommended
 - **[npm](https://www.npmjs.com/)**: bundled with Node.js
 - **[Git](https://git-scm.com/)**: latest version
 - **[Obsidian](https://obsidian.md/)**: 1.11.4 or later for API's `SecretStorage` / `SecretComponent` classes and a local vault for testing. Older versions will not load the plugin.
@@ -53,7 +53,7 @@ This starts esbuild in watch mode. It will rebuild `main.js` automatically whene
 npm run lint
 ```
 
-ESLint 10 with [`eslint-plugin-obsidianmd`](https://github.com/obsidianmd/eslint-plugin-obsidianmd) is configured via `eslint.config.mjs`. Run lint before submitting a pull request.
+ESLint 10 is configured via [`eslint.config.mjs`](eslint.config.mjs) (flat config). The setup extends `eslint-plugin-obsidianmd`'s recommended rules, which include Obsidian-specific guidance plus the typescript-eslint type-aware ruleset. Run lint before submitting a pull request.
 
 ## Production Build
 
@@ -61,7 +61,7 @@ ESLint 10 with [`eslint-plugin-obsidianmd`](https://github.com/obsidianmd/eslint
 npm run build
 ```
 
-This performs a TypeScript type-check (`tsc -skipLibCheck`) followed by an optimized esbuild bundle. The output is `main.js` in the project root.
+This performs a TypeScript type-check followed by an optimized esbuild bundle. The output is `main.js` in the project root.
 
 The files required for a release are:
 
@@ -78,7 +78,8 @@ contact-note/
 │   ├── Contact.ts                 # Contact data model
 │   ├── ContactCard.ts             # Contact card builder
 │   ├── ContactListView.ts         # Sidebar list view
-│   └── ContactNoteSettingTab.ts   # Settings tab UI
+│   ├── ContactNoteSettingTab.ts   # Settings tab UI
+│   └── SchemaMigration.ts         # data.json migrations
 ├── styles.css                     # Plugin styles
 ├── manifest.json                  # Obsidian plugin manifest
 ├── versions.json                  # Plugin/Obsidian version map
@@ -87,6 +88,24 @@ contact-note/
 ├── esbuild.config.mjs             # esbuild config
 └── eslint.config.mjs              # ESLint config
 ```
+
+## Settings Schema Migrations
+
+Plugin settings are versioned through [`SchemaMigration.ts`](src/SchemaMigration.ts). The `schemaVersion` field on `ContactNoteSettings` records the version of the data on disk, and `CURRENT_SCHEMA_VERSION` records the version the running code expects.
+
+On every plugin load, `loadSettings()` runs the user's saved data through `migrate(...)`, which steps the data forward one version at a time using the entries in the `MIGRATIONS` array. If anything was migrated, the upgraded settings are written back to disk so the user only pays the migration cost once.
+
+### Adding a new migration
+
+When a settings change would break existing user data (renamed field, restructured value, removed field with a non-default replacement, etc.):
+
+1. **Bump `CURRENT_SCHEMA_VERSION`** in [`SchemaMigration.ts`](src/SchemaMigration.ts) by one.
+2. **Add a step function** named `migrate_N_to_N+1(raw)` under the *Migration Step Functions* region. It receives the previous-version shape as `any` and returns `Partial<ContactNoteSettings> & { schemaVersion: N+1 }`.
+3. **Register it** by adding `{ from: N, to: N+1, apply: migrate_N_to_N+1 }` to the `MIGRATIONS` array.
+4. **Update `ContactNoteSettings` and `DEFAULT_SETTINGS`** in [`main.ts`](src/main.ts) to reflect the new shape.
+
+> [!IMPORTANT]
+> Never edit a migration step after it has shipped. Users who already ran the old version of the step would silently desync from those who ran the new version. If a step needs correcting, write a *new* step that fixes the bad data forward.
 
 ## Testing
 
@@ -97,6 +116,7 @@ Currently, the project relies on manual testing within an Obsidian vault. When m
 - Settings persist across reloads.
 - The contact list view updates correctly when notes are added, modified, or deleted.
 - Both folder-based and tag-based contact identification work.
+- Loading a `data.json` from a previous schema version triggers migration on first start, after which the file is rewritten in the current shape with `schemaVersion` stamped.
 - The plugin renders correctly in **both light and dark mode**. All bugs, features, and UI changes should be verified against both themes before submission.
 
 ## Submitting Changes
