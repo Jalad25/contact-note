@@ -121,6 +121,8 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       );
   }
 
+  //#region Utilities
+
   private renderDefaultFilters(containerEl: HTMLElement): void {
     containerEl.empty();
 
@@ -186,6 +188,8 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       );
     }
   }
+
+  //#endregion
 }
 
 //#endregion

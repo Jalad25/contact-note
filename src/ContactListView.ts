@@ -1,8 +1,63 @@
-import { CachedMetadata, ItemView, Modal, Setting, setIcon, TFile, WorkspaceLeaf } from "obsidian";
+import { 
+  CachedMetadata, 
+  ItemView, 
+  Modal, 
+  Setting, 
+  setIcon, 
+  TFile, 
+  WorkspaceLeaf 
+} from "obsidian";
 import ContactNotePlugin, { FrontmatterFilter } from "./main";
-import { VIEW_TYPE_CONTACT_LIST } from "./main";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
+
+//#region Types/Objects/Interfaces
+
+class NewContactModal extends Modal {
+  plugin: ContactNotePlugin;
+
+  constructor(plugin: ContactNotePlugin) {
+    super(plugin.app);
+    this.plugin = plugin;
+  }
+
+  onOpen(): void {
+    const { contentEl } = this;
+    contentEl.createEl("h2", { text: "New contact" });
+
+    let firstName = "";
+    let lastName = "";
+
+    new Setting(contentEl)
+      .setName("First name")
+      .addText((text) =>
+        text.onChange((value) => { firstName = value; })
+      );
+
+    new Setting(contentEl)
+      .setName("Last name")
+      .addText((text) =>
+        text.onChange((value) => { lastName = value; })
+      );
+
+    new Setting(contentEl)
+      .addButton((btn) =>
+        btn
+          .setButtonText("Create")
+          .setCta()
+          .onClick(() => {
+            this.close();
+            void this.plugin.createNewContact(firstName.trim(), lastName.trim());
+          })
+      );
+  }
+
+  onClose(): void {
+    this.contentEl.empty();
+  }
+}
+
+//#endregion
 
 //#region Contact List View
 
@@ -19,7 +74,7 @@ export class ContactListView extends ItemView {
   }
 
   getViewType(): string {
-    return VIEW_TYPE_CONTACT_LIST;
+    return this.plugin.viewTypeContactList;
   }
 
   getDisplayText(): string {
@@ -110,28 +165,28 @@ export class ContactListView extends ItemView {
   render(): void {
     const container = this.contentEl;
     container.empty();
-    container.addClass("contact-note-list-view");
+    container.addClass(`${this.plugin.manifest.id}-list-view`);
     if (this.plugin.settings.condensedList) {
-      container.addClass("contact-note-list-condensed");
+      container.addClass(`${this.plugin.manifest.id}-list-condensed`);
     } else {
-      container.removeClass("contact-note-list-condensed");
+      container.removeClass(`${this.plugin.manifest.id}-list-condensed`);
     }
 
     // Header
-    const headerEl = container.createDiv({ cls: "contact-note-list-header" });
+    const headerEl = container.createDiv({ cls: `${this.plugin.manifest.id}-list-header` });
     headerEl.createEl("h1", {
-      cls: "contact-note-list-title",
+      cls: `${this.plugin.manifest.id}-list-title`,
       text: this.plugin.settings.listTitle || "Contacts",
     });
-    const btnGroup = headerEl.createDiv({ cls: "contact-note-header-btns" });
+    const btnGroup = headerEl.createDiv({ cls: `${this.plugin.manifest.id}-header-btns` });
 
-    const newBtn = btnGroup.createEl("button", { cls: "contact-note-header-btn clickable-icon" });
+    const newBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-header-btn clickable-icon` });
     setIcon(newBtn, "user-plus");
     newBtn.setAttribute("aria-label", "New contact");
     newBtn.addEventListener("click", () => new NewContactModal(this.plugin).open());
 
     // Search
-    const searchBtn = btnGroup.createEl("button", { cls: "contact-note-header-btn clickable-icon" });
+    const searchBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-header-btn clickable-icon` });
     setIcon(searchBtn, "search");
     searchBtn.setAttribute("aria-label", "Search contacts");
     if (this.showSearch) searchBtn.addClass("is-active");
@@ -143,7 +198,7 @@ export class ContactListView extends ItemView {
   
     if (this.showSearch) {
       const searchInput = container.createEl("input", {
-        cls: "contact-note-search",
+        cls: `${this.plugin.manifest.id}-search`,
         attr: { type: "text", placeholder: "Search contacts…" },
       });
       searchInput.value = this.searchQuery;
@@ -155,11 +210,11 @@ export class ContactListView extends ItemView {
     }
 
     // Alphabet filter bar
-    const alphaBar = container.createDiv({ cls: "nav-header contact-note-alpha-bar" });
+    const alphaBar = container.createDiv({ cls: `nav-header ${this.plugin.manifest.id}-alpha-bar` });
     const alphaBtns = alphaBar.createDiv({ cls: "nav-buttons-container" });
 
     for (const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
-      const btn = alphaBtns.createDiv({ cls: "clickable-icon contact-note-alpha-btn" });
+      const btn = alphaBtns.createDiv({ cls: `clickable-icon ${this.plugin.manifest.id}-alpha-btn` });
       btn.setText(letter);
       if (this.letterFilter === letter) btn.addClass("is-active");
       btn.addEventListener("click", () => {
@@ -173,7 +228,7 @@ export class ContactListView extends ItemView {
 
   private renderCards(): void {
     const container = this.contentEl;
-    container.querySelectorAll(".contact-note-card, .contact-note-list-empty")
+    container.querySelectorAll(`.${this.plugin.manifest.id}-card, .${this.plugin.manifest.id}-list-empty`)
       .forEach((el) => el.remove());
 
     const query = this.searchQuery.toLowerCase().trim();
@@ -195,7 +250,7 @@ export class ContactListView extends ItemView {
 
     if (filtered.length === 0) {
       container.createEl("p", {
-        cls: "contact-note-list-empty",
+        cls: `${this.plugin.manifest.id}-list-empty`,
         text: query || letter ? "No contacts match your filter." : "No contact notes found.",
       });
       return;
@@ -207,56 +262,8 @@ export class ContactListView extends ItemView {
       const nameOverride = lastNameFirst
         ? [contact.lastName + ",", contact.firstName, contact.middleName].filter(Boolean).join(" ")
         : undefined;
-      buildContactCard(this.plugin.app, container, contact, { condensed, clickable: true, showDetails: false, nameOverride });
+      buildContactCard(this.plugin, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: false, nameOverride });
     }
-  }
-}
-
-//#endregion
-
-//#region New Contact Modal
-
-export class NewContactModal extends Modal {
-  plugin: ContactNotePlugin;
-
-  constructor(plugin: ContactNotePlugin) {
-    super(plugin.app);
-    this.plugin = plugin;
-  }
-
-  onOpen(): void {
-    const { contentEl } = this;
-    contentEl.createEl("h2", { text: "New contact" });
-
-    let firstName = "";
-    let lastName = "";
-
-    new Setting(contentEl)
-      .setName("First name")
-      .addText((text) =>
-        text.onChange((value) => { firstName = value; })
-      );
-
-    new Setting(contentEl)
-      .setName("Last name")
-      .addText((text) =>
-        text.onChange((value) => { lastName = value; })
-      );
-
-    new Setting(contentEl)
-      .addButton((btn) =>
-        btn
-          .setButtonText("Create")
-          .setCta()
-          .onClick(() => {
-            this.close();
-            void this.plugin.createNewContact(firstName.trim(), lastName.trim());
-          })
-      );
-  }
-
-  onClose(): void {
-    this.contentEl.empty();
   }
 }
 

@@ -4,14 +4,14 @@ import {
   Notice,
   Plugin,
   TFile,
-  MarkdownPostProcessorContext,
+  MarkdownPostProcessorContext
 } from "obsidian";
 import { ContactListView } from "./ContactListView";
 import { ContactNoteSettingTab } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
 
-//#region Types
+//#region Types/Objects/Interface
 
 export interface FrontmatterFilter {
   property: string;
@@ -33,8 +33,6 @@ export interface ContactNoteSettings {
 
 //#region Constants/Defaults
 
-export const VIEW_TYPE_CONTACT_LIST = "contact-note-list";
-
 export const DEFAULT_SETTINGS: ContactNoteSettings = {
   useFolder: true,
   folderPath: "Contacts",
@@ -50,6 +48,7 @@ export const DEFAULT_SETTINGS: ContactNoteSettings = {
 export default class ContactNotePlugin extends Plugin {
   settings!: ContactNoteSettings;
   private renamingFiles = new Set<string>();
+  viewTypeContactList: string = `${this.manifest.id}-list`;
 
   async onload() {
     // Settings
@@ -77,7 +76,7 @@ export default class ContactNotePlugin extends Plugin {
 
     // View
     this.registerView(
-      VIEW_TYPE_CONTACT_LIST,
+      this.viewTypeContactList,
       (leaf) => new ContactListView(leaf, this)
     );
 
@@ -106,10 +105,10 @@ export default class ContactNotePlugin extends Plugin {
       this.app.workspace.on("layout-change", () => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!view || !view.file || !this.isContactFile(view.file)) {
-          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass("contact-note");
+          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass(this.manifest.id);
           return;
         }
-        view.contentEl.querySelector(".markdown-reading-view")?.addClass("contact-note");
+        view.contentEl.querySelector(".markdown-reading-view")?.addClass(this.manifest.id);
       })
     );
 
@@ -117,10 +116,10 @@ export default class ContactNotePlugin extends Plugin {
       this.app.workspace.on("active-leaf-change", () => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!view || !view.file || !this.isContactFile(view.file)) {
-          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass("contact-note");
+          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass(this.manifest.id);
           return;
         }
-        view.contentEl.querySelector(".markdown-reading-view")?.addClass("contact-note");
+        view.contentEl.querySelector(".markdown-reading-view")?.addClass(this.manifest.id);
       })
     );
 
@@ -128,10 +127,10 @@ export default class ContactNotePlugin extends Plugin {
       this.app.workspace.on("file-open", () => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
         if (!view || !view.file || !this.isContactFile(view.file)) {
-          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass("contact-note");
+          view?.contentEl.querySelector(".markdown-reading-view")?.removeClass(this.manifest.id);
           return;
         };
-        view.contentEl.querySelector(".markdown-reading-view")?.addClass("contact-note");
+        view.contentEl.querySelector(".markdown-reading-view")?.addClass(this.manifest.id);
       })
     );
 
@@ -153,62 +152,7 @@ export default class ContactNotePlugin extends Plugin {
 //#region Contact File
 
   async createNewContact(firstName: string, lastName: string): Promise<void> {
-    const folder = this.settings.useFolder
-      ? normalizePath(this.settings.folderPath)
-      : "";
-
-    if (folder && !this.app.vault.getAbstractFileByPath(folder)) {
-      await this.app.vault.createFolder(folder);
-    }
-
-    const baseName = [firstName, lastName].filter((s) => s.trim()).join(" ") || "New Contact";
-    let name = baseName;
-    let counter = 1;
-    while (this.app.vault.getAbstractFileByPath(`${folder ? folder + "/" : ""}${name}.md`)) {
-      name = `${baseName} ${counter++}`;
-    }
-    const filePath = `${folder ? folder + "/" : ""}${name}.md`;
-
-    const tagLine = !this.settings.useFolder && this.settings.tag.trim()
-      ? `tags:\n  - ${this.settings.tag.trim().replace(/^#/, "")}\n`
-      : "";
-    const aliasLines = firstName
-      ? ["aliases:", `  - ${firstName}`]
-      : ["aliases:"];
-
-    const lines = [
-      "---",
-      `firstName: ${firstName}`,
-      "middleName: ",
-      `lastName: ${lastName}`,
-      "displayName: ",
-      "company: ",
-      "title: ",
-      "email: ",
-      "phone: ",
-      "photo: ",
-      "socials:",
-      "  - twitter: ",
-      "  - instagram: ",
-      "  - linkedin: ",
-      "  - github: ",
-      "  - facebook: ",
-      "  - youtube: ",
-      "  - tiktok: ",
-      "  - bluesky: ",
-      "  - reddit: ",
-      "  - discord: ",
-      "  - telegram: ",
-      "  - twitch: ",
-      "  - snapchat: ",
-      "  - pinterest: ",
-      ...aliasLines,
-      ...(tagLine ? tagLine.replace(/\s+$/, "").split("\n") : []),
-      "---",
-      "",
-    ];
-
-    const file = await this.app.vault.create(filePath, lines.join("\n"));
+    const file = await Contact.create(this.app, this.settings, firstName, lastName);
     await this.app.workspace.getLeaf(false).openFile(file);
   }
 
@@ -278,14 +222,14 @@ export default class ContactNotePlugin extends Plugin {
       const missingFields: string[] = [];
       if (!contact.firstName) missingFields.push("firstName");
       if (!contact.lastName) missingFields.push("lastName");
-      const errorEl = el.createDiv({ cls: "contact-note-error" });
+      const errorEl = el.createDiv({ cls: `${this.manifest.id}-error` });
       errorEl.createEl("strong", { text: "Contact note is missing required fields: " });
       errorEl.createSpan({ text: missingFields.join(", ") });
       errorEl.createEl("p", { text: "Add these properties to the frontmatter to display this contact." });
       return;
     }
 
-    buildContactCard(this.app, el, contact, { showDetails: true });
+    buildContactCard(this, this.app, el, contact, { showDetails: true });
   }
 
 //#endregion
@@ -294,20 +238,20 @@ export default class ContactNotePlugin extends Plugin {
 
   async activateContactListView() {
     const { workspace } = this.app;
-    const existing = workspace.getLeavesOfType(VIEW_TYPE_CONTACT_LIST);
+    const existing = workspace.getLeavesOfType(this.viewTypeContactList);
     if (existing.length > 0) {
       await workspace.revealLeaf(existing[0]);
       return;
     }
     const leaf = workspace.getRightLeaf(false);
     if (leaf) {
-      await leaf.setViewState({ type: VIEW_TYPE_CONTACT_LIST, active: true });
+      await leaf.setViewState({ type: this.viewTypeContactList, active: true });
       await workspace.revealLeaf(leaf);
     }
   }
 
   refreshContactListView() {
-    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_CONTACT_LIST)) {
+    for (const leaf of this.app.workspace.getLeavesOfType(this.viewTypeContactList)) {
       if (leaf.view instanceof ContactListView) {
         leaf.view.reinit();
       }

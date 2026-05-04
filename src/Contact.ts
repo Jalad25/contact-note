@@ -1,8 +1,8 @@
-import { TFile } from "obsidian";
+import { App, normalizePath, TFile } from "obsidian";
 
-//#region Social
+//#region Types/Objects/Interfaces
 
-export class Social {
+class Social {
   name: string;
   handle: string;
 
@@ -12,19 +12,19 @@ export class Social {
   }
 
   private static readonly URLS: Record<string, string> = {
-    twitter:   "https://twitter.com",
+    twitter: "https://twitter.com",
     instagram: "https://instagram.com",
-    linkedin:  "https://linkedin.com",
-    github:    "https://github.com",
-    facebook:  "https://facebook.com",
-    youtube:   "https://youtube.com",
-    tiktok:    "https://tiktok.com",
-    bluesky:   "https://bsky.app",
-    reddit:    "https://reddit.com",
-    telegram:  "https://t.me",
-    twitch:    "https://twitch.tv",
-    snapchat:  "https://snapchat.com",
-    pinterest: "https://pinterest.com",
+    linkedin: "https://linkedin.com",
+    github: "https://github.com",
+    facebook: "https://facebook.com",
+    youtube: "https://youtube.com",
+    tiktok: "https://tiktok.com",
+    bluesky: "https://bsky.app",
+    reddit: "https://reddit.com",
+    telegram: "https://t.me",
+    twitch: "https://twitch.tv",
+    snapchat: "https://snapchat.com",
+    pinterest: "https://pinterest.com"
   };
 
   get url(): string | null {
@@ -41,11 +41,11 @@ export class Social {
       case "youtube":
       case "tiktok":
         return `${Social.URLS[this.name]}/@${h}`;
-      case "linkedin":  return `${Social.URLS.linkedin}/in/${h}`;
-      case "bluesky":   return `${Social.URLS.bluesky}/profile/${h}`;
-      case "reddit":    return `${Social.URLS.reddit}/user/${h}`;
-      case "snapchat":  return `${Social.URLS.snapchat}/add/${h}`;
-      default:          return null;
+      case "linkedin": return `${Social.URLS.linkedin}/in/${h}`;
+      case "bluesky": return `${Social.URLS.bluesky}/profile/${h}`;
+      case "reddit": return `${Social.URLS.reddit}/user/${h}`;
+      case "snapchat": return `${Social.URLS.snapchat}/add/${h}`;
+      default: return null;
     }
   }
 }
@@ -70,16 +70,16 @@ export class Contact {
 
   private constructor(file: TFile) {
     this.file = file;
-    this.firstName      = "";
-    this.middleName     = "";
-    this.lastName       = "";
-    this.displayName    = "";
-    this.title          = "";
-    this.company        = "";
-    this.photo          = "";
-    this.emails         = [];
-    this.phones         = [];
-    this.socials        = [];
+    this.firstName = "";
+    this.middleName = "";
+    this.lastName = "";
+    this.displayName = "";
+    this.title = "";
+    this.company = "";
+    this.photo = "";
+    this.emails = [];
+    this.phones = [];
+    this.socials = [];
     this.rawFrontmatter = {};
   }
 
@@ -89,18 +89,80 @@ export class Contact {
     return contact;
   }
 
+  static async create(
+    app: App,
+    settings: { useFolder: boolean; folderPath: string; tag: string },
+    firstName: string,
+    lastName: string
+  ): Promise<TFile> {
+    const folder = settings.useFolder ? normalizePath(settings.folderPath) : "";
+
+    if (folder && !app.vault.getAbstractFileByPath(folder)) {
+      await app.vault.createFolder(folder);
+    }
+
+    const baseName = [firstName, lastName].filter((s) => s.trim()).join(" ") || "New Contact";
+    let name = baseName;
+    let counter = 1;
+    while (app.vault.getAbstractFileByPath(`${folder ? folder + "/" : ""}${name}.md`)) {
+      name = `${baseName} ${counter++}`;
+    }
+    const filePath = `${folder ? folder + "/" : ""}${name}.md`;
+
+    const tagLine = !settings.useFolder && settings.tag.trim()
+      ? `tags:\n  - ${settings.tag.trim().replace(/^#/, "")}\n`
+      : "";
+    const aliasLines = firstName
+      ? ["aliases:", `  - ${firstName}`]
+      : ["aliases:"];
+
+    const lines = [
+      "---",
+      `firstName: ${firstName}`,
+      "middleName: ",
+      `lastName: ${lastName}`,
+      "displayName: ",
+      "company: ",
+      "title: ",
+      "email: ",
+      "phone: ",
+      "photo: ",
+      "socials:",
+      "  - twitter: ",
+      "  - instagram: ",
+      "  - linkedin: ",
+      "  - github: ",
+      "  - facebook: ",
+      "  - youtube: ",
+      "  - tiktok: ",
+      "  - bluesky: ",
+      "  - reddit: ",
+      "  - discord: ",
+      "  - telegram: ",
+      "  - twitch: ",
+      "  - snapchat: ",
+      "  - pinterest: ",
+      ...aliasLines,
+      ...(tagLine ? tagLine.replace(/\s+$/, "").split("\n") : []),
+      "---",
+      "",
+    ];
+
+    return app.vault.create(filePath, lines.join("\n"));
+  }
+
   update(frontmatter: Record<string, unknown>): void {
     this.rawFrontmatter = frontmatter;
-    this.firstName   = trimStr(frontmatter.firstName);
-    this.middleName  = trimStr(frontmatter.middleName);
-    this.lastName    = trimStr(frontmatter.lastName);
+    this.firstName = trimStr(frontmatter.firstName);
+    this.middleName = trimStr(frontmatter.middleName);
+    this.lastName = trimStr(frontmatter.lastName);
     this.displayName = trimStr(frontmatter.displayName);
-    this.title       = trimStr(frontmatter.title);
-    this.company     = trimStr(frontmatter.company);
-    this.photo       = trimStr(frontmatter.photo);
+    this.title = trimStr(frontmatter.title);
+    this.company = trimStr(frontmatter.company);
+    this.photo = trimStr(frontmatter.photo);
 
-    this.emails  = parseStrArr(frontmatter.email);
-    this.phones  = parseStrArr(frontmatter.phone);
+    this.emails = parseStrArr(frontmatter.email);
+    this.phones = parseStrArr(frontmatter.phone);
 
     this.socials = [];
     if (Array.isArray(frontmatter.socials)) {
