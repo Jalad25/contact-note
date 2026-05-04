@@ -13,7 +13,12 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 
   display(): void {
     const { containerEl } = this;
-    containerEl.empty();
+    containerEl.empty();    
+
+    containerEl.createDiv({
+      attr: { style: "text-align:right;" },
+      text: `Version: ${this.plugin.manifest.version}`,
+    });
 
     // Contact Note Settings
     new Setting(containerEl).setName("Contact file identification").setHeading();
