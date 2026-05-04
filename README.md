@@ -95,22 +95,22 @@ All fields are optional except `firstName` and `lastName`.
 
 ```yaml
 ---
-firstName: Jane
-middleName: A.
-lastName: Smith
-displayName:
-company: Acme Corp
-title: Engineer
+firstName: Geordi
+middleName: Terror
+lastName: La Forge
+displayName: Papa
+company: Geordi Bytes LLC.
+title: Professional Cutie
 email:
-  - jane@example.com
+  - geordi@notarealemail.com
 phone:
-  - +1 555 000 0000
-photo: Attachments/jane.jpg
+  - 123-456-7890
+photo: Attachments/Geordi.jpg
 aliases:
-  - Jane
+  - Geordi
 socials:
-  - github: janesmith
-  - linkedin: jane-smith
+  - github: geordiBytes
+  - linkedin: geordi-bytes
 ---
 ```
 
