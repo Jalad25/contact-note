@@ -42,3 +42,4 @@ Fixes #
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes with no TypeScript errors.
 - [ ] I have tested with existing contact notes to confirm no regression.
+- [ ] I have verified the fix in both light and dark mode (if the bug is visual).

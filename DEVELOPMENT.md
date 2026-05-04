@@ -97,6 +97,7 @@ Currently, the project relies on manual testing within an Obsidian vault. When m
 - Settings persist across reloads.
 - The contact list view updates correctly when notes are added, modified, or deleted.
 - Both folder-based and tag-based contact identification work.
+- The plugin renders correctly in **both light and dark mode**. All bugs, features, and UI changes should be verified against both themes before submission.
 
 ## Submitting Changes
 

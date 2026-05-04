@@ -15,6 +15,7 @@ Before opening a new bug report:
 - Search [existing issues](https://github.com/Jalad25/contact-note/issues) to see if it has already been reported.
 - Make sure you are running the latest version of the plugin and the minimum required version of Obsidian.
 - Try to reproduce the bug in a clean vault with other plugins disabled or removed.
+- Try to reproduce the bug in **both light and dark mode**, since some issues are theme-specific.
 
 ## Suggesting Enhancements
 

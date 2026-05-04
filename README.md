@@ -20,6 +20,7 @@ An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards fro
 - **Multiple Values for Certain Frontmatter Properties**: Supports multiple emails, phone numbers, and social media profiles per contact.
 - **Default Filters**: Create default list filters based on any frontmatter property!
 - **Contact Note Identification**: Contacts identified by folder or tag.
+- **Light and Dark Mode Support**: All plugin UI is styled for both Obsidian themes.
 
 ## Installation
 

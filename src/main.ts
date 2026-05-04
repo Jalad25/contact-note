@@ -10,6 +10,7 @@ import { ContactListView } from "./ContactListView";
 import { ContactNoteSettingTab } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
+import { CURRENT_SCHEMA_VERSION, migrate } from "./SchemaMigration";
 
 //#region Types/Objects/Interface
 
@@ -20,6 +21,7 @@ export interface FrontmatterFilter {
 }
 
 export interface ContactNoteSettings {
+  schemaVersion: number;
   useFolder: boolean;
   folderPath: string;
   tag: string;
@@ -34,6 +36,7 @@ export interface ContactNoteSettings {
 //#region Constants/Defaults
 
 export const DEFAULT_SETTINGS: ContactNoteSettings = {
+  schemaVersion: CURRENT_SCHEMA_VERSION,
   useFolder: true,
   folderPath: "Contacts",
   tag: "contact",
@@ -140,7 +143,10 @@ export default class ContactNotePlugin extends Plugin {
 
   async loadSettings() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Disabling eslint as this is an issue triggered by Obsidian's API. Triggers locally
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const raw = await this.loadData();
+    const { values, migrated } = migrate(raw);
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, values);
+    if (migrated) await this.saveSettings();
   }
 
   async saveSettings() {

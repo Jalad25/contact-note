@@ -33,3 +33,4 @@
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes with no TypeScript errors.
 - [ ] I have tested the affected areas in a local vault to confirm no regression.
+- [ ] I have verified the affected UI in both light and dark mode (if any styles or DOM structure were touched).
