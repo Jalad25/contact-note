@@ -262,7 +262,7 @@ export class ContactListView extends ItemView {
       const nameOverride = lastNameFirst
         ? [contact.lastName + ",", contact.firstName, contact.middleName].filter(Boolean).join(" ")
         : undefined;
-      buildContactCard(this.plugin, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: false, nameOverride });
+      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: false, nameOverride });
     }
   }
 }

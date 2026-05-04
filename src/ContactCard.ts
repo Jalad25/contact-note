@@ -4,7 +4,6 @@ import {
   TFile 
 } from "obsidian";
 import { Contact } from "./Contact";
-import ContactNotePlugin from "./main";
 
 //#region Constants
 
@@ -41,7 +40,7 @@ interface ContactCardOptions {
 //#region Card Builder
 
 export function buildContactCard(
-  plugin: ContactNotePlugin,
+  pluginId: string,
   app: App,
   container: HTMLElement,
   contact: Contact,
@@ -50,7 +49,7 @@ export function buildContactCard(
   const { condensed = false, clickable = false, showDetails = true, nameOverride } = options;
   const displayName = nameOverride ?? contact.resolvedDisplayName;
 
-  const card = container.createDiv({ cls: `${plugin.manifest.id}-card` });
+  const card = container.createDiv({ cls: `${pluginId}-card` });
 
   if (clickable) {
     card.addClass("is-clickable");
@@ -63,44 +62,44 @@ export function buildContactCard(
   if (contact.photo) {
     const photoFile = app.vault.getAbstractFileByPath(contact.photo);
     if (photoFile instanceof TFile) {
-      const photoContainer = card.createDiv({ cls: `${plugin.manifest.id}-photo` });
-      const img = photoContainer.createEl("img", { cls: `${plugin.manifest.id}-photo-img` });
+      const photoContainer = card.createDiv({ cls: `${pluginId}-photo` });
+      const img = photoContainer.createEl("img", { cls: `${pluginId}-photo-img` });
       img.src = app.vault.getResourcePath(photoFile);
       img.alt = displayName || "Contact photo";
     }
   } else {
-    const photoContainer = card.createDiv({ cls: `${plugin.manifest.id}-photo` });
+    const photoContainer = card.createDiv({ cls: `${pluginId}-photo` });
     setIcon(photoContainer, "user-round");
-    photoContainer.children[0].classList.add(`${plugin.manifest.id}-photo-default`);
+    photoContainer.children[0].classList.add(`${pluginId}-photo-default`);
   }
 
   // Name, Company, and Title
-  const infoEl = card.createDiv({ cls: `${plugin.manifest.id}-info` });
+  const infoEl = card.createDiv({ cls: `${pluginId}-info` });
 
   if (displayName) {
-    infoEl.createDiv({ cls: `${plugin.manifest.id}-name`, text: displayName });
+    infoEl.createDiv({ cls: `${pluginId}-name`, text: displayName });
   }
 
   if (!condensed && contact.title) {
-    infoEl.createDiv({ cls: `${plugin.manifest.id}-title`, text: contact.title });
+    infoEl.createDiv({ cls: `${pluginId}-title`, text: contact.title });
   }
 
   if (!condensed && contact.company) {
-    infoEl.createDiv({ cls: `${plugin.manifest.id}-company`, text: contact.company });
+    infoEl.createDiv({ cls: `${pluginId}-company`, text: contact.company });
   }
 
   // Details: Socials, Emails, and Phones
   if (!showDetails) return card;
 
   if (contact.emails.length > 0 || contact.phones.length > 0 || contact.socials.length > 0) {
-    const detailsEl = card.createDiv({ cls: `${plugin.manifest.id}-details` });
+    const detailsEl = card.createDiv({ cls: `${pluginId}-details` });
 
     // Socials
     if (contact.socials.length > 0) {
-      const socialsEl = detailsEl.createDiv({ cls: `${plugin.manifest.id}-socials` });
+      const socialsEl = detailsEl.createDiv({ cls: `${pluginId}-socials` });
       for (const social of contact.socials) {
-        const row = socialsEl.createDiv({ cls: `${plugin.manifest.id}-detail-row` });
-        const iconEl = row.createSpan({ cls: `${plugin.manifest.id}-detail-icon` });
+        const row = socialsEl.createDiv({ cls: `${pluginId}-detail-row` });
+        const iconEl = row.createSpan({ cls: `${pluginId}-detail-icon` });
         const svgPath = getSocialIcon(social.name);
         if (svgPath) {
           const svg = iconEl.createSvg("svg", { attr: { role: "img", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" } });
@@ -110,33 +109,33 @@ export function buildContactCard(
         }
         const url = social.url;
         if (url) {
-          row.createEl("a", { cls: `${plugin.manifest.id}-detail-value`, text: social.handle, href: url });
+          row.createEl("a", { cls: `${pluginId}-detail-value`, text: social.handle, href: url });
         } else {
-          row.createSpan({ cls: `${plugin.manifest.id}-detail-value`, text: social.handle });
+          row.createSpan({ cls: `${pluginId}-detail-value`, text: social.handle });
         }
       }
     }
 
     // Emails
     if (contact.emails.length > 0) {
-      const emailsEl = detailsEl.createDiv({ cls: `${plugin.manifest.id}-emails` });
+      const emailsEl = detailsEl.createDiv({ cls: `${pluginId}-emails` });
       for (const email of contact.emails) {
-        const row = emailsEl.createDiv({ cls: `${plugin.manifest.id}-detail-row` });
-        const emailIcon = row.createSpan({ cls: `${plugin.manifest.id}-detail-icon` });
+        const row = emailsEl.createDiv({ cls: `${pluginId}-detail-row` });
+        const emailIcon = row.createSpan({ cls: `${pluginId}-detail-icon` });
         setIcon(emailIcon, "mail");
-        row.createEl("a", { cls: `${plugin.manifest.id}-detail-value`, text: email, href: `mailto:${email}` });
+        row.createEl("a", { cls: `${pluginId}-detail-value`, text: email, href: `mailto:${email}` });
       }
     }
 
     // Phones
     if (contact.phones.length > 0) {
-      const phonesEl = detailsEl.createDiv({ cls: `${plugin.manifest.id}-phones` });
+      const phonesEl = detailsEl.createDiv({ cls: `${pluginId}-phones` });
       for (const phone of contact.phones) {
-        const row = phonesEl.createDiv({ cls: `${plugin.manifest.id}-detail-row` });
-        const phoneIcon = row.createSpan({ cls: `${plugin.manifest.id}-detail-icon` });
+        const row = phonesEl.createDiv({ cls: `${pluginId}-detail-row` });
+        const phoneIcon = row.createSpan({ cls: `${pluginId}-detail-icon` });
         setIcon(phoneIcon, "phone");
         row.createEl("a", {
-          cls: `${plugin.manifest.id}-detail-value`,
+          cls: `${pluginId}-detail-value`,
           text: phone,
           href: `tel:${phone.replace(/[\s\-().]/g, "")}`,
         });

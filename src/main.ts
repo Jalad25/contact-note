@@ -229,7 +229,7 @@ export default class ContactNotePlugin extends Plugin {
       return;
     }
 
-    buildContactCard(this, this.app, el, contact, { showDetails: true });
+    buildContactCard(this.manifest.id, this.app, el, contact, { showDetails: true });
   }
 
 //#endregion

@@ -1,4 +1,8 @@
-import { App, normalizePath, TFile } from "obsidian";
+import { 
+  App, 
+  normalizePath, 
+  TFile 
+} from "obsidian";
 
 //#region Types/Objects/Interfaces
 
