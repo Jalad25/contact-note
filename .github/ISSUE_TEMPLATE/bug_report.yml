@@ -100,7 +100,7 @@ body:
     id: theme-mode
     attributes:
       label: Theme mode
-      description: Which Obsidian appearance mode does the bug occur in? If you haven't checked the other mode, please try to reproduce there as well — some issues are theme-specific.
+      description: Which Obsidian appearance mode does the bug occur in? If you haven't checked the other mode, please try to reproduce there as well, some issues are theme-specific.
       options:
         - Both light and dark mode
         - Light mode only
