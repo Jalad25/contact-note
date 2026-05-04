@@ -2,8 +2,11 @@
   <img src="assets/PluginBanner.png" alt="Contact Note" align="center" width=800>
 </p>
 
-<!--FOR THE FUTURE ![Obsidian plugin](https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json) -->
-![GitHub release](https://img.shields.io/github/v/release/Jalad25/contact-note) ![Assests downloaded](https://img.shields.io/github/downloads/Jalad25/contact-note/total)
+<p align="center">
+  <!--FOR THE FUTURE <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json" alt="Obsidian plugin"> -->
+  <img src="https://img.shields.io/github/v/release/Jalad25/contact-note" alt="GitHub release">
+  <img src="https://img.shields.io/github/downloads/Jalad25/contact-note/total" alt="Assets downloaded">
+</p>
 
 # Contact Note
 
@@ -24,12 +27,17 @@ An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards fro
 
 ## Installation
 
-### Obsidian Community Plugins
+### BRAT
 
-1. Open Obsidian and go to **Settings → Community plugins**.
-2. If restricted mode is on, click **Turn on community plugins**.
-3. Click **Browse** and search for **Contact Note**.
-4. Click **Install**, then **Enable**.
+While Contact Note is awaiting inclusion in the Obsidian Community Plugins directory, [BRAT](https://github.com/TfTHacker/obsidian42-brat) is the recommended way to install and stay up to date. BRAT installs plugins directly from their GitHub repository and auto-updates them on each release.
+
+1. Install **BRAT** from **Settings → Community plugins → Browse** and enable it.
+2. Open the command palette (`Ctrl/Cmd+P`) and run **BRAT: Add a beta plugin for testing**.
+3. Enter the repository URL: `https://github.com/Jalad25/contact-note`.
+4. Choose whether to track the latest release or the latest commit, then click **Add Plugin**.
+5. Open **Settings → Community plugins** and enable **Contact Note**.
+
+To get future updates, run **BRAT: Check for updates to all beta plugins** from the command palette, or enable auto-update in BRAT's settings.
 
 ### Manual
 
@@ -37,6 +45,15 @@ An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards fro
 2. In your vault, create the folder `.obsidian/plugins/contact-note/` if it does not already exist.
 3. Copy the downloaded files into that folder.
 4. Open Obsidian, go to **Settings → Community plugins**, and enable **Contact Note**.
+
+### Obsidian Community Plugins
+
+> *Coming soon — pending listing in the directory.*
+
+1. Open Obsidian and go to **Settings → Community plugins**.
+2. If restricted mode is on, click **Turn on community plugins**.
+3. Click **Browse** and search for **Contact Note**.
+4. Click **Install**, then **Enable**.
 
 ## Usage
 
@@ -120,9 +137,9 @@ Social profiles are defined as a list of single-key objects under the `socials` 
 
 ```yaml
 socials:
-  - twitter: janesmith
-  - github: janesmith
-  - linkedin: jane-smith
+  - twitter: geordibytes
+  - github: geordiBytes
+  - linkedin: geordi-bytes
 ```
 
 Supported platforms:
