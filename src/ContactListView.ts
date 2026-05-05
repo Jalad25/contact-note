@@ -7,7 +7,7 @@ import {
   TFile, 
   WorkspaceLeaf 
 } from "obsidian";
-import ContactNotePlugin, { FrontmatterFilter } from "./main";
+import ContactNotePlugin, { FrontmatterFilter, VIEW_TYPE_CONTACT_LIST } from "./main";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
 
@@ -74,7 +74,7 @@ export class ContactListView extends ItemView {
   }
 
   getViewType(): string {
-    return this.plugin.viewTypeContactList;
+    return VIEW_TYPE_CONTACT_LIST;
   }
 
   getDisplayText(): string {

@@ -35,6 +35,8 @@ export interface ContactNoteSettings {
 
 //#region Constants/Defaults
 
+export const VIEW_TYPE_CONTACT_LIST = "contact-note-list";
+
 export const DEFAULT_SETTINGS: ContactNoteSettings = {
   schemaVersion: CURRENT_SCHEMA_VERSION,
   useFolder: true,
@@ -51,7 +53,6 @@ export const DEFAULT_SETTINGS: ContactNoteSettings = {
 export default class ContactNotePlugin extends Plugin {
   settings!: ContactNoteSettings;
   private renamingFiles = new Set<string>();
-  viewTypeContactList: string = `${this.manifest.id}-list`;
 
   async onload() {
     // Settings
@@ -79,7 +80,7 @@ export default class ContactNotePlugin extends Plugin {
 
     // View
     this.registerView(
-      this.viewTypeContactList,
+      VIEW_TYPE_CONTACT_LIST,
       (leaf) => new ContactListView(leaf, this)
     );
 
@@ -244,20 +245,20 @@ export default class ContactNotePlugin extends Plugin {
 
   async activateContactListView() {
     const { workspace } = this.app;
-    const existing = workspace.getLeavesOfType(this.viewTypeContactList);
+    const existing = workspace.getLeavesOfType(VIEW_TYPE_CONTACT_LIST);
     if (existing.length > 0) {
       await workspace.revealLeaf(existing[0]);
       return;
     }
     const leaf = workspace.getRightLeaf(false);
     if (leaf) {
-      await leaf.setViewState({ type: this.viewTypeContactList, active: true });
+      await leaf.setViewState({ type: VIEW_TYPE_CONTACT_LIST, active: true });
       await workspace.revealLeaf(leaf);
     }
   }
 
   refreshContactListView() {
-    for (const leaf of this.app.workspace.getLeavesOfType(this.viewTypeContactList)) {
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_CONTACT_LIST)) {
       if (leaf.view instanceof ContactListView) {
         leaf.view.reinit();
       }
