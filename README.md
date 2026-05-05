@@ -10,6 +10,9 @@
 
 # Contact Note
 
+> [!IMPORTANT]
+> **Help figure out what's next!** I'm deciding which features to build next and would love your input. VOTE in the [feature priority poll](https://github.com/Jalad25/contact-note/discussions/2)!
+
 An [Obsidian](https://obsidian.md/) plugin that renders visual contact cards from frontmatter in designated contact notes, with a searchable and filterable contact list view.
 
 ![preview](assets/screenshots/Preview.gif)
