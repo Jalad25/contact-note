@@ -7,46 +7,15 @@ import {
   MarkdownPostProcessorContext
 } from "obsidian";
 import { ContactListView } from "./ContactListView";
-import { ContactNoteSettingTab } from "./ContactNoteSettingTab";
+import { ContactNoteSettingTab, ContactNoteSettings, DEFAULT_SETTINGS } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
-import { CURRENT_SCHEMA_VERSION, migrate } from "./SchemaMigration";
+import { ContactBasesView } from "./ContactBasesView";
+import { migrate } from "./SchemaMigration";
 
-//#region Types/Objects/Interface
+//#region Constants
 
-export interface FrontmatterFilter {
-  property: string;
-  operator: "contains" | "is" | "exists" | "is true" | "is false";
-  value: string;
-}
-
-export interface ContactNoteSettings {
-  schemaVersion: number;
-  useFolder: boolean;
-  folderPath: string;
-  tag: string;
-  listTitle: string;
-  condensedList: boolean;
-  lastNameFirst: boolean;
-  defaultFilters: FrontmatterFilter[];
-}
-
-//#endregion
-
-//#region Constants/Defaults
-
-export const VIEW_TYPE_CONTACT_LIST = "contact-note-list";
-
-export const DEFAULT_SETTINGS: ContactNoteSettings = {
-  schemaVersion: CURRENT_SCHEMA_VERSION,
-  useFolder: true,
-  folderPath: "Contacts",
-  tag: "contact",
-  listTitle: "Contacts",
-  condensedList: true,
-  lastNameFirst: true,
-  defaultFilters: [],
-};
+export const CONTACT_CARDS_LIST_VIEW_TYPE = "contact-note-list";
 
 //#endregion
 
@@ -80,9 +49,20 @@ export default class ContactNotePlugin extends Plugin {
 
     // View
     this.registerView(
-      VIEW_TYPE_CONTACT_LIST,
+      CONTACT_CARDS_LIST_VIEW_TYPE,
       (leaf) => new ContactListView(leaf, this)
     );
+
+    // Bases view
+    this.registerBasesView(
+			CONTACT_CARDS_LIST_VIEW_TYPE, {
+				name: "Contact Cards",
+				icon: "book-user",
+				factory: (controller, scrollEl) =>
+					new ContactBasesView(controller, scrollEl, this),
+				options: ContactBasesView.getViewOptions,
+			}
+		);
 
     // Enforce contact file naming
     this.registerEvent(
@@ -225,17 +205,6 @@ export default class ContactNotePlugin extends Plugin {
 
     const contact = Contact.fromCache(file, ctx.frontmatter as Record<string, unknown>);
 
-    if (!contact.isValid) {
-      const missingFields: string[] = [];
-      if (!contact.firstName) missingFields.push("firstName");
-      if (!contact.lastName) missingFields.push("lastName");
-      const errorEl = el.createDiv({ cls: `${this.manifest.id}-error` });
-      errorEl.createEl("strong", { text: "Contact note is missing required fields: " });
-      errorEl.createSpan({ text: missingFields.join(", ") });
-      errorEl.createEl("p", { text: "Add these properties to the frontmatter to display this contact." });
-      return;
-    }
-
     buildContactCard(this.manifest.id, this.app, el, contact, { showDetails: true });
   }
 
@@ -245,23 +214,35 @@ export default class ContactNotePlugin extends Plugin {
 
   async activateContactListView() {
     const { workspace } = this.app;
-    const existing = workspace.getLeavesOfType(VIEW_TYPE_CONTACT_LIST);
+    const existing = workspace.getLeavesOfType(CONTACT_CARDS_LIST_VIEW_TYPE);
     if (existing.length > 0) {
       await workspace.revealLeaf(existing[0]);
       return;
     }
     const leaf = workspace.getRightLeaf(false);
     if (leaf) {
-      await leaf.setViewState({ type: VIEW_TYPE_CONTACT_LIST, active: true });
+      await leaf.setViewState({ type: CONTACT_CARDS_LIST_VIEW_TYPE, active: true });
       await workspace.revealLeaf(leaf);
     }
   }
 
   refreshContactListView() {
-    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_CONTACT_LIST)) {
+    for (const leaf of this.app.workspace.getLeavesOfType(CONTACT_CARDS_LIST_VIEW_TYPE)) {
       if (leaf.view instanceof ContactListView) {
         leaf.view.reinit();
       }
+    }
+  }
+
+  refreshContactBasesView() {
+    for (const view of ContactBasesView.liveViews) {
+      // Prune entries whose container detached without onunload firing
+      // (defensive — Bases may swap view types without calling onunload).
+      if (!view.containerEl.isConnected) {
+        ContactBasesView.liveViews.delete(view);
+        continue;
+      }
+      view.onDataUpdated();
     }
   }
 

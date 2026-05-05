@@ -45,7 +45,7 @@ export function buildContactCard(
   container: HTMLElement,
   contact: Contact,
   options: ContactCardOptions = {}
-): HTMLElement {
+) {
   const { condensed = false, clickable = false, showDetails = true, nameOverride } = options;
   const displayName = nameOverride ?? contact.resolvedDisplayName;
 
@@ -58,17 +58,31 @@ export function buildContactCard(
     });
   }
 
+	// If invalid show error
+	if (!contact.isValid) {
+		const missingFields: string[] = [];
+		if (!contact.firstName) missingFields.push("firstName");
+		if (!contact.lastName) missingFields.push("lastName");
+		const errorEl = card.createDiv({ cls: `${pluginId}-error` });
+		errorEl.createEl("strong", { text: "Contact note is missing required fields: " });
+		errorEl.createSpan({ text: missingFields.join(", ") });
+		errorEl.createEl("p", { text: "Add these properties to the frontmatter to display this contact." });
+		return errorEl;
+	}
+
   // Photo
+  const photoContainer = card.createDiv({ cls: `${pluginId}-photo` });
   if (contact.photo) {
     const photoFile = app.vault.getAbstractFileByPath(contact.photo);
     if (photoFile instanceof TFile) {
-      const photoContainer = card.createDiv({ cls: `${pluginId}-photo` });
       const img = photoContainer.createEl("img", { cls: `${pluginId}-photo-img` });
       img.src = app.vault.getResourcePath(photoFile);
       img.alt = displayName || "Contact photo";
-    }
+    } else {
+		setIcon(photoContainer, "user-round");
+		photoContainer.children[0].classList.add(`${pluginId}-photo-default`);
+  	}
   } else {
-    const photoContainer = card.createDiv({ cls: `${pluginId}-photo` });
     setIcon(photoContainer, "user-round");
     photoContainer.children[0].classList.add(`${pluginId}-photo-default`);
   }
@@ -142,8 +156,6 @@ export function buildContactCard(
       }
     }
   }
-
-  return card;
 }
 
 //#endregion

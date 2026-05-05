@@ -7,7 +7,8 @@ import {
   TFile, 
   WorkspaceLeaf 
 } from "obsidian";
-import ContactNotePlugin, { FrontmatterFilter, VIEW_TYPE_CONTACT_LIST } from "./main";
+import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "./main";
+import { FrontmatterFilter } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
 
@@ -74,7 +75,7 @@ export class ContactListView extends ItemView {
   }
 
   getViewType(): string {
-    return VIEW_TYPE_CONTACT_LIST;
+    return CONTACT_CARDS_LIST_VIEW_TYPE;
   }
 
   getDisplayText(): string {
@@ -258,11 +259,12 @@ export class ContactListView extends ItemView {
 
     const condensed = this.plugin.settings.condensedList;
     const lastNameFirst = this.plugin.settings.lastNameFirst;
+	const showDetails = this.plugin.settings.showContactDetails
     for (const contact of filtered) {
       const nameOverride = lastNameFirst
         ? [contact.lastName + ",", contact.firstName, contact.middleName].filter(Boolean).join(" ")
         : undefined;
-      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: false, nameOverride });
+      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: showDetails, nameOverride });
     }
   }
 }

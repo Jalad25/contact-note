@@ -1,5 +1,45 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
-import ContactNotePlugin, { FrontmatterFilter } from "./main";
+import ContactNotePlugin from "./main";
+
+//#region Types/Objects/Interfaces
+
+export interface FrontmatterFilter {
+  property: string;
+  operator: "contains" | "is" | "exists" | "is true" | "is false";
+  value: string;
+}
+
+export interface ContactNoteSettings {
+  schemaVersion: number;
+  useFolder: boolean;
+  folderPath: string;
+  tag: string;
+  listTitle: string;
+  condensedList: boolean;
+  lastNameFirst: boolean;
+  showContactDetails: boolean;
+  defaultFilters: FrontmatterFilter[];
+}
+
+//#endregion
+
+//#region Constants
+
+export const CURRENT_SCHEMA_VERSION = 0;
+
+export const DEFAULT_SETTINGS: ContactNoteSettings = {
+  schemaVersion: CURRENT_SCHEMA_VERSION,
+  useFolder: true,
+  folderPath: "Contacts",
+  tag: "contact",
+  listTitle: "Contacts",
+  condensedList: true,
+  lastNameFirst: true,
+  showContactDetails: false,
+  defaultFilters: []
+};
+
+//#endregion
 
 //#region Settings Tab
 
@@ -33,6 +73,8 @@ export class ContactNoteSettingTab extends PluginSettingTab {
         toggle.setValue(this.plugin.settings.useFolder).onChange(async (value) => {
           this.plugin.settings.useFolder = value;
           await this.plugin.saveSettings();
+          this.plugin.refreshContactListView();
+          this.plugin.refreshContactBasesView();
           this.display();
         })
       );
@@ -50,6 +92,8 @@ export class ContactNoteSettingTab extends PluginSettingTab {
             .onChange(async (value) => {
               this.plugin.settings.folderPath = value;
               await this.plugin.saveSettings();
+              this.plugin.refreshContactListView();
+              this.plugin.refreshContactBasesView();
             })
         );
     } else {
@@ -63,6 +107,8 @@ export class ContactNoteSettingTab extends PluginSettingTab {
             .onChange(async (value) => {
               this.plugin.settings.tag = value;
               await this.plugin.saveSettings();
+              this.plugin.refreshContactListView();
+              this.plugin.refreshContactBasesView();
             })
         );
     }
@@ -97,14 +143,29 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Condensed list view")
-      .setDesc("When enabled, each card in the contact list shows only the photo and name.")
+      .setDesc("Show only the photo and name in each card, at a smaller size. Disable to see the full card with title, company, and contact details.")
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.settings.condensedList).onChange(async (value) => {
           this.plugin.settings.condensedList = value;
+          if (value) this.plugin.settings.showContactDetails = false;
           await this.plugin.saveSettings();
           this.plugin.refreshContactListView();
+          this.display();
         })
       );
+
+    if (!this.plugin.settings.condensedList) {
+      new Setting(containerEl)
+        .setName("Show contact details")
+        .setDesc("Show each contact's emails, phone numbers, and socials inside the card.")
+        .addToggle((toggle) =>
+          toggle.setValue(this.plugin.settings.showContactDetails).onChange(async (value) => {
+            this.plugin.settings.showContactDetails = value;
+            await this.plugin.saveSettings();
+            this.plugin.refreshContactListView();
+          })
+        );
+    }
 
     new Setting(containerEl).setName("Default list filters").setHeading();
     containerEl.createEl("p", {

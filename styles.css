@@ -225,31 +225,64 @@
   border-color: var(--interactive-accent);
 }
 
+/* #endregion */
+
+/* Hide the native frontmatter block for contact notes.
+   The class is applied directly to the .mod-frontmatter
+   element by the post-processor. */
+.contact-note .mod-header {
+  display: none !important;
+}
+
+/* #region Bases View */
+
+.contact-note-bases-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--size-4-2);
+  padding: var(--size-4-2);
+}
+
+.contact-note-bases-view .contact-note-card {
+  margin-bottom: 0;
+}
+
+/* #endregion */
+
+/* #region Bases & View */
+
 /* Contact Card Normal */
-.contact-note-list-view .contact-note-card:hover {
+.contact-note-list-view .contact-note-card:hover,
+.contact-note-bases-view .contact-note-card:hover {
   background-color: var(--background-modifier-hover);
   border-color: var(--interactive-accent);
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.contact-note-list-view .contact-note-card {
+.contact-note-list-view .contact-note-card,
+.contact-note-bases-view .contact-note-card {
   gap: 12px;
   padding: 12px 14px;
   margin-bottom: 17px;
 }
 
 .contact-note-list-view .contact-note-photo-img,
-.contact-note-list-view .contact-note-photo-default {
+.contact-note-list-view .contact-note-photo-default,
+.contact-note-bases-view .contact-note-photo-img,
+.contact-note-bases-view .contact-note-photo-default {
   width: 108px !important;
   height: 108px !important;
 }
 
-.contact-note-list-view .contact-note-name {
+.contact-note-list-view .contact-note-name,
+.contact-note-bases-view .contact-note-name {
   font-size: 1.22rem;
 }
 
 .contact-note-list-view .contact-note-title,
-.contact-note-list-view .contact-note-company {
+.contact-note-list-view .contact-note-company,
+.contact-note-bases-view .contact-note-title,
+.contact-note-bases-view .contact-note-company {
   font-size: 0.79rem;
 }
 
@@ -271,10 +304,3 @@
 }
 
 /* #endregion */
-
-/* Hide the native frontmatter block for contact notes.
-   The class is applied directly to the .mod-frontmatter
-   element by the post-processor. */
-.contact-note .mod-header {
-  display: none !important;
-}
