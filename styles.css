@@ -301,7 +301,7 @@
 
 .contact-note-bases-view {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--size-4-2);
   padding: var(--size-4-2);
 }
@@ -318,7 +318,7 @@
 .contact-note-bases-view-group {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: var(--size-4-2);
 }
 

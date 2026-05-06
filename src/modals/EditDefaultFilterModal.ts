@@ -31,7 +31,7 @@ export class EditDefaultFilterModal extends Modal {
       );
   }
 
-  async onClose(): Promise<void> {
+  onClose(): void {
     // Drop rows with an empty property
     const cleaned = this.plugin.configuration.defaultFilters.filter(
       (f) => f.property.trim() !== "",
@@ -39,8 +39,7 @@ export class EditDefaultFilterModal extends Modal {
 
     if (cleaned.length !== this.plugin.configuration.defaultFilters.length) {
       this.plugin.configuration.defaultFilters = cleaned;
-      await this.plugin.saveSettings();
-      this.plugin.refreshContactsView();
+      void this.plugin.saveSettings().then(() => this.plugin.refreshContactsView());
     }
 
     this.contentEl.empty();

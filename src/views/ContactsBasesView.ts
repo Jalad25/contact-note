@@ -158,7 +158,7 @@ export class ContactsBasesView extends BasesView {
   private injectNewButton(): void {
     if (this.newButtonInjected) return;
 
-    const native = document.querySelector<HTMLElement>(
+    const native = activeDocument.querySelector<HTMLElement>(
       `.workspace-leaf:has(.${this.plugin.manifest.id}-bases-view) .bases-toolbar-new-item-menu`,
     );
     if (!native) return;
@@ -186,20 +186,20 @@ export class ContactsBasesView extends BasesView {
             type: "toggle",
             key: "condensed",
             default: true
-          } as BasesToggleOption,
+          },
           {
             displayName: "Show contact details",
             type: "toggle",
             key: "showDetails",
             default: false,
             shouldHide: () => config.get("condensed") === true
-          } as BasesToggleOption,
+          },
           {
             displayName: "Last name first",
             type: "toggle",
             key: "lastNameFirst",
             default: true
-          } as BasesToggleOption
+          }
         ] as BasesToggleOption[]
       } as BasesOptionGroup<BasesToggleOption>
     ];
