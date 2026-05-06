@@ -109,11 +109,27 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where does the bug occur?
+      description: Which part of the plugin is affected? Pick all that apply.
+      multiple: true
+      options:
+        - Contact card in a note (reading mode)
+        - Contacts view (sidebar view)
+        - Contacts base (.base file using the plugin's view)
+        - Settings
+        - File rename / naming enforcement
+        - Other / not sure
+    validations:
+      required: true
+
   - type: textarea
     id: other-plugins
     attributes:
       label: Other plugins enabled
-      description: Does the bug still occur with all other community plugins disabled? List any plugins that seem related.
+      description: Does the bug still occur with all other community plugins disabled? List any plugins that seem related. Note that the Bases view requires Obsidian's built-in Bases plugin to be enabled.
     validations:
       required: false
 

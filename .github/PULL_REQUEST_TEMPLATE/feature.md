@@ -16,21 +16,21 @@ Closes #
 
 ## What's new
 
-<!-- A bullet list of the user-facing changes: new commands, settings, frontmatter fields, list view behavior, etc. -->
+<!-- A bullet list of the user-facing changes: new commands, configuration, frontmatter fields, view behavior, etc. -->
 
 -
 
-## Settings / frontmatter changes
+## Configuration / frontmatter changes
 
-<!-- List any new or modified settings or frontmatter fields. Note defaults and migration behavior for existing users. Delete this section if not applicable. -->
+<!-- List any new or modified configurations or frontmatter fields. Note defaults and any required schema migration for existing users (see DEVELOPMENT.md → Configuration Schema Migrations). Delete this section if not applicable. -->
 
 ## Screenshots / recordings
 
-<!-- Required for any UI-visible feature. Include the contact card, list view, settings tab, or any new UI surface affected. -->
+<!-- Required for any UI-visible feature. Include the contact card, sidebar view, bases view, settings tab, or any new UI surface affected. -->
 
 ## Backwards compatibility
 
-<!-- Does this change affect existing contact notes, settings, or saved data? Will users notice anything different on upgrade? -->
+<!-- Does this change affect existing contact notes, configurations, or saved data? Will users notice anything different on upgrade? -->
 
 ## Checklist
 
@@ -39,7 +39,9 @@ Closes #
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes with no TypeScript errors.
 - [ ] I have tested with both folder-based and tag-based contact identification (if relevant).
+- [ ] I have tested in both the sidebar contacts view and a contacts base view (`.base` file), if the change touches shared rendering or contact data.
 - [ ] I have tested with existing contact notes to confirm no regression.
-- [ ] I have verified the feature renders correctly in both light and dark mode (if it adds or modifies UI).
-- [ ] I have updated the README to document the new feature (if relevant).
-- [ ] Settings persist correctly across reloads (if settings were changed).
+- [ ] I have tested the affected UI in both light and dark mode (if any styles or DOM structure were touched).
+- [ ] I have tested the feature on both the Obsidian desktop application and the Obsidian mobile app (if relevant).
+- [ ] I have added a schema migration in `SchemaMigration.ts` if this PR changes the on-disk shape of `ContactNoteConfiguration`.
+- [ ] Configuration persist correctly across reloads (if configurations were changed).

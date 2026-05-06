@@ -6,7 +6,6 @@ If your change fits one of the specialized templates, you can use it instead by 
   ?template=bugfix.md
   ?template=docs.md
   ?template=refactor.md
-  ?template=release.md
 -->
 
 ## Summary
@@ -43,4 +42,6 @@ Closes #
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes with no TypeScript errors.
 - [ ] I have tested these changes in a local Obsidian vault.
+- [ ] I have tested the affected UI in both light and dark mode (if any styles or DOM structure were touched).
+- [ ] I have tested these changes on both the Obsidian desktop application and the Obsidian mobile app (if relevant).
 - [ ] I have updated documentation (README, CONTRIBUTING, or DEVELOPMENT) where applicable.

@@ -116,7 +116,7 @@ export class Contact {
     const filePath = `${folderPrefix}${name}.md`;
 
     if (name !== baseName) {
-      new Notice(`Contact created as "${name}" because a contact named "${baseName}" already exists.`);
+      new Notice(`A contact named ${baseName} already exists. Renamed to ${name}.`);
     }
 
     const tagLine = !settings.useFolder && settings.tag.trim()

@@ -16,6 +16,22 @@ body:
         - label: I have searched [existing issues](../issues?q=is%3Aissue) and [discussions](../discussions) and this has not already been requested.
           required: true
 
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Which area does this affect?
+      description: Pick the part of the plugin you have in mind. Pick all that apply.
+      multiple: true
+      options:
+        - Contact card in a note (reading mode)
+        - Contacts view (sidebar view)
+        - Contacts base (.base file using the plugin's view)
+        - Settings
+        - File naming / frontmatter
+        - Other / not sure
+    validations:
+      required: true
+
   - type: textarea
     id: problem
     attributes:

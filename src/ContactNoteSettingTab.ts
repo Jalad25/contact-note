@@ -71,7 +71,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       new Setting(containerEl)
         .setName("Contacts folder path")
         .setDesc(
-          'Path to the folder containing contact notes, relative to the vault root (e.g. "contacts" or "people/contacts").'
+          'Path to the folder containing contact notes, relative to the vault root (e.g. "contacts" or "people/contacts"). Notes in subfolders are included.'
         )
         .addText((text) => {
           text
@@ -107,7 +107,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 		// viewName
     new Setting(containerEl)
       .setName("View name")
-      .setDesc("Title displayed at the top of the contacts view.")
+      .setDesc("Name displayed at the top of the contacts view.")
       .addText((text) =>
         text
           .setPlaceholder("Contacts")
@@ -120,11 +120,11 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       );
 
     /* Bases Settings */
-    new Setting(containerEl).setName("Contacts bases view").setHeading();
+    new Setting(containerEl).setName("Contacts base view").setHeading();
 
 		// defaultBaseViewName
     new Setting(containerEl)
-      .setName("Default base view name")
+      .setName("Default base file and view name")
       .setDesc("Name written into new contacts bases created by the plugin. Used both as the file name and the view's display name inside the base.")
       .addText((text) =>
         text

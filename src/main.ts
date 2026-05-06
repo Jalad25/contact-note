@@ -41,24 +41,24 @@ export default class ContactNotePlugin extends Plugin {
     this.addSettingTab(new ContactNoteSettingTab(this.app, this));
 
     /* Ribbon Icons */
-    this.addRibbonIcon("book-user", "Open contact list", () => {
+    this.addRibbonIcon("book-user", "Open contacts view", () => {
       void this.activateContactsView();
     });
 
-    this.addRibbonIcon("book-plus", "Create new contacts base", () => {
+    this.addRibbonIcon("book-plus", "Create new base with contacts base view", () => {
       void this.createContactsBase();
     });
 
     /* Commands */
     this.addCommand({
-      id: "open-contact-list",
-      name: "Open contact list",
+      id: "open-contacts-view",
+      name: "Open contacts view",
       callback: () => { void this.activateContactsView(); },
     });
 
     this.addCommand({
       id: "create-contacts-base",
-      name: "Create new contacts base",
+      name: "Create new base with contacts base view",
       callback: () => { void this.createContactsBase(); },
     });
 
@@ -78,7 +78,7 @@ export default class ContactNotePlugin extends Plugin {
     // Bases view
     this.registerBasesView(
 			CONTACT_CARDS_LIST_VIEW_TYPE, {
-				name: "Contact Cards",
+				name: "Contacts",
 				icon: "book-user",
 				factory: (controller, scrollEl) =>
 					new ContactsBasesView(controller, scrollEl, this),
@@ -233,7 +233,7 @@ export default class ContactNotePlugin extends Plugin {
     const newPath = `${folderPrefix}${finalName}.md`;
 
     if (finalName !== expectedName) {
-      new Notice(`Contact renamed to "${finalName}" because a contact named "${expectedName}" already exists.`);
+      new Notice(`A contact named ${expectedName} already exists. Renamed to ${finalName}.`);
     }
 
     this.renamingFiles.add(newPath);

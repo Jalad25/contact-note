@@ -42,4 +42,6 @@ Fixes #
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes with no TypeScript errors.
 - [ ] I have tested with existing contact notes to confirm no regression.
-- [ ] I have verified the fix in both light and dark mode (if the bug is visual).
+- [ ] I have tested the fix in both the sidebar contacts view and a contacts base view (`.base` file), if the bug touches shared rendering.
+- [ ] I have tested the fix in both light and dark mode (if the bug is visual).
+- [ ] I have tested the fix on both the Obsidian desktop application and the Obsidian mobile app (if relevant).

@@ -31,6 +31,7 @@ const LIST_FIELDS = ["email", "phone"] as const;
 
 const DEFAULT_PROPERTY_ORDER: BasesPropertyId[] = [
   "note.firstName",
+	"note.middleName",
   "note.lastName",
   "note.displayName"
 ];

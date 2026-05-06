@@ -8,14 +8,14 @@ const NO_VALUE_OPERATORS: FrontmatterFilter["operator"][] = ["exists", "is true"
 
 //#endregion
 
-export class EditDefaultFilterModal extends Modal {
+export class EditViewFilterModal extends Modal {
   constructor(private plugin: ContactNotePlugin) {
     super(plugin.app);
   }
 
   onOpen(): void {
     const { contentEl } = this;
-    new Setting(contentEl).setName("Edit default filter").setHeading().setDesc("Contacts in the view will be limited to those matching all conditions below.");
+    new Setting(contentEl).setName("Edit view filter").setHeading().setDesc("Contacts in the view will be limited to those matching all conditions below.");
     
 		const listEl = contentEl.createDiv({ cls: `${this.plugin.manifest.id}-filter-container` });
     this.renderRows(listEl);
@@ -23,7 +23,7 @@ export class EditDefaultFilterModal extends Modal {
     new Setting(contentEl)
       .addButton((btn) =>
         btn.setButtonText("Add filter condition").onClick(async () => {
-          this.plugin.configuration.defaultFilters.push({ property: "", operator: "contains", value: "" });
+          this.plugin.configuration.viewFilters.push({ property: "", operator: "contains", value: "" });
           await this.plugin.saveSettings();
           this.plugin.refreshContactsView();
           this.renderRows(listEl);
@@ -33,12 +33,12 @@ export class EditDefaultFilterModal extends Modal {
 
   onClose(): void {
     // Drop rows with an empty property
-    const cleaned = this.plugin.configuration.defaultFilters.filter(
+    const cleaned = this.plugin.configuration.viewFilters.filter(
       (f) => f.property.trim() !== "",
     );
 
-    if (cleaned.length !== this.plugin.configuration.defaultFilters.length) {
-      this.plugin.configuration.defaultFilters = cleaned;
+    if (cleaned.length !== this.plugin.configuration.viewFilters.length) {
+      this.plugin.configuration.viewFilters = cleaned;
       void this.plugin.saveSettings().then(() => this.plugin.refreshContactsView());
     }
 
@@ -47,7 +47,7 @@ export class EditDefaultFilterModal extends Modal {
 
   private renderRows(containerEl: HTMLElement): void {
     containerEl.empty();
-    const filters = this.plugin.configuration.defaultFilters;
+    const filters = this.plugin.configuration.viewFilters;
 
     for (let i = 0; i < filters.length; i++) {
       const filter = filters[i];

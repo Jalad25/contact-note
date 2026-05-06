@@ -10,7 +10,7 @@ import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "../main";
 import { Contact } from "../Contact";
 import { buildContactCard } from "../ContactNoteCard";
 import { NewContactModal } from "../modals/NewContactModal";
-import { EditDefaultFilterModal } from "../modals/EditDefaultFilterModal";
+import { EditViewFilterModal } from "../modals/EditViewFilterModal";
 
 //#region Types/Objects/Interfaces
 
@@ -24,7 +24,7 @@ export interface ContactsViewOptions {
   condensedList: boolean;
   lastNameFirst: boolean;
   showContactDetails: boolean;
-  defaultFilters: FrontmatterFilter[];
+  viewFilters: FrontmatterFilter[];
 }
 
 //#endregion
@@ -35,7 +35,7 @@ export const DEFAULT_VIEW_OPTIONS: ContactsViewOptions = {
   condensedList: true,
   lastNameFirst: true,
   showContactDetails: false,
-  defaultFilters: [],
+  viewFilters: [],
 };
 
 //#endregion
@@ -179,12 +179,12 @@ export class ContactsView extends ItemView {
 
     menu.addSeparator();
 
-		// defaultFilters
+		// viewFilters
     menu.addItem((item) =>
       item
-        .setTitle("Edit default filter…")
+        .setTitle("Edit view filter…")
         .setIcon("filter")
-        .onClick(() => new EditDefaultFilterModal(this.plugin).open()),
+        .onClick(() => new EditViewFilterModal(this.plugin).open()),
     );
 
     menu.showAtMouseEvent(evt);
@@ -292,14 +292,14 @@ export class ContactsView extends ItemView {
     const query = this.searchQuery.toLowerCase().trim();
     const letter = this.letterFilter;
 
-		/* Apply default filter */
-    const defaultFilters = this.plugin.configuration.defaultFilters.filter(
+		/* Apply view filter */
+    const viewFilters = this.plugin.configuration.viewFilters.filter(
       (f) => f.property.trim() !== ""
     );
 
     const filtered = [...this.contacts.values()]
       .filter((contact) => {
-        if (defaultFilters.some((f) => !matchesFilter(contact.rawFrontmatter, f))) return false;
+        if (viewFilters.some((f) => !matchesFilter(contact.rawFrontmatter, f))) return false;
         if (letter && !contact.lastName.toUpperCase().startsWith(letter)) return false;
         if (!query) return true;
         return [contact.firstName, contact.lastName, contact.middleName, contact.resolvedDisplayName(false)]

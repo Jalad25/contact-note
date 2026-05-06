@@ -40,14 +40,15 @@ For usage questions, configuration help, or sharing how you use the plugin, plea
 1. **Fork** the repository and create your branch from `master`.
 2. **Follow the development setup** in [DEVELOPMENT.md](DEVELOPMENT.md).
 3. **Make your changes** in a clear, focused commit history.
-4. **Lint your code** by running `npm run lint`.
-5. **Build the project** with `npm run build` to ensure there are no TypeScript errors.
-6. **Test your changes** in a local Obsidian vault.
-7. **Update documentation** (README or DEVELOPMENT.md) if your changes affect user-facing behavior or development workflow.
+4. **Add a schema migration** if your change alters the on-disk shape of `ContactNoteConfiguration` (renamed/removed fields, restructured values). See [Configuration Schema Migrations](DEVELOPMENT.md#configuration-schema-migrations).
+5. **Lint your code** by running `npm run lint`.
+6. **Build the project** with `npm run build` to ensure there are no TypeScript errors.
+7. **Test your changes** in a local Obsidian vault. If your change touches the shared card renderer or contact data model, verify both the **Contacts view** (sidebar) and a **Contacts base view** (`.base` file).
+8. **Update documentation** (README or DEVELOPMENT.md) if your changes affect user-facing behavior or development workflow.
 
 ### Creating a Pull Request
 
-When creating a pull request you'll be met with a default pull request template. It includes a list of template names that can be appended to the pull request URL to create a PR using one of the specialized templates. If you are unsure of which template to use, the default is fine. Fill out the chosen template and click "Create pull request" when you are ready.
+When creating a pull request you'll be met with a default pull request template. It includes a list of template names that can be appended to the pull request URL to create a PR using one of the specialized templates. If you are unsure of which template to use, the default is fine. Fill out the chosen template and select **Create pull request** when you are ready.
 
 #### Pull Request Templates
 
