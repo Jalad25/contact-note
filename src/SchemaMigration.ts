@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument -- This module reads untyped JSON of unknown shape from prior plugin versions. Strict typing here would only obscure the runtime guards that actually protect against malformed input. */
 
-import { ContactNoteSettings, CURRENT_SCHEMA_VERSION } from "./ContactNoteSettingTab";
+import { ContactNoteConfiguration, CURRENT_SCHEMA_VERSION } from "./main";
 
 //#region Constants
 
@@ -13,11 +13,11 @@ const MIGRATIONS: Migration[] = [];
 type Migration = {
   from: number;
   to: number;
-  apply: (raw: any) => Partial<ContactNoteSettings> & { schemaVersion: number };
+  apply: (raw: any) => Partial<ContactNoteConfiguration> & { schemaVersion: number };
 };
 
 export type MigrationResult = {
-  values: Partial<ContactNoteSettings>;
+  values: Partial<ContactNoteConfiguration>;
   migrated: boolean;
 };
 
@@ -43,15 +43,16 @@ export function migrate(raw: unknown): MigrationResult {
   }
 
   return {
-    values: current as Partial<ContactNoteSettings>,
+    values: current as Partial<ContactNoteConfiguration>,
     migrated
   };
 }
 
-//#endregion
-
 //#region Migration Step Functions
 
-/* This is a per-version migration steps. Append new functions below for each schema change and add it to MIGRATIONS. Never edit existing steps. */
+/* This is a per-version migration steps. Append new functions below for each schema change 	
+	 and add it to MIGRATIONS. Never edit existing steps. */
+
+//#endregion
 
 //#endregion

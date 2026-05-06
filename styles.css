@@ -16,13 +16,8 @@
   background-color: var(--background-secondary);
 }
 
-/* Contact Note */
-.contact-note .contact-note-card {
-  justify-self: center;
-}
-
 /* Validation Error */
-.contact-note-error {
+.contact-note-card-error {
   padding: 12px 16px;
   border: 1px solid var(--color-red);
   border-radius: var(--radius-m, 8px);
@@ -31,19 +26,19 @@
   margin-bottom: 16px;
 }
 
-.contact-note-error p {
+.contact-note-card-error p {
   margin: 6px 0 0;
   font-size: var(--font-ui-small);
   color: var(--text-normal);
 }
 
 /* Photo */
-.contact-note-photo {
+.contact-note-card-photo {
   flex-shrink: 0;
 }
 
-.contact-note-photo-img,
-.contact-note-photo-default {
+.contact-note-card-photo-img,
+.contact-note-card-photo-default {
   width: 150px !important;
   height: 150px !important;
   border-radius: 50%;
@@ -52,8 +47,8 @@
   display: block;
 }
 
-/* Name, Company, and Title */
-.contact-note-info {
+/* Info */
+.contact-note-card-info {
   flex: 1;
   min-width: 150px;
   display: flex;
@@ -62,28 +57,31 @@
   justify-content: center;
 }
 
-.contact-note-name {
+/* Name */
+.contact-note-card-name {
   font-size: 1.7rem;
   font-weight: var(--font-semibold);
   color: var(--text-normal);
   line-height: 1.3;
 }
 
-.contact-note-title {
+/* Title */
+.contact-note-card-title {
   font-size: 1.1rem;
   color: var(--text-muted);
   line-height: 1.3;
 }
 
-.contact-note-company {
+/* Company */
+.contact-note-card-company {
   font-size: 1.1rem;
   font-weight: var(--font-medium);
   color: var(--text-normal);
   line-height: 1.3;
 }
 
-/* Socials, Emails, and Phones */
-.contact-note-details {
+/* Details */
+.contact-note-card-details {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
@@ -93,72 +91,144 @@
   margin-top: 4px;
 }
 
-.contact-note-emails,
-.contact-note-phones {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.contact-note-detail-row {
+.contact-note-card-detail-row {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.contact-note-detail-icon {
+.contact-note-card-detail-icon {
   color: var(--text-faint);
   flex-shrink: 0;
   display: flex;
   align-items: center;
 }
 
-.contact-note-detail-icon svg {
+.contact-note-card-detail-icon svg {
   width: 14px;
   height: 14px;
 }
 
-.contact-note-socials .contact-note-detail-icon svg {
-  fill: currentColor;
-}
-
-.contact-note-detail-value {
+.contact-note-card-detail-value {
   font-size: var(--font-ui-small);
   color: var(--text-accent);
   text-decoration: none;
 }
 
-.contact-note-detail-value:hover {
+.contact-note-card-detail-value:hover {
   text-decoration: underline;
+}
+
+/* Emails and Phones */
+.contact-note-card-emails,
+.contact-note-card-phones {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Socials */
+.contact-note-card-socials .contact-note-card-detail-icon svg {
+  fill: currentColor;
+}
+
+/* Contact Note */
+.contact-note .contact-note-card {
+  justify-self: center;
+}
+
+/* Bases and View */
+
+/* Contact Card Normal */
+.contact-note-view .contact-note-card:hover,
+.contact-note-bases-view .contact-note-card:hover {
+  background-color: var(--background-modifier-hover);
+  border-color: var(--interactive-accent);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.contact-note-view .contact-note-card,
+.contact-note-bases-view .contact-note-card {
+  gap: 12px;
+  padding: 12px 14px;
+  margin-bottom: 17px;
+}
+
+.contact-note-view .contact-note-card-photo-img,
+.contact-note-view .contact-note-card-photo-default,
+.contact-note-bases-view .contact-note-card-photo-img,
+.contact-note-bases-view .contact-note-card-photo-default {
+  width: 108px !important;
+  height: 108px !important;
+}
+
+.contact-note-view .contact-note-card-name,
+.contact-note-bases-view .contact-note-card-name {
+  font-size: 1.22rem;
+}
+
+.contact-note-view .contact-note-card-title,
+.contact-note-view .contact-note-card-company,
+.contact-note-bases-view .contact-note-card-title,
+.contact-note-bases-view .contact-note-card-company {
+  font-size: 0.79rem;
+}
+
+/* Contact Card Condensed */
+.contact-note-card-condensed .contact-note-card {
+  padding: 6px 10px;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.contact-note-card-condensed .contact-note-card-photo-img,
+.contact-note-card-condensed .contact-note-card-photo-default {
+  width: 40px !important;
+  height: 40px !important;
+}
+
+.contact-note-card-condensed .contact-note-card-name {
+  font-size: 0.95rem;
 }
 
 /* #endregion */
 
-/* #region Contact List View */
+/* #region Contact Note */
 
-.is-mobile .contact-note-list-view {
+/* Hide the native frontmatter block for contact notes.
+   The class is applied directly to the .mod-frontmatter
+   element by the post-processor. */
+.contact-note .mod-header {
+  display: none !important;
+}
+
+/* #endregion */
+
+/* #region Contacts View */
+
+.is-mobile .contact-note-view {
   margin-top: 45px !important;
 }
 
 /* Header */
-.contact-note-list-header {
+.contact-note-view-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
 }
 
-.contact-note-list-title {
+.contact-note-view-title {
   margin: 0;
 }
 
-.contact-note-header-btns {
+.contact-note-view-header-btns {
   display: flex;
   gap: 4px;
   flex-shrink: 0;
 }
 
-.contact-note-header-btn {
+.contact-note-view-header-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,43 +242,43 @@
   cursor: pointer;
 }
 
-.contact-note-header-btn:hover {
+.contact-note-view-header-btn:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.contact-note-header-btn.is-active {
+.contact-note-view-header-btn.is-active {
   background: var(--interactive-accent);
   border-color: var(--interactive-accent);
   color: var(--text-on-accent);
 }
 
-.contact-note-header-btn svg {
+.contact-note-view-header-btn svg {
   width: 14px;
   height: 14px;
 }
 
 /* Letter filter */
-.contact-note-alpha-bar .nav-buttons-container {
+.contact-note-view-alpha-bar .nav-buttons-container {
   flex-wrap: wrap;
   gap: 2px;
   padding: 2px 0;
 }
 
-.contact-note-alpha-btn {
+.contact-note-view-alpha-btn {
   height: 24px;
   padding: 0 4px;
   font-size: var(--font-ui-smaller);
   border-radius: var(--radius-s, 4px);
 }
 
-.contact-note-alpha-btn.is-active {
+.contact-note-view-alpha-btn.is-active {
   background: var(--interactive-accent) !important;
   color: var(--text-on-accent) !important;
 }
 
 /* Search */
-.contact-note-search {
+.contact-note-view-search {
   width: 100%;
   margin-bottom: 16px;
   padding: 6px 10px;
@@ -220,21 +290,14 @@
   box-sizing: border-box;
 }
 
-.contact-note-search:focus {
+.contact-note-view-search:focus {
   outline: none;
   border-color: var(--interactive-accent);
 }
 
 /* #endregion */
 
-/* Hide the native frontmatter block for contact notes.
-   The class is applied directly to the .mod-frontmatter
-   element by the post-processor. */
-.contact-note .mod-header {
-  display: none !important;
-}
-
-/* #region Bases View */
+/* #region Contacts Bases View */
 
 .contact-note-bases-view {
   display: grid;
@@ -243,82 +306,45 @@
   padding: var(--size-4-2);
 }
 
-.contact-note-bases-view .contact-note-card {
-  margin-bottom: 0;
+.contact-note-bases-view-group-header {
+  grid-column: 1 / -1;
+  margin: var(--size-4-2) 0 var(--size-4-1);
+  padding-bottom: var(--size-2-2);
+  border-bottom: 1px solid var(--background-modifier-border);
+  font-size: var(--font-ui-medium);
+  color: var(--text-muted);
 }
 
-/* Hide the native Bases New button (but not our injected replacement)
-   only inside leaves that host our Contact Cards view. */
+.contact-note-bases-view-group {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--size-4-2);
+}
+
+/* Hide the native Bases New button (but not the injected replacement) */
 .workspace-leaf:has(.contact-note-bases-view)
   .bases-toolbar-new-item-menu .text-icon-button {
   display: none !important;
 }
 
-.contact-note-bases-new-btn {
+.contact-note-bases-view-new-btn {
 	padding: var(--size-2-2);
 	font-weight: var(--input-font-weight);
 	margin: 2px;
 	font-size: var(--font-ui-small);
 }
 
-.contact-note-bases-new-btn .text-button-label {
+.contact-note-bases-view-new-btn .text-button-label {
 	padding-inline-start: 5px;
 }
 
 /* #endregion */
 
-/* #region Bases & View */
+/* #region Default Filter Modal */
 
-/* Contact Card Normal */
-.contact-note-list-view .contact-note-card:hover,
-.contact-note-bases-view .contact-note-card:hover {
-  background-color: var(--background-modifier-hover);
-  border-color: var(--interactive-accent);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.contact-note-list-view .contact-note-card,
-.contact-note-bases-view .contact-note-card {
-  gap: 12px;
-  padding: 12px 14px;
-  margin-bottom: 17px;
-}
-
-.contact-note-list-view .contact-note-photo-img,
-.contact-note-list-view .contact-note-photo-default,
-.contact-note-bases-view .contact-note-photo-img,
-.contact-note-bases-view .contact-note-photo-default {
-  width: 108px !important;
-  height: 108px !important;
-}
-
-.contact-note-list-view .contact-note-name,
-.contact-note-bases-view .contact-note-name {
-  font-size: 1.22rem;
-}
-
-.contact-note-list-view .contact-note-title,
-.contact-note-list-view .contact-note-company,
-.contact-note-bases-view .contact-note-title,
-.contact-note-bases-view .contact-note-company {
-  font-size: 0.79rem;
-}
-
-/* Contact Card Condesned */
-.contact-note-list-condensed .contact-note-card {
-  padding: 6px 10px;
-  gap: 10px;
-  margin-bottom: 6px;
-}
-
-.contact-note-list-condensed .contact-note-photo-img,
-.contact-note-list-condensed .contact-note-photo-default {
-  width: 40px !important;
-  height: 40px !important;
-}
-
-.contact-note-list-condensed .contact-note-name {
-  font-size: 0.95rem;
+.contact-note-filter-container {
+	padding: var(--size-4-4);
 }
 
 /* #endregion */

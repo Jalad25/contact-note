@@ -32,7 +32,7 @@ interface ContactCardOptions {
   condensed?: boolean;
   clickable?: boolean;
   showDetails?: boolean;
-  nameOverride?: string;
+  lastNameFirstOverride?: boolean;
 }
 
 //#endregion
@@ -46,8 +46,8 @@ export function buildContactCard(
   contact: Contact,
   options: ContactCardOptions = {}
 ) {
-  const { condensed = false, clickable = false, showDetails = true, nameOverride } = options;
-  const displayName = nameOverride ?? contact.resolvedDisplayName;
+  const { condensed = false, clickable = false, showDetails = true, lastNameFirstOverride = false } = options;
+  const displayName = contact.resolvedDisplayName(lastNameFirstOverride ?? false);
 
   const card = container.createDiv({ cls: `${pluginId}-card` });
 
@@ -58,62 +58,62 @@ export function buildContactCard(
     });
   }
 
-	// If invalid show error
+	// If invalid show error anywhere card is rendered
 	if (!contact.isValid) {
 		const missingFields: string[] = [];
 		if (!contact.firstName) missingFields.push("firstName");
 		if (!contact.lastName) missingFields.push("lastName");
-		const errorEl = card.createDiv({ cls: `${pluginId}-error` });
+		const errorEl = card.createDiv({ cls: `${pluginId}-card-error` });
 		errorEl.createEl("strong", { text: "Contact note is missing required fields: " });
 		errorEl.createSpan({ text: missingFields.join(", ") });
 		errorEl.createEl("p", { text: "Add these properties to the frontmatter to display this contact." });
 		return errorEl;
 	}
 
-  // Photo
-  const photoContainer = card.createDiv({ cls: `${pluginId}-photo` });
+  /* Photo */
+  const photoContainer = card.createDiv({ cls: `${pluginId}-card-photo` });
   if (contact.photo) {
     const photoFile = app.vault.getAbstractFileByPath(contact.photo);
     if (photoFile instanceof TFile) {
-      const img = photoContainer.createEl("img", { cls: `${pluginId}-photo-img` });
+      const img = photoContainer.createEl("img", { cls: `${pluginId}-card-photo-img` });
       img.src = app.vault.getResourcePath(photoFile);
       img.alt = displayName || "Contact photo";
     } else {
 		setIcon(photoContainer, "user-round");
-		photoContainer.children[0].classList.add(`${pluginId}-photo-default`);
+		photoContainer.children[0].classList.add(`${pluginId}-card-photo-default`);
   	}
   } else {
     setIcon(photoContainer, "user-round");
-    photoContainer.children[0].classList.add(`${pluginId}-photo-default`);
+    photoContainer.children[0].classList.add(`${pluginId}-card-photo-default`);
   }
 
-  // Name, Company, and Title
-  const infoEl = card.createDiv({ cls: `${pluginId}-info` });
+  /* Name, Company, and Title */
+  const infoEl = card.createDiv({ cls: `${pluginId}-card-info` });
 
   if (displayName) {
-    infoEl.createDiv({ cls: `${pluginId}-name`, text: displayName });
+    infoEl.createDiv({ cls: `${pluginId}-card-name`, text: displayName });
   }
 
   if (!condensed && contact.title) {
-    infoEl.createDiv({ cls: `${pluginId}-title`, text: contact.title });
+    infoEl.createDiv({ cls: `${pluginId}-card-title`, text: contact.title });
   }
 
   if (!condensed && contact.company) {
-    infoEl.createDiv({ cls: `${pluginId}-company`, text: contact.company });
+    infoEl.createDiv({ cls: `${pluginId}-card-company`, text: contact.company });
   }
 
-  // Details: Socials, Emails, and Phones
+  /* Details: Socials, Emails, and Phones */
   if (!showDetails) return card;
 
   if (contact.emails.length > 0 || contact.phones.length > 0 || contact.socials.length > 0) {
-    const detailsEl = card.createDiv({ cls: `${pluginId}-details` });
+    const detailsEl = card.createDiv({ cls: `${pluginId}-card-details` });
 
     // Socials
     if (contact.socials.length > 0) {
-      const socialsEl = detailsEl.createDiv({ cls: `${pluginId}-socials` });
+      const socialsEl = detailsEl.createDiv({ cls: `${pluginId}-card-socials` });
       for (const social of contact.socials) {
-        const row = socialsEl.createDiv({ cls: `${pluginId}-detail-row` });
-        const iconEl = row.createSpan({ cls: `${pluginId}-detail-icon` });
+        const row = socialsEl.createDiv({ cls: `${pluginId}-card-detail-row` });
+        const iconEl = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
         const svgPath = getSocialIcon(social.name);
         if (svgPath) {
           const svg = iconEl.createSvg("svg", { attr: { role: "img", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg" } });
@@ -123,9 +123,9 @@ export function buildContactCard(
         }
         const url = social.url;
         if (url) {
-          row.createEl("a", { cls: `${pluginId}-detail-value`, text: social.handle, href: url });
+          row.createEl("a", { cls: `${pluginId}-card-detail-value`, text: social.handle, href: url });
         } else {
-          row.createSpan({ cls: `${pluginId}-detail-value`, text: social.handle });
+          row.createSpan({ cls: `${pluginId}-card-detail-value`, text: social.handle });
         }
       }
     }
@@ -134,22 +134,22 @@ export function buildContactCard(
     if (contact.emails.length > 0) {
       const emailsEl = detailsEl.createDiv({ cls: `${pluginId}-emails` });
       for (const email of contact.emails) {
-        const row = emailsEl.createDiv({ cls: `${pluginId}-detail-row` });
-        const emailIcon = row.createSpan({ cls: `${pluginId}-detail-icon` });
+        const row = emailsEl.createDiv({ cls: `${pluginId}-card-detail-row` });
+        const emailIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
         setIcon(emailIcon, "mail");
-        row.createEl("a", { cls: `${pluginId}-detail-value`, text: email, href: `mailto:${email}` });
+        row.createEl("a", { cls: `${pluginId}-card-detail-value`, text: email, href: `mailto:${email}` });
       }
     }
 
     // Phones
     if (contact.phones.length > 0) {
-      const phonesEl = detailsEl.createDiv({ cls: `${pluginId}-phones` });
+      const phonesEl = detailsEl.createDiv({ cls: `${pluginId}-card-phones` });
       for (const phone of contact.phones) {
-        const row = phonesEl.createDiv({ cls: `${pluginId}-detail-row` });
-        const phoneIcon = row.createSpan({ cls: `${pluginId}-detail-icon` });
+        const row = phonesEl.createDiv({ cls: `${pluginId}-card-detail-row` });
+        const phoneIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
         setIcon(phoneIcon, "phone");
         row.createEl("a", {
-          cls: `${pluginId}-detail-value`,
+          cls: `${pluginId}-card-detail-value`,
           text: phone,
           href: `tel:${phone.replace(/[\s\-().]/g, "")}`,
         });

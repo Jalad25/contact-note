@@ -1,19 +1,48 @@
 import {
   CachedMetadata,
   ItemView,
+  Menu,
   setIcon,
   TFile,
   WorkspaceLeaf
 } from "obsidian";
-import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "./main";
-import { FrontmatterFilter } from "./ContactNoteSettingTab";
-import { Contact } from "./Contact";
-import { buildContactCard } from "./ContactCard";
-import { NewContactModal } from "./NewContactModal";
+import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "../main";
+import { Contact } from "../Contact";
+import { buildContactCard } from "../ContactNoteCard";
+import { NewContactModal } from "../modals/NewContactModal";
+import { EditDefaultFilterModal } from "../modals/EditDefaultFilterModal";
 
-//#region Contact List View
+//#region Types/Objects/Interfaces
 
-export class ContactListView extends ItemView {
+export interface FrontmatterFilter {
+  property: string;
+  operator: "contains" | "is" | "exists" | "is true" | "is false";
+  value: string;
+}
+
+export interface ContactsViewOptions {
+  condensedList: boolean;
+  lastNameFirst: boolean;
+  showContactDetails: boolean;
+  defaultFilters: FrontmatterFilter[];
+}
+
+//#endregion
+
+//#region Constants
+
+export const DEFAULT_VIEW_OPTIONS: ContactsViewOptions = {
+  condensedList: true,
+  lastNameFirst: true,
+  showContactDetails: false,
+  defaultFilters: [],
+};
+
+//#endregion
+
+//#region Contacts View
+
+export class ContactsView extends ItemView {
   plugin: ContactNotePlugin;
   private contacts = new Map<string, Contact>();
   private searchQuery = "";
@@ -30,7 +59,7 @@ export class ContactListView extends ItemView {
   }
 
   getDisplayText(): string {
-    return this.plugin.settings.listTitle || "Contacts";
+    return this.plugin.configuration.viewName || "Contacts";
   }
 
   getIcon(): string {
@@ -104,6 +133,63 @@ export class ContactListView extends ItemView {
     this.render();
   }
 
+  private openOptionsMenu(evt: MouseEvent): void {
+    const menu = new Menu();
+
+		// condensedList
+    menu.addItem((item) =>
+      item
+        .setTitle("Condensed")
+        .setChecked(this.plugin.configuration.condensedList)
+        .onClick(async () => {
+          this.plugin.configuration.condensedList = !this.plugin.configuration.condensedList;
+          if (this.plugin.configuration.condensedList) {
+            this.plugin.configuration.showContactDetails = false;
+          }
+          await this.plugin.saveSettings();
+          this.plugin.refreshContactsView();
+        }),
+    );
+
+		// showContactDetails
+    if (!this.plugin.configuration.condensedList) {
+      menu.addItem((item) =>
+        item
+          .setTitle("Show contact details")
+          .setChecked(this.plugin.configuration.showContactDetails)
+          .onClick(async () => {
+            this.plugin.configuration.showContactDetails = !this.plugin.configuration.showContactDetails;
+            await this.plugin.saveSettings();
+            this.plugin.refreshContactsView();
+          }),
+      );
+    }
+
+		// lastNameFirst
+    menu.addItem((item) =>
+      item
+        .setTitle("Last name first")
+        .setChecked(this.plugin.configuration.lastNameFirst)
+        .onClick(async () => {
+          this.plugin.configuration.lastNameFirst = !this.plugin.configuration.lastNameFirst;
+          await this.plugin.saveSettings();
+          this.plugin.refreshContactsView();
+        }),
+    );
+
+    menu.addSeparator();
+
+		// defaultFilters
+    menu.addItem((item) =>
+      item
+        .setTitle("Edit default filter…")
+        .setIcon("filter")
+        .onClick(() => new EditDefaultFilterModal(this.plugin).open()),
+    );
+
+    menu.showAtMouseEvent(evt);
+  }
+
   private initContacts(): void {
     this.contacts.clear();
     for (const file of this.app.vault.getMarkdownFiles()) {
@@ -117,28 +203,38 @@ export class ContactListView extends ItemView {
   render(): void {
     const container = this.contentEl;
     container.empty();
-    container.addClass(`${this.plugin.manifest.id}-list-view`);
-    if (this.plugin.settings.condensedList) {
-      container.addClass(`${this.plugin.manifest.id}-list-condensed`);
+    container.addClass(`${this.plugin.manifest.id}-view`);
+    if (this.plugin.configuration.condensedList) {
+      container.addClass(`${this.plugin.manifest.id}-card-condensed`);
     } else {
-      container.removeClass(`${this.plugin.manifest.id}-list-condensed`);
+      container.removeClass(`${this.plugin.manifest.id}-card-condensed`);
     }
 
-    // Header
-    const headerEl = container.createDiv({ cls: `${this.plugin.manifest.id}-list-header` });
-    headerEl.createEl("h1", {
-      cls: `${this.plugin.manifest.id}-list-title`,
-      text: this.plugin.settings.listTitle || "Contacts",
-    });
-    const btnGroup = headerEl.createDiv({ cls: `${this.plugin.manifest.id}-header-btns` });
+    //#region Header
 
-    const newBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-header-btn clickable-icon` });
+    const headerEl = container.createDiv({ cls: `${this.plugin.manifest.id}-view-header` });
+
+		// Title
+    headerEl.createEl("h1", {
+      cls: `${this.plugin.manifest.id}-view-title`,
+      text: this.plugin.configuration.viewName || "Contacts",
+    });
+
+		// Buttons Container
+    const btnGroup = headerEl.createDiv({ cls: `${this.plugin.manifest.id}-view-header-btns` });
+
+		//#endregion
+
+		//#region Buttons
+
+		/* New Contact Button */
+    const newBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-view-header-btn clickable-icon` });
     setIcon(newBtn, "user-plus");
     newBtn.setAttribute("aria-label", "New contact");
     newBtn.addEventListener("click", () => new NewContactModal(this.plugin).open());
 
-    // Search
-    const searchBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-header-btn clickable-icon` });
+    /* Search Button */
+    const searchBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-view-header-btn clickable-icon` });
     setIcon(searchBtn, "search");
     searchBtn.setAttribute("aria-label", "Search contacts");
     if (this.showSearch) searchBtn.addClass("is-active");
@@ -147,10 +243,19 @@ export class ContactListView extends ItemView {
       if (!this.showSearch) this.searchQuery = "";
       this.render();
     });
+
+    /* View Options Menu */
+    const menuBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-view-header-btn clickable-icon` });
+    setIcon(menuBtn, "more-vertical");
+    menuBtn.setAttribute("aria-label", "View options");
+    menuBtn.addEventListener("click", (evt) => this.openOptionsMenu(evt));
+
+		//#endregion
   
+		// Search Input
     if (this.showSearch) {
       const searchInput = container.createEl("input", {
-        cls: `${this.plugin.manifest.id}-search`,
+        cls: `${this.plugin.manifest.id}-view-search`,
         attr: { type: "text", placeholder: "Search contacts…" },
       });
       searchInput.value = this.searchQuery;
@@ -161,12 +266,11 @@ export class ContactListView extends ItemView {
       searchInput.focus();
     }
 
-    // Alphabet filter bar
-    const alphaBar = container.createDiv({ cls: `nav-header ${this.plugin.manifest.id}-alpha-bar` });
+    /* Alphabet Filter Bar */
+    const alphaBar = container.createDiv({ cls: `nav-header ${this.plugin.manifest.id}-view-alpha-bar` });
     const alphaBtns = alphaBar.createDiv({ cls: "nav-buttons-container" });
-
     for (const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
-      const btn = alphaBtns.createDiv({ cls: `clickable-icon ${this.plugin.manifest.id}-alpha-btn` });
+      const btn = alphaBtns.createDiv({ cls: `clickable-icon ${this.plugin.manifest.id}-view-alpha-btn` });
       btn.setText(letter);
       if (this.letterFilter === letter) btn.addClass("is-active");
       btn.addEventListener("click", () => {
@@ -180,13 +284,16 @@ export class ContactListView extends ItemView {
 
   private renderCards(): void {
     const container = this.contentEl;
-    container.querySelectorAll(`.${this.plugin.manifest.id}-card, .${this.plugin.manifest.id}-list-empty`)
+
+		// Clear DOM of cards
+    container.querySelectorAll(`.${this.plugin.manifest.id}-card, .${this.plugin.manifest.id}-empty`)
       .forEach((el) => el.remove());
 
     const query = this.searchQuery.toLowerCase().trim();
     const letter = this.letterFilter;
 
-    const defaultFilters = this.plugin.settings.defaultFilters.filter(
+		/* Apply default filter */
+    const defaultFilters = this.plugin.configuration.defaultFilters.filter(
       (f) => f.property.trim() !== ""
     );
 
@@ -195,27 +302,27 @@ export class ContactListView extends ItemView {
         if (defaultFilters.some((f) => !matchesFilter(contact.rawFrontmatter, f))) return false;
         if (letter && !contact.lastName.toUpperCase().startsWith(letter)) return false;
         if (!query) return true;
-        return [contact.firstName, contact.lastName, contact.middleName, contact.resolvedDisplayName]
+        return [contact.firstName, contact.lastName, contact.middleName, contact.resolvedDisplayName(false)]
           .some((v) => v.toLowerCase().includes(query));
       })
       .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
 
     if (filtered.length === 0) {
       container.createEl("p", {
-        cls: `${this.plugin.manifest.id}-list-empty`,
+        cls: `${this.plugin.manifest.id}-empty`,
         text: query || letter ? "No contacts match your filter." : "No contact notes found.",
       });
       return;
     }
 
-    const condensed = this.plugin.settings.condensedList;
-    const lastNameFirst = this.plugin.settings.lastNameFirst;
-	const showDetails = this.plugin.settings.showContactDetails
+		/* Get options */
+    const condensed = this.plugin.configuration.condensedList;
+    const lastNameFirst = this.plugin.configuration.lastNameFirst;
+		const showDetails = this.plugin.configuration.showContactDetails;
+
+		// Build contact cards
     for (const contact of filtered) {
-      const nameOverride = lastNameFirst
-        ? [contact.lastName + ",", contact.firstName, contact.middleName].filter(Boolean).join(" ")
-        : undefined;
-      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: showDetails, nameOverride });
+      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: showDetails, lastNameFirstOverride: lastNameFirst });
     }
   }
 }

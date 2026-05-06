@@ -1,7 +1,8 @@
-import { 
-  App, 
-  normalizePath, 
-  TFile 
+import {
+  App,
+  normalizePath,
+  Notice,
+  TFile
 } from "obsidian";
 
 //#region Types/Objects/Interfaces
@@ -106,12 +107,17 @@ export class Contact {
     }
 
     const baseName = [firstName, lastName].filter((s) => s.trim()).join(" ") || "New Contact";
+    const folderPrefix = folder ? folder + "/" : "";
     let name = baseName;
     let counter = 1;
-    while (app.vault.getAbstractFileByPath(`${folder ? folder + "/" : ""}${name}.md`)) {
+    while (app.vault.getAbstractFileByPath(`${folderPrefix}${name}.md`)) {
       name = `${baseName} ${counter++}`;
     }
-    const filePath = `${folder ? folder + "/" : ""}${name}.md`;
+    const filePath = `${folderPrefix}${name}.md`;
+
+    if (name !== baseName) {
+      new Notice(`Contact created as "${name}" because a contact named "${baseName}" already exists.`);
+    }
 
     const tagLine = !settings.useFolder && settings.tag.trim()
       ? `tags:\n  - ${settings.tag.trim().replace(/^#/, "")}\n`
@@ -182,7 +188,8 @@ export class Contact {
     }
   }
 
-  get resolvedDisplayName(): string {
+  resolvedDisplayName(lastNameFirstOverride: boolean): string {
+		if (lastNameFirstOverride) return [this.lastName + ",", this.firstName, this.middleName].filter(Boolean).join(" ")
     if (this.displayName) return this.displayName;
     return [this.firstName, this.middleName, this.lastName].filter(Boolean).join(" ");
   }

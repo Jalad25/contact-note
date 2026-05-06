@@ -1,5 +1,8 @@
-import { Modal, Setting } from "obsidian";
-import ContactNotePlugin from "./main";
+import { 
+	Modal, 
+	Setting 
+} from "obsidian";
+import ContactNotePlugin from "../main";
 
 export class NewContactModal extends Modal {
   plugin: ContactNotePlugin;

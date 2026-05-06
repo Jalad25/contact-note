@@ -6,42 +6,54 @@ import {
   TFile,
   MarkdownPostProcessorContext
 } from "obsidian";
-import { ContactListView } from "./ContactListView";
+import { ContactsView, ContactsViewOptions, DEFAULT_VIEW_OPTIONS } from "./views/ContactsView";
 import { ContactNoteSettingTab, ContactNoteSettings, DEFAULT_SETTINGS } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
-import { buildContactCard } from "./ContactCard";
-import { ContactBasesView } from "./ContactBasesView";
+import { buildContactCard } from "./ContactNoteCard";
+import { ContactsBasesView } from "./views/ContactsBasesView";
 import { migrate } from "./SchemaMigration";
 
 //#region Constants
 
 export const CONTACT_CARDS_LIST_VIEW_TYPE = "contact-note-list";
 
+export const CURRENT_SCHEMA_VERSION = 0;
+
+export type ContactNoteConfiguration = { schemaVersion: number } & ContactNoteSettings & ContactsViewOptions;
+
+export const DEFAULT_CONFIGURATION: ContactNoteConfiguration = {
+	schemaVersion: CURRENT_SCHEMA_VERSION,
+  ...DEFAULT_SETTINGS,
+  ...DEFAULT_VIEW_OPTIONS,
+};
+
 //#endregion
 
 export default class ContactNotePlugin extends Plugin {
-  settings!: ContactNoteSettings;
+  configuration!: ContactNoteConfiguration;
   private renamingFiles = new Set<string>();
 
   async onload() {
-    // Settings
+    // Configuration
     await this.loadSettings();
+
+		// Settings
     this.addSettingTab(new ContactNoteSettingTab(this.app, this));
 
-    // Ribbon
+    /* Ribbon Icons */
     this.addRibbonIcon("book-user", "Open contact list", () => {
-      void this.activateContactListView();
+      void this.activateContactsView();
     });
 
     this.addRibbonIcon("book-plus", "Create new contacts base", () => {
       void this.createContactsBase();
     });
 
-    // Command
+    /* Commands */
     this.addCommand({
       id: "open-contact-list",
       name: "Open contact list",
-      callback: () => { void this.activateContactListView(); },
+      callback: () => { void this.activateContactsView(); },
     });
 
     this.addCommand({
@@ -60,7 +72,7 @@ export default class ContactNotePlugin extends Plugin {
     // View
     this.registerView(
       CONTACT_CARDS_LIST_VIEW_TYPE,
-      (leaf) => new ContactListView(leaf, this)
+      (leaf) => new ContactsView(leaf, this)
     );
 
     // Bases view
@@ -69,12 +81,12 @@ export default class ContactNotePlugin extends Plugin {
 				name: "Contact Cards",
 				icon: "book-user",
 				factory: (controller, scrollEl) =>
-					new ContactBasesView(controller, scrollEl, this),
-				options: ContactBasesView.getViewOptions,
+					new ContactsBasesView(controller, scrollEl, this),
+				options: ContactsBasesView.getViewOptions,
 			}
 		);
 
-    // Enforce contact file naming
+    /* Enforce contact file naming */
     this.registerEvent(
       this.app.metadataCache.on("changed", async (file, _data, cache) => {
         if (!this.isContactFile(file)) return;
@@ -95,6 +107,7 @@ export default class ContactNotePlugin extends Plugin {
       })
     );
 
+		/* File change events */
     this.registerEvent(
       this.app.workspace.on("layout-change", () => {
         const view = this.app.workspace.getActiveViewOfType(MarkdownView);
@@ -130,18 +143,31 @@ export default class ContactNotePlugin extends Plugin {
 
   }
 
-//#region Settings
+//#region Configuration
 
   async loadSettings() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Disabling eslint as this is an issue triggered by Obsidian's API. Triggers locally
     const raw = await this.loadData();
     const { values, migrated } = migrate(raw);
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, values);
-    if (migrated) await this.saveSettings();
+
+    // Remove properties from data.json object that are no longer used
+		// Does not include migrated properties (usually a rename)
+    const known = new Set(Object.keys(DEFAULT_CONFIGURATION));
+    const filtered: Record<string, unknown> = {};
+    let droppedAny = false;
+    if (values && typeof values === "object") {
+      for (const [k, v] of Object.entries(values as Record<string, unknown>)) {
+        if (known.has(k)) filtered[k] = v;
+        else droppedAny = true;
+      }
+    }
+
+    this.configuration = Object.assign({}, DEFAULT_CONFIGURATION, filtered);
+    if (migrated || droppedAny) await this.saveSettings();
   }
 
   async saveSettings() {
-    await this.saveData(this.settings);
+    await this.saveData(this.configuration);
   }
 
 //#endregion
@@ -149,18 +175,18 @@ export default class ContactNotePlugin extends Plugin {
 //#region Contact File
 
   async createNewContact(firstName: string, lastName: string): Promise<void> {
-    const file = await Contact.create(this.app, this.settings, firstName, lastName);
+    const file = await Contact.create(this.app, this.configuration, firstName, lastName);
     await this.app.workspace.getLeaf(false).openFile(file);
   }
 
   isContactFile(file: TFile): boolean {
-    if (this.settings.useFolder) {
-      const folder = normalizePath(this.settings.folderPath);
+    if (this.configuration.useFolder) {
+      const folder = normalizePath(this.configuration.folderPath);
       if (!folder) return false;
       return file.path === folder || file.path.startsWith(folder + "/");
     }
 
-    const tag = this.settings.tag.trim().replace(/^#/, "").toLowerCase();
+    const tag = this.configuration.tag.trim().replace(/^#/, "").toLowerCase();
     if (!tag) return false;
 
     const cache = this.app.metadataCache.getFileCache(file);
@@ -196,11 +222,18 @@ export default class ContactNotePlugin extends Plugin {
     if (file.basename === expectedName) return;
 
     const folder = file.parent?.path;
-    const newPath = (folder ? folder + "/" : "") + expectedName + ".md";
+    const folderPrefix = folder ? folder + "/" : "";
 
-    if (this.app.vault.getAbstractFileByPath(newPath)) {
-      new Notice(`Contact could not be renamed to "${expectedName}": a file with that name already exists. Add a middle name or initial to disambiguate.`);
-      return;
+    let finalName = expectedName;
+    let counter = 1;
+    while (this.app.vault.getAbstractFileByPath(`${folderPrefix}${finalName}.md`)) {
+      finalName = `${expectedName} ${counter++}`;
+    }
+
+    const newPath = `${folderPrefix}${finalName}.md`;
+
+    if (finalName !== expectedName) {
+      new Notice(`Contact renamed to "${finalName}" because a contact named "${expectedName}" already exists.`);
     }
 
     this.renamingFiles.add(newPath);
@@ -215,14 +248,14 @@ export default class ContactNotePlugin extends Plugin {
 
     const contact = Contact.fromCache(file, ctx.frontmatter as Record<string, unknown>);
 
-    buildContactCard(this.manifest.id, this.app, el, contact, { showDetails: true });
+    buildContactCard(this.manifest.id, this.app, el, contact, { showDetails: true, lastNameFirstOverride: false });
   }
 
 //#endregion
 
 //#region View
 
-  async activateContactListView() {
+  async activateContactsView() {
     const { workspace } = this.app;
     const existing = workspace.getLeavesOfType(CONTACT_CARDS_LIST_VIEW_TYPE);
     if (existing.length > 0) {
@@ -236,9 +269,9 @@ export default class ContactNotePlugin extends Plugin {
     }
   }
 
-  refreshContactListView() {
+  refreshContactsView() {
     for (const leaf of this.app.workspace.getLeavesOfType(CONTACT_CARDS_LIST_VIEW_TYPE)) {
-      if (leaf.view instanceof ContactListView) {
+      if (leaf.view instanceof ContactsView) {
         leaf.view.reinit();
       }
     }
@@ -249,9 +282,11 @@ export default class ContactNotePlugin extends Plugin {
 //#region Bases View
 
   async createContactsBase(): Promise<void> {
-    const isContactExpr = this.settings.useFolder
-      ? `file.inFolder("${this.settings.folderPath.replace(/"/g, '\\"')}")`
-      : `file.hasTag("${this.settings.tag.replace(/^#/, "").replace(/"/g, '\\"')}")`;
+    const isContactExpr = this.configuration.useFolder
+      ? `file.inFolder("${this.configuration.folderPath.replace(/"/g, '\\"')}")`
+      : `file.hasTag("${this.configuration.tag.replace(/^#/, "").replace(/"/g, '\\"')}")`;
+
+    const baseViewName = this.configuration.defaultBaseViewName || "Contacts";
 
     const yaml = [
       "formulas:",
@@ -261,24 +296,33 @@ export default class ContactNotePlugin extends Plugin {
       "    - formula.isContact",
       "views:",
       `  - type: ${CONTACT_CARDS_LIST_VIEW_TYPE}`,
-      `    name: ${this.settings.listTitle || "Contacts"}`,
+      `    name: ${baseViewName}`,
       "    order:",
       "      - note.firstName",
       "      - note.lastName",
       "      - note.displayName",
+      "    sort:",
+      "      - property: note.lastName",
+      "        direction: ASC",
       "    condensed: true",
       "    lastNameFirst: true",
       "    showDetails: false",
       "",
     ].join("\n");
 
-    const baseName = this.settings.listTitle || "Contacts";
-    let name = baseName;
-    let n = 1;
-    while (this.app.vault.getAbstractFileByPath(`${name}.base`)) {
-      name = `${baseName} ${++n}`;
+    const raw = normalizePath(this.configuration.baseFolderPath ?? "");
+    const folder = raw === "/" ? "" : raw;
+    if (folder && !this.app.vault.getAbstractFileByPath(folder)) {
+      await this.app.vault.createFolder(folder);
     }
-    const file = await this.app.vault.create(`${name}.base`, yaml);
+    const folderPrefix = folder ? `${folder}/` : "";
+
+    let name = baseViewName;
+    let n = 1;
+    while (this.app.vault.getAbstractFileByPath(`${folderPrefix}${name}.base`)) {
+      name = `${baseViewName} ${++n}`;
+    }
+    const file = await this.app.vault.create(`${folderPrefix}${name}.base`, yaml);
     await this.app.workspace.getLeaf(false).openFile(file);
   }
 
