@@ -247,6 +247,24 @@
   margin-bottom: 0;
 }
 
+/* Hide the native Bases New button (but not our injected replacement)
+   only inside leaves that host our Contact Cards view. */
+.workspace-leaf:has(.contact-note-bases-view)
+  .bases-toolbar-new-item-menu .text-icon-button {
+  display: none !important;
+}
+
+.contact-note-bases-new-btn {
+	padding: var(--size-2-2);
+	font-weight: var(--input-font-weight);
+	margin: 2px;
+	font-size: var(--font-ui-small);
+}
+
+.contact-note-bases-new-btn .text-button-label {
+	padding-inline-start: 5px;
+}
+
 /* #endregion */
 
 /* #region Bases & View */

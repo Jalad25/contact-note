@@ -74,7 +74,6 @@ export class ContactNoteSettingTab extends PluginSettingTab {
           this.plugin.settings.useFolder = value;
           await this.plugin.saveSettings();
           this.plugin.refreshContactListView();
-          this.plugin.refreshContactBasesView();
           this.display();
         })
       );
@@ -93,7 +92,6 @@ export class ContactNoteSettingTab extends PluginSettingTab {
               this.plugin.settings.folderPath = value;
               await this.plugin.saveSettings();
               this.plugin.refreshContactListView();
-              this.plugin.refreshContactBasesView();
             })
         );
     } else {
@@ -108,13 +106,12 @@ export class ContactNoteSettingTab extends PluginSettingTab {
               this.plugin.settings.tag = value;
               await this.plugin.saveSettings();
               this.plugin.refreshContactListView();
-              this.plugin.refreshContactBasesView();
             })
         );
     }
 
     // Contact List view settings
-    new Setting(containerEl).setName("Contact list").setHeading();
+    new Setting(containerEl).setName("Contact list view").setHeading();
 
     new Setting(containerEl)
       .setName("Contact list title")

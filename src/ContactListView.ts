@@ -1,64 +1,15 @@
-import { 
-  CachedMetadata, 
-  ItemView, 
-  Modal, 
-  Setting, 
-  setIcon, 
-  TFile, 
-  WorkspaceLeaf 
+import {
+  CachedMetadata,
+  ItemView,
+  setIcon,
+  TFile,
+  WorkspaceLeaf
 } from "obsidian";
 import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "./main";
 import { FrontmatterFilter } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
-
-//#region Types/Objects/Interfaces
-
-class NewContactModal extends Modal {
-  plugin: ContactNotePlugin;
-
-  constructor(plugin: ContactNotePlugin) {
-    super(plugin.app);
-    this.plugin = plugin;
-  }
-
-  onOpen(): void {
-    const { contentEl } = this;
-    contentEl.createEl("h2", { text: "New contact" });
-
-    let firstName = "";
-    let lastName = "";
-
-    new Setting(contentEl)
-      .setName("First name")
-      .addText((text) =>
-        text.onChange((value) => { firstName = value; })
-      );
-
-    new Setting(contentEl)
-      .setName("Last name")
-      .addText((text) =>
-        text.onChange((value) => { lastName = value; })
-      );
-
-    new Setting(contentEl)
-      .addButton((btn) =>
-        btn
-          .setButtonText("Create")
-          .setCta()
-          .onClick(() => {
-            this.close();
-            void this.plugin.createNewContact(firstName.trim(), lastName.trim());
-          })
-      );
-  }
-
-  onClose(): void {
-    this.contentEl.empty();
-  }
-}
-
-//#endregion
+import { NewContactModal } from "./NewContactModal";
 
 //#region Contact List View
 

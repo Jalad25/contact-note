@@ -51,7 +51,7 @@ To get future updates, run **BRAT: Check for updates to all beta plugins** from 
 
 ### Obsidian Community Plugins
 
-> *Coming soon — pending listing in the directory.*
+> *Coming soon - pending listing in the directory.*
 
 1. Open Obsidian and go to **Settings → Community plugins**.
 2. If restricted mode is on, click **Turn on community plugins**.

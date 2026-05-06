@@ -33,11 +33,21 @@ export default class ContactNotePlugin extends Plugin {
       void this.activateContactListView();
     });
 
+    this.addRibbonIcon("book-plus", "Create new contacts base", () => {
+      void this.createContactsBase();
+    });
+
     // Command
     this.addCommand({
       id: "open-contact-list",
       name: "Open contact list",
       callback: () => { void this.activateContactListView(); },
+    });
+
+    this.addCommand({
+      id: "create-contacts-base",
+      name: "Create new contacts base",
+      callback: () => { void this.createContactsBase(); },
     });
 
     // Markdown Post Processor
@@ -234,16 +244,42 @@ export default class ContactNotePlugin extends Plugin {
     }
   }
 
-  refreshContactBasesView() {
-    for (const view of ContactBasesView.liveViews) {
-      // Prune entries whose container detached without onunload firing
-      // (defensive — Bases may swap view types without calling onunload).
-      if (!view.containerEl.isConnected) {
-        ContactBasesView.liveViews.delete(view);
-        continue;
-      }
-      view.onDataUpdated();
+//#endregion
+
+//#region Bases View
+
+  async createContactsBase(): Promise<void> {
+    const isContactExpr = this.settings.useFolder
+      ? `file.inFolder("${this.settings.folderPath.replace(/"/g, '\\"')}")`
+      : `file.hasTag("${this.settings.tag.replace(/^#/, "").replace(/"/g, '\\"')}")`;
+
+    const yaml = [
+      "formulas:",
+      `  isContact: ${JSON.stringify(isContactExpr)}`,
+      "filters:",
+      "  and:",
+      "    - formula.isContact",
+      "views:",
+      `  - type: ${CONTACT_CARDS_LIST_VIEW_TYPE}`,
+      `    name: ${this.settings.listTitle || "Contacts"}`,
+      "    order:",
+      "      - note.firstName",
+      "      - note.lastName",
+      "      - note.displayName",
+      "    condensed: true",
+      "    lastNameFirst: true",
+      "    showDetails: false",
+      "",
+    ].join("\n");
+
+    const baseName = this.settings.listTitle || "Contacts";
+    let name = baseName;
+    let n = 1;
+    while (this.app.vault.getAbstractFileByPath(`${name}.base`)) {
+      name = `${baseName} ${++n}`;
     }
+    const file = await this.app.vault.create(`${name}.base`, yaml);
+    await this.app.workspace.getLeaf(false).openFile(file);
   }
 
 //#endregion

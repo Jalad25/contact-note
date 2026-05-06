@@ -1,15 +1,18 @@
 import {
   BasesOptionGroup,
+  BasesPropertyId,
   BasesToggleOption,
   BasesView,
   BasesViewConfig,
   ListValue,
   NullValue,
   QueryController,
+  setIcon,
   Value
 } from "obsidian";
 import { Contact } from "./Contact";
 import { buildContactCard } from "./ContactCard";
+import { NewContactModal } from "./NewContactModal";
 import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "./main";
 
 //#region Constants
@@ -26,16 +29,21 @@ const SCALAR_FIELDS = [
 
 const LIST_FIELDS = ["email", "phone"] as const;
 
+const DEFAULT_PROPERTY_ORDER: BasesPropertyId[] = [
+  "note.firstName",
+  "note.lastName",
+  "note.displayName"
+];
+
 //#endregion
 
 //#region Bases View
 
 export class ContactBasesView extends BasesView {
-  static readonly liveViews = new Set<ContactBasesView>();
-
   type = CONTACT_CARDS_LIST_VIEW_TYPE;
   scrollEl: HTMLElement;
   containerEl: HTMLElement;
+  private seeded = false;
 
   constructor(
     controller: QueryController,
@@ -47,11 +55,24 @@ export class ContactBasesView extends BasesView {
     this.containerEl = scrollEl.createDiv({
       cls: `${plugin.manifest.id}-bases-view`
     });
-    ContactBasesView.liveViews.add(this);
   }
 
   onDataUpdated(): void {
+    this.injectNewButton();
     this.containerEl.empty();
+
+    // Seed default property order on first run for fresh views.
+    // Empty or just-["file.name"] means the user hasn't customized the panel.
+    if (!this.seeded) {
+      this.seeded = true;
+      const order = this.config.getOrder();
+      const isFreshView =
+        order.length === 0 ||
+        (order.length === 1 && order[0] === "file.name");
+      if (isFreshView) {
+        this.config.set("order", DEFAULT_PROPERTY_ORDER);
+      }
+    }
 
     const condensed = (this.config.get("condensed") as boolean) ?? true;
     let showDetails = (this.config.get("showDetails") as boolean) ?? false;
@@ -67,16 +88,12 @@ export class ContactBasesView extends BasesView {
     if (this.data.data.length === 0) {
       this.containerEl.createEl("p", {
         cls: `${this.plugin.manifest.id}-list-empty`,
-        text: "No contacts match.",
+        text: "No contacts match."
       });
       return;
     }
 
-		const filteredData = this.data.data.filter((f) => {
-			return this.plugin.isContactFile(f.file);
-		});
-
-    for (const entry of filteredData) {
+    for (const entry of this.data.data) {
       const fm: Record<string, unknown> = {};
 
       for (const field of SCALAR_FIELDS) {
@@ -110,8 +127,34 @@ export class ContactBasesView extends BasesView {
   }
 
   onunload(): void {
-    ContactBasesView.liveViews.delete(this);
     this.containerEl.remove();
+  }
+
+  // Bases' native New button creates a file using the visible columns'
+  // frontmatter at the vault root — wrong location and wrong shape for a
+  // contact. We can't intercept it (createFileForView is a helper for views
+  // to *call*, not a hook Bases calls on us), so the native button is hidden
+  // via CSS (scoped to leaves containing our view) and we inject our own.
+  private newButtonInjected = false;
+
+  private injectNewButton(): void {
+    if (this.newButtonInjected) return;
+
+    const native = document.querySelector<HTMLElement>(
+      `.workspace-leaf:has(.${this.plugin.manifest.id}-bases-view) .bases-toolbar-new-item-menu`,
+    );
+    if (!native) return;
+
+		//const containerDiv = native.createDiv({ cls: "bases-toolbar-item bases-toolbar-new-item-menu" });
+    const ourBtn = native.createEl("button", {
+      cls: `${this.plugin.manifest.id}-bases-new-btn clickable-icon`,
+      attr: { "aria-label": "New contact" }
+    });
+    setIcon(ourBtn, "lucide-plus");
+		ourBtn.createSpan({ cls: "text-button-label", text: "New"});
+    ourBtn.addEventListener("click", () => new NewContactModal(this.plugin).open());
+
+    this.newButtonInjected = true;
   }
 
   static getViewOptions(this: void, config: BasesViewConfig) {
