@@ -8,7 +8,7 @@ import {
 } from "obsidian";
 import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "../main";
 import { Contact } from "../Contact";
-import { buildContactCard } from "../ContactNoteCard";
+import { buildContactCard } from "../ContactCard";
 import { NewContactModal } from "../modals/NewContactModal";
 import { EditViewFilterModal } from "../modals/EditViewFilterModal";
 

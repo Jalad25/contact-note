@@ -9,7 +9,7 @@ import {
 import { ContactsView, ContactsViewOptions, DEFAULT_VIEW_OPTIONS } from "./views/ContactsView";
 import { ContactNoteSettingTab, ContactNoteSettings, DEFAULT_SETTINGS } from "./ContactNoteSettingTab";
 import { Contact } from "./Contact";
-import { buildContactCard } from "./ContactNoteCard";
+import { buildContactCard } from "./ContactCard";
 import { ContactsBasesView } from "./views/ContactsBasesView";
 import { migrate } from "./SchemaMigration";
 
@@ -41,25 +41,37 @@ export default class ContactNotePlugin extends Plugin {
     this.addSettingTab(new ContactNoteSettingTab(this.app, this));
 
     /* Ribbon Icons */
-    this.addRibbonIcon("book-user", "Open contacts view", () => {
+    this.addRibbonIcon("book-user", "Open contacts view in panel", () => {
       void this.activateContactsView();
     });
 
-    this.addRibbonIcon("book-plus", "Create new base with contacts base view", () => {
+    this.addRibbonIcon("book-plus", "Create new base with contacts view", () => {
       void this.createContactsBase();
     });
 
     /* Commands */
     this.addCommand({
       id: "open-contacts-view",
-      name: "Open contacts view",
+      name: "Open contacts view in panel",
       callback: () => { void this.activateContactsView(); },
     });
 
     this.addCommand({
       id: "create-contacts-base",
-      name: "Create new base with contacts base view",
+      name: "Create new base with contacts view",
       callback: () => { void this.createContactsBase(); },
+    });
+
+    this.addCommand({
+      id: "add-contacts-base-view",
+      name: "Add contacts view to active base",
+      checkCallback: (checking) => {
+        const file = this.app.workspace.getActiveFile();
+        if (!file || file.extension !== "base") return false;
+        if (checking) return true;
+        void this.addContactsBaseViewToActiveBase(file);
+        return true;
+      },
     });
 
     // Markdown Post Processor
@@ -281,22 +293,21 @@ export default class ContactNotePlugin extends Plugin {
 
 //#region Bases View
 
-  async createContactsBase(): Promise<void> {
-    const isContactExpr = this.configuration.useFolder
+  private buildIsContactExpr(): string {
+    return this.configuration.useFolder
       ? `file.inFolder("${this.configuration.folderPath.replace(/"/g, '\\"')}")`
       : `file.hasTag("${this.configuration.tag.replace(/^#/, "").replace(/"/g, '\\"')}")`;
+  }
 
-    const baseViewName = this.configuration.defaultBaseViewName || "Contacts";
-
-    const yaml = [
-      "formulas:",
-      `  isContact: ${JSON.stringify(isContactExpr)}`,
-      "filters:",
-      "  and:",
-      "    - formula.isContact",
-      "views:",
+  // Renders a Contacts view block including its own filter so the view can
+  // be appended to any base file independent of file-level filters.
+  private buildContactsViewYaml(viewName: string): string[] {
+    return [
       `  - type: ${CONTACT_CARDS_LIST_VIEW_TYPE}`,
-      `    name: ${baseViewName}`,
+      `    name: ${viewName}`,
+      "    filters:",
+      "      and:",
+      "        - formula.isContact",
       "    order:",
       "      - note.firstName",
       "      - note.lastName",
@@ -307,6 +318,18 @@ export default class ContactNotePlugin extends Plugin {
       "    condensed: true",
       "    lastNameFirst: true",
       "    showDetails: false",
+    ];
+  }
+
+  async createContactsBase(): Promise<void> {
+    const isContactExpr = this.buildIsContactExpr();
+    const baseViewName = this.configuration.defaultBaseViewName || "Contacts";
+
+    const yaml = [
+      "formulas:",
+      `  isContact: ${JSON.stringify(isContactExpr)}`,
+      "views:",
+      ...this.buildContactsViewYaml(baseViewName),
       "",
     ].join("\n");
 
@@ -324,6 +347,68 @@ export default class ContactNotePlugin extends Plugin {
     }
     const file = await this.app.vault.create(`${folderPrefix}${name}.base`, yaml);
     await this.app.workspace.getLeaf(false).openFile(file);
+  }
+
+  // Append a Contacts view to an existing .base file. Merges
+  // formulas.isContact with the file's existing formulas:
+  //   - missing       -> insert it
+  //   - present, same -> leave alone
+  //   - present, diff -> notice and leave alone (don't overwrite — the user
+  //                      may have shaped that base around a different rule)
+  // The view block always carries its own filter, regardless of any
+  // file-level filters already present.
+  async addContactsBaseViewToActiveBase(file: TFile): Promise<void> {
+    const content = await this.app.vault.read(file);
+    const expectedExpr = this.buildIsContactExpr();
+    const viewName = this.configuration.defaultBaseViewName || "Contacts";
+
+    const isContactMatch = /^( {2}|\t)isContact:\s*(.+)$/m.exec(content);
+    let updated = content;
+    let formulaMismatch = false;
+
+    if (isContactMatch) {
+      // Strip surrounding quotes (single or double) if Bases re-serialized it.
+      const existing = isContactMatch[2].trim().replace(/^["'](.*)["']$/, "$1");
+      if (existing !== expectedExpr) {
+        formulaMismatch = true;
+      }
+    } else {
+      // Need to add the formula. Insert into existing formulas: block, or
+      // create one at the top of the file.
+      const formulasHeader = /^formulas:\s*$/m.exec(content);
+      const formulaLine = `  isContact: ${JSON.stringify(expectedExpr)}`;
+      if (formulasHeader) {
+        const insertAt = formulasHeader.index + formulasHeader[0].length;
+        updated = updated.slice(0, insertAt) + "\n" + formulaLine + updated.slice(insertAt);
+      } else {
+        updated = `formulas:\n${formulaLine}\n${updated}`;
+      }
+    }
+
+    // Append the new view block. If the file already has a views: section,
+    // append after the last line; otherwise add a views: section.
+    const viewBlock = this.buildContactsViewYaml(viewName).join("\n");
+    const viewsHeader = /^views:\s*$/m.exec(updated);
+    if (viewsHeader) {
+      // Append at end of file. Bases keeps views as a top-level list, and
+      // any list-item starting with "  - " is treated as the next view.
+      // Trailing newline tolerated.
+      if (!updated.endsWith("\n")) updated += "\n";
+      updated += viewBlock + "\n";
+    } else {
+      if (!updated.endsWith("\n")) updated += "\n";
+      updated += `views:\n${viewBlock}\n`;
+    }
+
+    await this.app.vault.modify(file, updated);
+
+    if (formulaMismatch) {
+      new Notice(
+        `Contacts view added, but the existing isContact formula in this base does not match the current plugin settings. Update the formula manually if needed.`,
+      );
+    } else {
+      new Notice(`Contacts view "${viewName}" added to ${file.basename}.`);
+    }
   }
 
 //#endregion

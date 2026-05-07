@@ -102,12 +102,12 @@ export class ContactNoteSettingTab extends PluginSettingTab {
     }
 
     /* Contacts View Settings */
-    new Setting(containerEl).setName("Contacts view").setHeading();
+    new Setting(containerEl).setName("Contacts view in panel").setHeading();
 
 		// viewName
     new Setting(containerEl)
       .setName("View name")
-      .setDesc("Name displayed at the top of the contacts view.")
+      .setDesc("Name displayed at the top of the Contacts view in the panel.")
       .addText((text) =>
         text
           .setPlaceholder("Contacts")
@@ -120,7 +120,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       );
 
     /* Bases Settings */
-    new Setting(containerEl).setName("Contacts base view").setHeading();
+    new Setting(containerEl).setName("Contacts view in a base").setHeading();
 
 		// defaultBaseViewName
     new Setting(containerEl)

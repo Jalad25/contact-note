@@ -11,7 +11,7 @@ import {
   Value
 } from "obsidian";
 import { Contact } from "../Contact";
-import { buildContactCard } from "../ContactNoteCard";
+import { buildContactCard } from "../ContactCard";
 import { NewContactModal } from "../modals/NewContactModal";
 import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "../main";
 
