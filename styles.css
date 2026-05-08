@@ -175,19 +175,19 @@
 }
 
 /* Contact Card Condensed */
-.contact-note-card-condensed .contact-note-card {
+.contact-note-cards-condensed .contact-note-card {
   padding: 6px 10px;
   gap: 10px;
   margin-bottom: 6px;
 }
 
-.contact-note-card-condensed .contact-note-card-photo-img,
-.contact-note-card-condensed .contact-note-card-photo-default {
+.contact-note-cards-condensed .contact-note-card-photo-img,
+.contact-note-cards-condensed .contact-note-card-photo-default {
   width: 40px !important;
   height: 40px !important;
 }
 
-.contact-note-card-condensed .contact-note-card-name {
+.contact-note-cards-condensed .contact-note-card-name {
   font-size: 0.95rem;
 }
 
@@ -206,8 +206,9 @@
 
 /* #region Contacts View */
 
-.is-mobile .contact-note-view {
-  margin-top: 45px !important;
+/* Horizontal Lines */
+.contact-note-view hr {
+	margin: 15px 0 15px 0 !important;
 }
 
 /* Header */
@@ -259,8 +260,10 @@
 }
 
 /* Letter filter */
-.contact-note-view-alpha-bar .nav-buttons-container {
+.contact-note-view-alpha-btns {
+  display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 2px;
   padding: 2px 0;
 }

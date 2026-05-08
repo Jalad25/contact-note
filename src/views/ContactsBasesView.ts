@@ -1,6 +1,5 @@
 import {
   BasesOptionGroup,
-  BasesPropertyId,
   BasesToggleOption,
   BasesView,
   BasesViewConfig,
@@ -11,37 +10,16 @@ import {
   Value
 } from "obsidian";
 import { Contact } from "../Contact";
+import { BUILTIN_FIELDS } from "../ContactNote";
 import { buildContactCard } from "../ContactCard";
-import { NewContactModal } from "../modals/NewContactModal";
-import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "../main";
-
-//#region Constants
-
-const SCALAR_FIELDS = [
-  "firstName",
-  "middleName",
-  "lastName",
-  "displayName",
-  "title",
-  "company",
-  "photo"
-] as const;
-
-const LIST_FIELDS = ["email", "phone"] as const;
-
-const DEFAULT_PROPERTY_ORDER: BasesPropertyId[] = [
-  "note.firstName",
-	"note.middleName",
-  "note.lastName",
-  "note.displayName"
-];
-
-//#endregion
+import { DEFAULT_PROPERTY_ORDER } from "../ContactsBase";
+import { NewContactNoteModal } from "../modals/NewContactNoteModal";
+import ContactNotePlugin, { CONTACT_NOTE_LIST_VIEW_TYPE } from "../main";
 
 //#region Bases View
 
 export class ContactsBasesView extends BasesView {
-  type = CONTACT_CARDS_LIST_VIEW_TYPE;
+  type = CONTACT_NOTE_LIST_VIEW_TYPE;
   scrollEl: HTMLElement;
   containerEl: HTMLElement;
   private seeded = false;
@@ -89,7 +67,7 @@ export class ContactsBasesView extends BasesView {
       showDetails = false;
     }
 
-    this.containerEl.toggleClass(`${this.plugin.manifest.id}-card-condensed`, condensed);
+    this.containerEl.toggleClass(`${this.plugin.manifest.id}-cards-condensed`, condensed);
 
     if (this.data.data.length === 0) {
       this.containerEl.createEl("p", {
@@ -118,15 +96,14 @@ export class ContactsBasesView extends BasesView {
       for (const entry of group.entries) {
         const fm: Record<string, unknown> = {};
 
-        for (const field of SCALAR_FIELDS) {
-          fm[field] = readScalar(entry.getValue(`note.${field}`));
-        }
-        for (const field of LIST_FIELDS) {
-          fm[field] = readStringList(entry.getValue(`note.${field}`));
+        for (const field of BUILTIN_FIELDS) {
+          const raw = entry.getValue(`note.${field.key}`);
+          fm[field.key] = field.kind === "scalar" ? readScalar(raw) : readStringList(raw);
         }
 
-        // socials is an array of single key objects. ObjectValue has no key enumeration
-        // in the public API, so read this one field straight from the metadata cache
+        /* socials is an array of single key objects. ObjectValue has no key 
+					 enumeration in the public API, so read this one field straight from the 
+					 metadata cache */
         const cached = this.plugin.app.metadataCache.getFileCache(entry.file);
         fm.socials = cached?.frontmatter?.socials;
 
@@ -138,7 +115,7 @@ export class ContactsBasesView extends BasesView {
           this.plugin.app,
           groupContainer,
           contact,
-          { condensed, clickable: true, showDetails, lastNameFirstOverride: lastNameFirst },
+          { condensed, clickable: true, showDetails, lastNameFirst: lastNameFirst },
         );
       }
     }
@@ -170,7 +147,7 @@ export class ContactsBasesView extends BasesView {
     });
     setIcon(ourBtn, "lucide-plus");
 		ourBtn.createSpan({ cls: "text-button-label", text: "New"});
-    ourBtn.addEventListener("click", () => new NewContactModal(this.plugin).open());
+    ourBtn.addEventListener("click", () => new NewContactNoteModal(this.plugin).open());
 
     this.newButtonInjected = true;
   }

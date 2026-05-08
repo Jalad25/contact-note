@@ -1,4 +1,8 @@
-import { App, PluginSettingTab, Setting } from "obsidian";
+import { 
+	App, 
+	PluginSettingTab, 
+	Setting 
+} from "obsidian";
 import ContactNotePlugin from "./main";
 import { FolderSuggest } from "./suggesters/FolderSuggest";
 
@@ -9,7 +13,6 @@ export interface ContactNoteSettings {
   folderPath: string;
   tag: string;
   viewName: string;
-  defaultBaseViewName: string;
   baseFolderPath: string;
 }
 
@@ -21,9 +24,8 @@ export const DEFAULT_SETTINGS: ContactNoteSettings = {
   useFolder: true,
   folderPath: "Contacts",
   tag: "contact",
-  viewName: "",
-  defaultBaseViewName: "",
-  baseFolderPath: "",
+  viewName: "Contacts",
+  baseFolderPath: ""
 };
 
 //#endregion
@@ -60,8 +62,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       .addToggle((toggle) =>
         toggle.setValue(this.plugin.configuration.useFolder).onChange(async (value) => {
           this.plugin.configuration.useFolder = value;
-          await this.plugin.saveSettings();
-          this.plugin.refreshContactsView();
+          await this.plugin.saveConfiguration();
           this.display();
         })
       );
@@ -71,7 +72,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       new Setting(containerEl)
         .setName("Contacts folder path")
         .setDesc(
-          'Path to the folder containing contact notes, relative to the vault root (e.g. "contacts" or "people/contacts"). Notes in subfolders are included.'
+          'Path to the folder containing contact notes, relative to the vault root (e.g. "contacts" or "people/contacts"). Notes in subfolders are included. Cannot be root of the vault.'
         )
         .addText((text) => {
           text
@@ -79,10 +80,9 @@ export class ContactNoteSettingTab extends PluginSettingTab {
             .setValue(this.plugin.configuration.folderPath)
             .onChange(async (value) => {
               this.plugin.configuration.folderPath = value;
-              await this.plugin.saveSettings();
-              this.plugin.refreshContactsView();
+              await this.plugin.saveConfiguration();
             });
-          new FolderSuggest(this.app, text.inputEl);
+          new FolderSuggest(this.app, text.inputEl, true);
         });
     } else {
 			// tag
@@ -95,8 +95,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
             .setValue(this.plugin.configuration.tag)
             .onChange(async (value) => {
               this.plugin.configuration.tag = value;
-              await this.plugin.saveSettings();
-              this.plugin.refreshContactsView();
+              await this.plugin.saveConfiguration();
             })
         );
     }
@@ -107,34 +106,19 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 		// viewName
     new Setting(containerEl)
       .setName("View name")
-      .setDesc("Name displayed at the top of the Contacts view in the panel.")
+      .setDesc("Name displayed at the top of the contacts view in the panel.")
       .addText((text) =>
         text
           .setPlaceholder("Contacts")
           .setValue(this.plugin.configuration.viewName)
           .onChange(async (value) => {
             this.plugin.configuration.viewName = value;
-            await this.plugin.saveSettings();
-            this.plugin.refreshContactsView();
+            await this.plugin.saveConfiguration();
           })
       );
 
     /* Bases Settings */
     new Setting(containerEl).setName("Contacts view in a base").setHeading();
-
-		// defaultBaseViewName
-    new Setting(containerEl)
-      .setName("Default base file and view name")
-      .setDesc("Name written into new contacts bases created by the plugin. Used both as the file name and the view's display name inside the base.")
-      .addText((text) =>
-        text
-          .setPlaceholder("Contacts")
-          .setValue(this.plugin.configuration.defaultBaseViewName)
-          .onChange(async (value) => {
-            this.plugin.configuration.defaultBaseViewName = value;
-            await this.plugin.saveSettings();
-          })
-      );
 
 		// baseFolderPath
     new Setting(containerEl)
@@ -146,7 +130,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
           .setValue(this.plugin.configuration.baseFolderPath)
           .onChange(async (value) => {
             this.plugin.configuration.baseFolderPath = value;
-            await this.plugin.saveSettings();
+            await this.plugin.saveConfiguration();
           });
         new FolderSuggest(this.app, text.inputEl);
       });

@@ -6,10 +6,10 @@ import {
   TFile,
   WorkspaceLeaf
 } from "obsidian";
-import ContactNotePlugin, { CONTACT_CARDS_LIST_VIEW_TYPE } from "../main";
+import ContactNotePlugin, { CONTACT_NOTE_LIST_VIEW_TYPE } from "../main";
 import { Contact } from "../Contact";
 import { buildContactCard } from "../ContactCard";
-import { NewContactModal } from "../modals/NewContactModal";
+import { NewContactNoteModal } from "../modals/NewContactNoteModal";
 import { EditViewFilterModal } from "../modals/EditViewFilterModal";
 
 //#region Types/Objects/Interfaces
@@ -55,7 +55,7 @@ export class ContactsView extends ItemView {
   }
 
   getViewType(): string {
-    return CONTACT_CARDS_LIST_VIEW_TYPE;
+    return CONTACT_NOTE_LIST_VIEW_TYPE;
   }
 
   getDisplayText(): string {
@@ -69,6 +69,9 @@ export class ContactsView extends ItemView {
   onOpen(): Promise<void> {
     this.initContacts();
 
+		//#region Events
+
+		/* File change events */
     this.registerEvent(
       this.app.metadataCache.on("changed", (file: TFile, _data: string, cache: CachedMetadata) => {
         const isContact = this.plugin.isContactFile(file);
@@ -120,6 +123,15 @@ export class ContactsView extends ItemView {
       })
     );
 
+		// Configuration Events
+		this.registerEvent(
+			this.plugin.events.on("configuration-changed", () => {
+				this.reinit();
+			})
+		);
+
+		//#endregion
+
     this.render();
     return Promise.resolve();
   }
@@ -128,12 +140,12 @@ export class ContactsView extends ItemView {
     return Promise.resolve();
   }
 
-  reinit(): void {
+  private reinit(): void {
     this.initContacts();
     this.render();
   }
 
-  private openOptionsMenu(evt: MouseEvent): void {
+  private openOptionsMenu(e: MouseEvent): void {
     const menu = new Menu();
 
 		// condensedList
@@ -146,8 +158,7 @@ export class ContactsView extends ItemView {
           if (this.plugin.configuration.condensedList) {
             this.plugin.configuration.showContactDetails = false;
           }
-          await this.plugin.saveSettings();
-          this.plugin.refreshContactsView();
+          await this.plugin.saveConfiguration();
         }),
     );
 
@@ -159,8 +170,7 @@ export class ContactsView extends ItemView {
           .setChecked(this.plugin.configuration.showContactDetails)
           .onClick(async () => {
             this.plugin.configuration.showContactDetails = !this.plugin.configuration.showContactDetails;
-            await this.plugin.saveSettings();
-            this.plugin.refreshContactsView();
+            await this.plugin.saveConfiguration();
           }),
       );
     }
@@ -172,8 +182,7 @@ export class ContactsView extends ItemView {
         .setChecked(this.plugin.configuration.lastNameFirst)
         .onClick(async () => {
           this.plugin.configuration.lastNameFirst = !this.plugin.configuration.lastNameFirst;
-          await this.plugin.saveSettings();
-          this.plugin.refreshContactsView();
+          await this.plugin.saveConfiguration();
         }),
     );
 
@@ -187,7 +196,7 @@ export class ContactsView extends ItemView {
         .onClick(() => new EditViewFilterModal(this.plugin).open()),
     );
 
-    menu.showAtMouseEvent(evt);
+    menu.showAtMouseEvent(e);
   }
 
   private initContacts(): void {
@@ -200,14 +209,14 @@ export class ContactsView extends ItemView {
     }
   }
 
-  render(): void {
+  private render(): void {
     const container = this.contentEl;
     container.empty();
     container.addClass(`${this.plugin.manifest.id}-view`);
     if (this.plugin.configuration.condensedList) {
-      container.addClass(`${this.plugin.manifest.id}-card-condensed`);
+      container.addClass(`${this.plugin.manifest.id}-cards-condensed`);
     } else {
-      container.removeClass(`${this.plugin.manifest.id}-card-condensed`);
+      container.removeClass(`${this.plugin.manifest.id}-cards-condensed`);
     }
 
     //#region Header
@@ -231,7 +240,7 @@ export class ContactsView extends ItemView {
     const newBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-view-header-btn clickable-icon` });
     setIcon(newBtn, "user-plus");
     newBtn.setAttribute("aria-label", "New contact");
-    newBtn.addEventListener("click", () => new NewContactModal(this.plugin).open());
+    newBtn.addEventListener("click", () => new NewContactNoteModal(this.plugin).open());
 
     /* Search Button */
     const searchBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-view-header-btn clickable-icon` });
@@ -248,10 +257,10 @@ export class ContactsView extends ItemView {
     const menuBtn = btnGroup.createEl("button", { cls: `${this.plugin.manifest.id}-view-header-btn clickable-icon` });
     setIcon(menuBtn, "more-vertical");
     menuBtn.setAttribute("aria-label", "View options");
-    menuBtn.addEventListener("click", (evt) => this.openOptionsMenu(evt));
+    menuBtn.addEventListener("click", (e) => this.openOptionsMenu(e));
 
 		//#endregion
-  
+
 		// Search Input
     if (this.showSearch) {
       const searchInput = container.createEl("input", {
@@ -267,8 +276,9 @@ export class ContactsView extends ItemView {
     }
 
     /* Alphabet Filter Bar */
-    const alphaBar = container.createDiv({ cls: `nav-header ${this.plugin.manifest.id}-view-alpha-bar` });
-    const alphaBtns = alphaBar.createDiv({ cls: "nav-buttons-container" });
+		container.createEl("hr");
+    const alphaBar = container.createDiv({ cls: `${this.plugin.manifest.id}-view-alpha-bar` });
+    const alphaBtns = alphaBar.createDiv({ cls: `${this.plugin.manifest.id}-view-alpha-btns` });
     for (const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
       const btn = alphaBtns.createDiv({ cls: `clickable-icon ${this.plugin.manifest.id}-view-alpha-btn` });
       btn.setText(letter);
@@ -278,6 +288,7 @@ export class ContactsView extends ItemView {
         this.render();
       });
     }
+		container.createEl("hr");
 
     this.renderCards();
   }
@@ -292,21 +303,24 @@ export class ContactsView extends ItemView {
     const query = this.searchQuery.toLowerCase().trim();
     const letter = this.letterFilter;
 
-		/* Apply view filter */
+		/* Apply view filters */
+
     const viewFilters = this.plugin.configuration.viewFilters.filter(
       (f) => f.property.trim() !== ""
     );
 
+		// Run through filters and sort
     const filtered = [...this.contacts.values()]
       .filter((contact) => {
         if (viewFilters.some((f) => !matchesFilter(contact.rawFrontmatter, f))) return false;
         if (letter && !contact.lastName.toUpperCase().startsWith(letter)) return false;
         if (!query) return true;
-        return [contact.firstName, contact.lastName, contact.middleName, contact.resolvedDisplayName(false)]
+        return [contact.firstName, contact.lastName, contact.middleName, contact.displayName]
           .some((v) => v.toLowerCase().includes(query));
       })
-      .sort((a, b) => a.sortKey.localeCompare(b.sortKey));
+      .sort(compareContacts);
 
+		// Show empty message if no contacts
     if (filtered.length === 0) {
       container.createEl("p", {
         cls: `${this.plugin.manifest.id}-empty`,
@@ -322,7 +336,7 @@ export class ContactsView extends ItemView {
 
 		// Build contact cards
     for (const contact of filtered) {
-      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: showDetails, lastNameFirstOverride: lastNameFirst });
+      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: showDetails, lastNameFirst: lastNameFirst });
     }
   }
 }
@@ -330,6 +344,16 @@ export class ContactsView extends ItemView {
 //#endregion
 
 //#region Utilities
+
+function compareContacts(a: Contact, b: Contact): number {
+  const aValid = !!(a.firstName && a.lastName);
+  const bValid = !!(b.firstName && b.lastName);
+  if (aValid !== bValid) return aValid ? -1 : 1;
+  if (!aValid) return 0;
+  return `${a.lastName} ${a.firstName}`
+    .toLowerCase()
+    .localeCompare(`${b.lastName} ${b.firstName}`.toLowerCase());
+}
 
 function matchesFilter(fm: Record<string, unknown>, filter: FrontmatterFilter): boolean {
   const raw = fm[filter.property];

@@ -1,11 +1,27 @@
-import { 
-  App, 
-  setIcon, 
-  TFile 
+import {
+  App,
+  setIcon,
+  TFile
 } from "obsidian";
-import { Contact } from "./Contact";
+import { Contact, SocialEntry } from "./Contact";
 
 //#region Constants
+
+const SOCIAL_BASE_URLS: Record<string, string> = {
+  twitter: "https://twitter.com",
+  instagram: "https://instagram.com",
+  linkedin: "https://linkedin.com",
+  github: "https://github.com",
+  facebook: "https://facebook.com",
+  youtube: "https://youtube.com",
+  tiktok: "https://tiktok.com",
+  bluesky: "https://bsky.app",
+  reddit: "https://reddit.com",
+  telegram: "https://t.me",
+  twitch: "https://twitch.tv",
+  snapchat: "https://snapchat.com",
+  pinterest: "https://pinterest.com"
+};
 
 const SOCIAL_SVG_PATHS: Record<string, string> = {
   twitter: "M21.543 7.104c.015.211.015.423.015.636 0 6.507-4.954 14.01-14.01 14.01v-.003A13.94 13.94 0 0 1 0 19.539a9.88 9.88 0 0 0 7.287-2.041 4.93 4.93 0 0 1-4.6-3.42 4.916 4.916 0 0 0 2.223-.084A4.926 4.926 0 0 1 .96 9.167v-.062a4.887 4.887 0 0 0 2.235.616A4.928 4.928 0 0 1 1.67 3.148 13.98 13.98 0 0 0 11.82 8.292a4.929 4.929 0 0 1 8.39-4.49 9.868 9.868 0 0 0 3.128-1.196 4.941 4.941 0 0 1-2.165 2.724A9.828 9.828 0 0 0 24 4.555a10.019 10.019 0 0 1-2.457 2.549z",
@@ -32,7 +48,7 @@ interface ContactCardOptions {
   condensed?: boolean;
   clickable?: boolean;
   showDetails?: boolean;
-  lastNameFirstOverride?: boolean;
+  lastNameFirst?: boolean;
 }
 
 //#endregion
@@ -46,11 +62,12 @@ export function buildContactCard(
   contact: Contact,
   options: ContactCardOptions = {}
 ) {
-  const { condensed = false, clickable = false, showDetails = true, lastNameFirstOverride = false } = options;
-  const displayName = contact.resolvedDisplayName(lastNameFirstOverride ?? false);
+  const { condensed = false, clickable = false, showDetails = true, lastNameFirst: lastNameFirst = false } = options;
+  const displayName = resolveDisplayName(contact, lastNameFirst);
 
   const card = container.createDiv({ cls: `${pluginId}-card` });
 
+	// Enable opening note from card, if set
   if (clickable) {
     card.addClass("is-clickable");
     card.addEventListener("click", () => {
@@ -105,7 +122,7 @@ export function buildContactCard(
   /* Details: Socials, Emails, and Phones */
   if (!showDetails) return card;
 
-  if (contact.emails.length > 0 || contact.phones.length > 0 || contact.socials.length > 0) {
+  if (contact.emails.length > 0 || contact.phoneNumbers.length > 0 || contact.socials.length > 0) {
     const detailsEl = card.createDiv({ cls: `${pluginId}-card-details` });
 
     // Socials
@@ -121,7 +138,7 @@ export function buildContactCard(
         } else {
           setIcon(iconEl, "link");
         }
-        const url = social.url;
+        const url = getSocialUrl(social);
         if (url) {
           row.createEl("a", { cls: `${pluginId}-card-detail-value`, text: social.handle, href: url });
         } else {
@@ -141,10 +158,10 @@ export function buildContactCard(
       }
     }
 
-    // Phones
-    if (contact.phones.length > 0) {
+    // Phone Numbers
+    if (contact.phoneNumbers.length > 0) {
       const phonesEl = detailsEl.createDiv({ cls: `${pluginId}-card-phones` });
-      for (const phone of contact.phones) {
+      for (const phone of contact.phoneNumbers) {
         const row = phonesEl.createDiv({ cls: `${pluginId}-card-detail-row` });
         const phoneIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
         setIcon(phoneIcon, "phone");
@@ -162,8 +179,40 @@ export function buildContactCard(
 
 //#region Utilities
 
+function resolveDisplayName(contact: Contact, lastNameFirst: boolean): string {
+  if (lastNameFirst) {
+    return [contact.lastName + ",", contact.firstName, contact.middleName].filter(Boolean).join(" ");
+  }
+  if (contact.displayName) return contact.displayName;
+  return [contact.firstName, contact.middleName, contact.lastName].filter(Boolean).join(" ");
+}
+
 function getSocialIcon(name: string): string | null {
   return SOCIAL_SVG_PATHS[name] ?? null;
+}
+
+function getSocialUrl(social: SocialEntry): string | null {
+  const base = SOCIAL_BASE_URLS[social.name];
+  if (!base) return null;
+  const handle = social.handle.replace(/^@/, "");
+  switch (social.name) {
+    case "twitter":
+    case "instagram":
+    case "github":
+    case "facebook":
+    case "telegram":
+    case "twitch":
+    case "pinterest":
+      return `${base}/${handle}`;
+    case "youtube":
+    case "tiktok":
+      return `${base}/@${handle}`;
+    case "linkedin": return `${base}/in/${handle}`;
+    case "bluesky": return `${base}/profile/${handle}`;
+    case "reddit": return `${base}/user/${handle}`;
+    case "snapchat": return `${base}/add/${handle}`;
+    default: return null;
+  }
 }
 
 //#endregion

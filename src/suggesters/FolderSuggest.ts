@@ -4,11 +4,12 @@ import {
 	TFolder 
 } from "obsidian";
 
-/* Attaches an autocomplete dropdown to a folder-path text input. Users can
-   freely type a path or pick from the suggestion list. Matches existing
-   folders by case-insensitive substring */
 export class FolderSuggest extends AbstractInputSuggest<string> {
-  constructor(app: App, private inputEl: HTMLInputElement) {
+  constructor(
+    app: App,
+    private inputEl: HTMLInputElement,
+    private excludeRoot = false,
+  ) {
     super(app, inputEl);
   }
 
@@ -16,7 +17,10 @@ export class FolderSuggest extends AbstractInputSuggest<string> {
     const q = query.toLowerCase();
     const out: string[] = [];
     const collect = (folder: TFolder) => {
-      if (folder.path.toLowerCase().includes(q)) out.push(folder.path);
+      const isRoot = folder.path === "" || folder.path === "/";
+      if (!(isRoot && this.excludeRoot) && folder.path.toLowerCase().includes(q)) {
+        out.push(folder.path);
+      }
       for (const child of folder.children) {
         if (child instanceof TFolder) collect(child);
       }

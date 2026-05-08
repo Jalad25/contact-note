@@ -1,4 +1,7 @@
-import { Modal, Setting } from "obsidian";
+import { 
+	Modal, 
+	Setting 
+} from "obsidian";
 import ContactNotePlugin from "../main";
 import { FrontmatterFilter } from "../views/ContactsView";
 
@@ -24,8 +27,7 @@ export class EditViewFilterModal extends Modal {
       .addButton((btn) =>
         btn.setButtonText("Add filter condition").onClick(async () => {
           this.plugin.configuration.viewFilters.push({ property: "", operator: "contains", value: "" });
-          await this.plugin.saveSettings();
-          this.plugin.refreshContactsView();
+          await this.plugin.saveConfiguration();
           this.renderRows(listEl);
         }),
       );
@@ -39,7 +41,7 @@ export class EditViewFilterModal extends Modal {
 
     if (cleaned.length !== this.plugin.configuration.viewFilters.length) {
       this.plugin.configuration.viewFilters = cleaned;
-      void this.plugin.saveSettings().then(() => this.plugin.refreshContactsView());
+      void this.plugin.saveConfiguration();
     }
 
     this.contentEl.empty();
@@ -59,8 +61,7 @@ export class EditViewFilterModal extends Modal {
             .setValue(filter.property)
             .onChange(async (value) => {
               filters[i].property = value;
-              await this.plugin.saveSettings();
-              this.plugin.refreshContactsView();
+              await this.plugin.saveConfiguration();
             }),
         )
         .addDropdown((dd) =>
@@ -76,8 +77,7 @@ export class EditViewFilterModal extends Modal {
               if (NO_VALUE_OPERATORS.includes(filters[i].operator)) {
                 filters[i].value = "";
               }
-              await this.plugin.saveSettings();
-              this.plugin.refreshContactsView();
+              await this.plugin.saveConfiguration();
               this.renderRows(containerEl);
             }),
         );
@@ -89,8 +89,7 @@ export class EditViewFilterModal extends Modal {
             .setValue(filter.value)
             .onChange(async (value) => {
               filters[i].value = value;
-              await this.plugin.saveSettings();
-              this.plugin.refreshContactsView();
+              await this.plugin.saveConfiguration();
             }),
         );
       }
@@ -101,8 +100,7 @@ export class EditViewFilterModal extends Modal {
           .setTooltip("Remove filter")
           .onClick(async () => {
             filters.splice(i, 1);
-            await this.plugin.saveSettings();
-            this.plugin.refreshContactsView();
+            await this.plugin.saveConfiguration();
             this.renderRows(containerEl);
           }),
       );
