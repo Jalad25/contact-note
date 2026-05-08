@@ -13,7 +13,7 @@ import { buildContactCard } from "./ContactCard";
 import { NewContactsBaseModal } from "./modals/NewContactsBaseModal";
 import { AppendContactsBaseViewModal } from "./modals/AppendContactsBaseViewModal";
 import { ContactsBasesView } from "./views/ContactsBasesView";
-import { migrate } from "./SchemaMigration";
+import { migrate } from "./ConfigurationSchemaMigration";
 
 //#region Constants
 
