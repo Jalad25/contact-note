@@ -20,7 +20,7 @@
 
 An [Obsidian](https://obsidian.md/) plugin that turns frontmatter in notes designated as contacts into visual contact cards. Browse them with a built-in searchable, filterable view or surface them through an Obsidian Bases view that adds sorting, grouping, and extensive filtering and search.
 
-<video src="assets/Preview.mp4" controls></video>
+[assets/Preview.mp4](https://github.com/user-attachments/assets/a3506e20-d264-4104-b4a7-2968fa52d965)
 
 ## Features
 
