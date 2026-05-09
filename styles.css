@@ -18,18 +18,17 @@
 
 /* Validation Error */
 .contact-note-card-error {
+	width: 100%;
   padding: 12px 16px;
   border: 1px solid var(--color-red);
   border-radius: var(--radius-m, 8px);
   background-color: var(--background-modifier-error);
-  color: var(--text-normal);
   margin-bottom: 16px;
 }
 
 .contact-note-card-error p {
   margin: 6px 0 0;
   font-size: var(--font-ui-small);
-  color: var(--text-normal);
 }
 
 /* Photo */
@@ -61,7 +60,6 @@
 .contact-note-card-name {
   font-size: 1.7rem;
   font-weight: var(--font-semibold);
-  color: var(--text-normal);
   line-height: 1.3;
 }
 
@@ -76,7 +74,6 @@
 .contact-note-card-company {
   font-size: 1.1rem;
   font-weight: var(--font-medium);
-  color: var(--text-normal);
   line-height: 1.3;
 }
 
@@ -88,7 +85,6 @@
   gap: 6px 32px;
   padding-top: 4px;
   border-top: 1px solid var(--background-modifier-border);
-  margin-top: 4px;
 }
 
 .contact-note-card-detail-row {
@@ -111,7 +107,6 @@
 
 .contact-note-card-detail-value {
   font-size: var(--font-ui-small);
-  color: var(--text-accent);
   text-decoration: none;
 }
 
@@ -119,9 +114,10 @@
   text-decoration: underline;
 }
 
-/* Emails and Phones */
+/* Socials, Emails, and Phone Numbers */
 .contact-note-card-emails,
-.contact-note-card-phones {
+.contact-note-card-phones,
+.contact-note-card-socials {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -132,14 +128,8 @@
   fill: currentColor;
 }
 
-/* Contact Note */
-.contact-note .contact-note-card {
-  justify-self: center;
-}
-
 /* Bases and View */
 
-/* Contact Card Normal */
 .contact-note-view .contact-note-card:hover,
 .contact-note-bases-view .contact-note-card:hover {
   background-color: var(--background-modifier-hover);
@@ -147,6 +137,7 @@
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
+/* Contact Card Normal */
 .contact-note-view .contact-note-card,
 .contact-note-bases-view .contact-note-card {
   gap: 12px;
@@ -216,11 +207,6 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.contact-note-view-title {
-  margin: 0;
 }
 
 .contact-note-view-header-btns {
@@ -230,28 +216,9 @@
 }
 
 .contact-note-view-header-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 28px;
   height: 28px;
-  padding: 0;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: var(--radius-s, 4px);
-  background: transparent;
-  color: var(--text-muted);
   cursor: pointer;
-}
-
-.contact-note-view-header-btn:hover {
-  background: var(--background-modifier-hover);
-  color: var(--text-normal);
-}
-
-.contact-note-view-header-btn.is-active {
-  background: var(--interactive-accent);
-  border-color: var(--interactive-accent);
-  color: var(--text-on-accent);
 }
 
 .contact-note-view-header-btn svg {
@@ -269,33 +236,12 @@
 }
 
 .contact-note-view-alpha-btn {
-  height: 24px;
-  padding: 0 4px;
   font-size: var(--font-ui-smaller);
-  border-radius: var(--radius-s, 4px);
-}
-
-.contact-note-view-alpha-btn.is-active {
-  background: var(--interactive-accent) !important;
-  color: var(--text-on-accent) !important;
 }
 
 /* Search */
 .contact-note-view-search {
   width: 100%;
-  margin-bottom: 16px;
-  padding: 6px 10px;
-  border: 1px solid var(--background-modifier-border);
-  border-radius: var(--radius-s, 4px);
-  background: var(--background-primary);
-  color: var(--text-normal);
-  font-size: var(--font-ui-small);
-  box-sizing: border-box;
-}
-
-.contact-note-view-search:focus {
-  outline: none;
-  border-color: var(--interactive-accent);
 }
 
 /* #endregion */
@@ -336,6 +282,11 @@
 	font-weight: var(--input-font-weight);
 	margin: 2px;
 	font-size: var(--font-ui-small);
+}
+
+.contact-note-bases-view-new-btn svg {
+	color: var(--text-muted);
+	opacity: 1;
 }
 
 .contact-note-bases-view-new-btn .text-button-label {

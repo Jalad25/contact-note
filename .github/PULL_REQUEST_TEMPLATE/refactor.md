@@ -33,5 +33,6 @@
 - [ ] `npm run lint` passes.
 - [ ] `npm run build` passes with no TypeScript errors.
 - [ ] I have tested the affected areas in a local vault to confirm no regression.
+- [ ] I have tested in both the sidebar contacts view and a contacts base view (`.base` file), if the change touches shared rendering or contact data.
 - [ ] I have tested the affected UI in both light and dark mode (if any styles or DOM structure were touched).
 - [ ] I have tested the affected behavior on both the Obsidian desktop application and the Obsidian mobile app (if relevant).

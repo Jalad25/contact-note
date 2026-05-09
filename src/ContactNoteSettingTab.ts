@@ -101,7 +101,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
     }
 
     /* Contacts View Settings */
-    new Setting(containerEl).setName("Contacts view in panel").setHeading();
+    new Setting(containerEl).setName("Contacts view in a panel").setHeading();
 
 		// viewName
     new Setting(containerEl)

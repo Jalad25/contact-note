@@ -149,7 +149,7 @@ export function buildContactCard(
 
     // Emails
     if (contact.emails.length > 0) {
-      const emailsEl = detailsEl.createDiv({ cls: `${pluginId}-emails` });
+      const emailsEl = detailsEl.createDiv({ cls: `${pluginId}-card-emails` });
       for (const email of contact.emails) {
         const row = emailsEl.createDiv({ cls: `${pluginId}-card-detail-row` });
         const emailIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });

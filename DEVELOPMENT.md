@@ -6,7 +6,7 @@ This document outlines how to set up a local development environment and the int
 
 - **[Node.js](https://nodejs.org/)**: v22 or later recommended
 - **[Git](https://git-scm.com/)**: latest version
-- **[Obsidian](https://obsidian.md/)**: 1.11.4 for the API's `Bases` and a local vault for testing. Older versions will not load the plugin.
+- **[Obsidian](https://obsidian.md/)**: 1.12.7 for the API's `Bases` and a local vault for testing. Older versions will not load the plugin.
 
 ## Getting Started
 
@@ -73,26 +73,30 @@ The files required for a release are:
 ```
 contact-note/
 ├── src/
-│   ├── main.ts                          # Plugin entry point, configuration, file events, view registration
-│   ├── Contact.ts                       # Contact data model
-│   ├── ContactNoteCard.ts               # Shared contact card builder (used by reading view, contacts view, and bases view)
-│   ├── ContactNoteSettingTab.ts         # Settings tab UI; owns ContactNoteSettings and DEFAULT_SETTINGS
-│   ├── SchemaMigration.ts               # data.json migrations
+│   ├── main.ts                                # Plugin entry point, configuration, file events, view registration, ribbon, commands
+│   ├── Contact.ts                             # Runtime contact model (parsed frontmatter)
+│   ├── ContactNote.ts                         # On-disk contact note schema: BUILTIN_FIELDS and the frontmatter template builder
+│   ├── ContactCard.ts                         # Shared contact card builder (used by reading view, panel view, and bases view)
+│   ├── ContactsBase.ts                        # `.base` file builder and append-view mutator; owns DEFAULT_PROPERTY_ORDER
+│   ├── ContactNoteSettingTab.ts               # Settings tab UI; owns ContactNoteSettings and DEFAULT_SETTINGS
+│   ├── ConfigurationSchemaMigration.ts        # data.json migrations
 │   ├── views/
-│   │   ├── ContactsView.ts              # Contacts view (ItemView); owns ContactsViewOptions and DEFAULT_VIEW_OPTIONS
-│   │   └── ContactsBasesView.ts         # Bases-integrated contacts base view (BasesView)
+│   │   ├── ContactsView.ts                    # Contacts view in a sidebar panel (ItemView); owns ContactsViewOptions and DEFAULT_VIEW_OPTIONS
+│   │   └── ContactsBasesView.ts               # Contacts view in a base (BasesView)
 │   ├── modals/
-│   │   ├── NewContactModal.ts           # "New contact" dialog
-│   │   └── EditViewFilterModal.ts       # Contacts view filter editor
+│   │   ├── NewContactNoteModal.ts             # "New contact" dialog
+│   │   ├── NewContactsBaseModal.ts            # "New base with contacts view" dialog
+│   │   ├── AppendContactsBaseViewModal.ts     # "Add contacts view to base" dialog
+│   │   └── EditViewFilterModal.ts             # Panel view filter editor
 │   └── suggesters/
-│       └── FolderSuggest.ts             # Folder-path autocompletion for settings inputs
-├── styles.css                           # Plugin styles
-├── manifest.json                        # Obsidian plugin manifest
-├── versions.json                        # Plugin/Obsidian version map
-├── package.json                         # npm manifest and scripts
-├── tsconfig.json                        # TypeScript config
-├── esbuild.config.mjs                   # esbuild config
-└── eslint.config.mjs                    # ESLint config
+│       └── FolderSuggest.ts                   # Folder-path autocompletion for settings inputs
+├── styles.css                                 # Plugin styles
+├── manifest.json                              # Obsidian plugin manifest
+├── versions.json                              # Plugin/Obsidian version map
+├── package.json                               # npm manifest and scripts
+├── tsconfig.json                              # TypeScript config
+├── esbuild.config.mjs                         # esbuild config
+└── eslint.config.mjs                          # ESLint config
 ```
 
 ## Configuration Shape
@@ -102,31 +106,42 @@ User configuration is stored in `data.json` and loaded into `plugin.configuratio
 ```ts
 type ContactNoteConfiguration =
   { schemaVersion: number }
-  & ContactNoteSettings   // from ContactNoteSettingTab.ts — fields edited in the settings tab
-  & ContactsViewOptions;  // from views/ContactsView.ts — per-view options edited from the ⋮ menu
+  & ContactNoteSettings   // from ContactNoteSettingTab.ts, fields edited in the settings tab
+  & ContactsViewOptions;  // from views/ContactsView.ts, per-view options edited from the ⋮ menu
 ```
 
 `DEFAULT_CONFIGURATION` is the merged default of the two sub-defaults plus `schemaVersion`. `loadSettings()` runs the saved object through `migrate(...)` and then strips any keys not in `DEFAULT_CONFIGURATION`, so removed fields self-clean from `data.json` on the next save.
 
-## Contacts Base View and Sidebar View
+## Contacts Views in a (Sidebar) Panel or Base
 
-The plugin registers two views under the same view type `CONTACT_CARDS_LIST_VIEW_TYPE`:
+The plugin registers two views under the same view type `CONTACT_NOTE_LIST_VIEW_TYPE`:
 
-- `ContactsView` via `registerView`
-- `ContactsBasesView` via `registerBasesView`
+- `ContactsView` (the contacts view in a sidebar panel) via `registerView`
+- `ContactsBasesView` (the contacts view in a base) via `registerBasesView`
 
 A few things worth knowing before changing the bases view:
 
 - **Per-base options.** The `static getViewOptions(config)` method returns the toggle group rendered in Bases' options panel. Toggle values are read at render time via `this.config.get(...)` in `onDataUpdated`.
 - **Property reads.** Scalar and list frontmatter fields are read through Bases' query API (`entry.getValue("note.<field>")`). The `socials` field is read directly from `metadataCache` because Bases' `ObjectValue` has no public key-enumeration API.
-- **Injected New button.** Bases' native New button creates a file at the vault root using only the visible columns' frontmatter, which is the wrong location and shape for a contact. It cannot be intercepted, so the native button is hidden via CSS scoped to the plugin's bases view, and `injectNewButton()` adds a replacement that opens `NewContactModal`.
-- **Default property order.** On first render of a fresh view, `ContactsBasesView` seeds the property order with `firstName`, `lastName`, `displayName` so the column picker is populated. Once the user customises the order, the seed is not reapplied.
+- **Injected New button.** Bases' native New button creates a file at the vault root using only the visible columns' frontmatter, which is the wrong location and shape for a contact. It cannot be intercepted, so the native button is hidden via CSS scoped to the plugin's bases view, and `injectNewButton()` adds a replacement that opens `NewContactNoteModal`.
+- **Default property order.** On first render of a fresh view, `ContactsBasesView` seeds the property order with `DEFAULT_PROPERTY_ORDER` from [`ContactsBase.ts`](src/ContactsBase.ts) (`firstName`, `middleName`, `lastName`, `displayName`) so the column picker is populated. Once the user customises the order, the seed is not reapplied.
 
-The **Create new base with Contacts base view** command (and the matching `book-plus` ribbon icon) generates a `.base` YAML file pre-configured with the contact filter, ordering, and default toggle values. The file location and base-view name are driven by the `baseFolderPath` and `defaultBaseViewName` settings.
+## Base File Generation and Mutation
+
+[`ContactsBase.ts`](src/ContactsBase.ts) is the single source for `.base` YAML emitted or modified by the plugin:
+
+- `buildContactsBaseFile(...)` produces the YAML written by **Create new base with contacts view** (driven by `NewContactsBaseModal`). The `isContact` formula sits at the top level; the `filters.and: [- formula.isContact]` block is written *inside the view* so multiple views in a base can opt in or out independently.
+- `appendContactsViewToBase(...)` powers **Add contacts view to base** (driven by `AppendContactsBaseViewModal`). It appends a new view block to an existing `.base`, inserts an `isContact` formula if the file doesn't already have one, and reports a `formulaMismatch` when the existing formula doesn't match the current identification settings so the modal can surface a notice.
+
+Both flows take `useFolder`, `folderPath`, `tag`, and the user-entered `viewName` from the modal. The base file folder is taken from the `baseFolderPath` setting; the base file name and view name are entered per-creation in the modal (there is no "default base file/view name" setting).
+
+## Plugin Event Bus
+
+[`main.ts`](src/main.ts) creates a plugin-scoped `Events` instance (`plugin.events`) and `saveConfiguration()` fires `configuration-changed` after every write. `ContactsView` subscribes to that event in `onOpen` and re-initialises its in-memory contacts on each fire, which is how the panel view picks up changes to **Identify contacts by folder / folder path / tag** without requiring the user to reopen it. New listeners that need to respond to settings changes should subscribe to the same event rather than polling configuration.
 
 ## Configuration Schema Migrations
 
-Plugin configurations are versioned through [`SchemaMigration.ts`](src/SchemaMigration.ts). The `schemaVersion` field on `ContactNoteConfiguration` records the version of the data on disk, and `CURRENT_SCHEMA_VERSION` (defined in [`main.ts`](src/main.ts)) records the version the running code expects.
+Plugin configurations are versioned through [`ConfigurationSchemaMigration.ts`](src/ConfigurationSchemaMigration.ts). The `schemaVersion` field on `ContactNoteConfiguration` records the version of the data on disk, and `CURRENT_SCHEMA_VERSION` (defined in [`main.ts`](src/main.ts)) records the version the running code expects.
 
 On every plugin load, `loadSettings()` runs the user's saved data through `migrate(...)`, which steps the data forward one version at a time using the entries in the `MIGRATIONS` array. If anything was migrated, the upgraded settings are written back to disk so the user only pays the migration cost once.
 
@@ -137,11 +152,11 @@ On every plugin load, `loadSettings()` runs the user's saved data through `migra
 When a configuration change would break existing user data (renamed field, restructured value, removed field with a non-default replacement, etc.):
 
 1. **Bump `CURRENT_SCHEMA_VERSION`** in [`main.ts`](src/main.ts) by one.
-2. **Add a step function** named `migrate_N_to_N+1(raw)` under the *Migration Step Functions* region of [`SchemaMigration.ts`](src/SchemaMigration.ts). It receives the previous-version shape as `any` and returns `Partial<ContactNoteConfiguration> & { schemaVersion: N+1 }`.
+2. **Add a step function** named `migrate_N_to_N+1(raw)` under the *Migration Step Functions* region of [`ConfigurationSchemaMigration.ts`](src/ConfigurationSchemaMigration.ts). It receives the previous-version shape as `any` and returns `Partial<ContactNoteConfiguration> & { schemaVersion: N+1 }`.
 3. **Register it** by adding `{ from: N, to: N+1, apply: migrate_N_to_N+1 }` to the `MIGRATIONS` array.
 4. **Update the relevant type and default** to reflect the new shape:
    - For settings-tab fields, edit `ContactNoteSettings` and `DEFAULT_SETTINGS` in [`ContactNoteSettingTab.ts`](src/ContactNoteSettingTab.ts).
-   - For per-view options surfaced through the `⋮` menu, edit `ContactsViewOptions` and `DEFAULT_VIEW_OPTIONS` in [`views/ContactsView.ts`](src/views/ContactsView.ts).
+   - For sidebar panel view options, edit `ContactsViewOptions` and `DEFAULT_VIEW_OPTIONS` in [`views/ContactsView.ts`](src/views/ContactsView.ts).
 
 > [!IMPORTANT]
 > Never edit a migration step after it has shipped. Users who already ran the old version of the step would silently desync from those who ran the new version. If a step needs correcting, write a *new* step that fixes the bad data forward.
@@ -153,7 +168,7 @@ Currently, the project relies on manual testing within an Obsidian vault. When m
 - The plugin loads without errors (check the developer console with `Ctrl+Shift+I` (Windows) or `Command+Option+I` (macOS)).
 - Existing contact notes still render correctly.
 - Configuration persist across reloads.
-- The Contacts view updates correctly when notes are added, modified, or deleted.
+- The Contacts view in a panel or base updates correctly when notes are added, modified, or deleted.
 - A Contacts base view (`.base` file using the plugin's view) renders entries, responds to its `Display` toggles, and the injected **New** button creates a contact in the configured contacts folder or with the configured tag in the vault's root.
 - Both folder-based and tag-based contact identification work.
 - Auto-rename collision handling: creating a second contact with the same `First [Middle] Last` produces `First [Middle] Last 1.md` and surfaces a notice.
@@ -206,5 +221,6 @@ If the workflows are unavailable, the release can be performed manually:
 
 - [Obsidian Plugin Developer Docs](https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin)
 - [Obsidian API reference](https://github.com/obsidianmd/obsidian-api)
+- [Obsidian Help Documents](https://obsidian.md/help/)
 - [Obsidian Sample Plugin](https://github.com/obsidianmd/obsidian-sample-plugin)
 - [eslint-plugin-obsidianmd](https://github.com/obsidianmd/eslint-plugin)

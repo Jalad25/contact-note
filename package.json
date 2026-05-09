@@ -1,7 +1,7 @@
 {
   "name": "contact-note",
   "version": "1.1.2",
-  "description": "Turn frontmatter in notes designated as contacts into visual contact cards. Browse them with a built-in searchable, filterable view or surface them through an Obsidian Bases view that adds sorting, grouping, and extensive filtering.",
+  "description": "Turn frontmatter in notes designated as contacts into visual contact cards. Browse them with a built-in searchable, filterable view or surface them through an Obsidian Bases view that adds sorting, grouping, and extensive filtering and searching.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

@@ -16,6 +16,7 @@ Before opening a new bug report:
 - Make sure you are running the latest version of the plugin and the minimum required version of Obsidian.
 - Try to reproduce the bug in a clean vault with other plugins disabled or removed.
 - Try to reproduce the bug in **both light and dark mode**, since some issues are theme-specific.
+- Try to reproduce the bug in the **Obsidian desktop application and the Obsidian mobile app**, since some issues are device-specific.
 
 ## Suggesting Enhancements
 
@@ -43,7 +44,7 @@ For usage questions, configuration help, or sharing how you use the plugin, plea
 4. **Add a schema migration** if your change alters the on-disk shape of `ContactNoteConfiguration` (renamed/removed fields, restructured values). See [Configuration Schema Migrations](DEVELOPMENT.md#configuration-schema-migrations).
 5. **Lint your code** by running `npm run lint`.
 6. **Build the project** with `npm run build` to ensure there are no TypeScript errors.
-7. **Test your changes** in a local Obsidian vault. If your change touches the shared card renderer or contact data model, verify both the **Contacts view** (sidebar) and a **Contacts base view** (`.base` file).
+7. **Test your changes** in a local Obsidian vault. If your change touches the shared card renderer or contact data model, verify both the **ContactsView** (sidebar panel) and **ContactsBasesView** (`.base` file).
 8. **Update documentation** (README or DEVELOPMENT.md) if your changes affect user-facing behavior or development workflow.
 
 ### Creating a Pull Request
