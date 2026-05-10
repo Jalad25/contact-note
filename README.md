@@ -101,15 +101,15 @@ All fields are optional except `firstName` and `lastName`.
 
 | Field | Type | Description |
 |---|---|---|
-| `firstName` | string | **Required.** The contact's first name. |
-| `lastName` | string | **Required.** The contact's last name. |
-| `middleName` | string | Middle name or initial. Used in the display name and file name. |
-| `displayName` | string | Overrides the resolved display name everywhere if set. |
-| `title` | string | Job title or role. |
-| `company` | string | Company or organization name. |
-| `emails` | string or list | One or more email addresses. |
+| `firstName` | text | **Required.** The contact's first name. |
+| `lastName` | text | **Required.** The contact's last name. |
+| `middleName` | text | Middle name or initial. Used in the display name and file name. |
+| `displayName` | text | Overrides the resolved display name everywhere if set. |
+| `title` | text | Job title or role. |
+| `company` | text | Company or organization name. |
+| `emails` | text or list | One or more email addresses. |
 | `phoneNumbers` | string or list | One or more phone numbers. |
-| `photo` | string | Vault path to a photo file (e.g. `Attachments/jane.jpg`). |
+| `photo` | text | Vault path to a photo file (e.g. `Attachments/jane.jpg`). |
 | `aliases` | list | Obsidian aliases for the note. Pre-populated with `firstName` on creation when using the new contact dialog. Not used directly by plugin. |
 | `socials` | list | List of social media handles. See [Socials](#socials) below. |
 
