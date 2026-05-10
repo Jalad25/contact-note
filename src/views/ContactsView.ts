@@ -96,9 +96,9 @@ export class ContactsView extends ItemView {
 
         const existing = this.contacts.get(file.path);
         if (existing) {
-          existing.update(fm);
+          existing.update(fm, this.plugin.contactNote);
         } else {
-          this.contacts.set(file.path, Contact.fromCache(file, fm));
+          this.contacts.set(file.path, Contact.fromCache(file, fm, this.plugin.contactNote));
         }
         this.renderCards();
       })
@@ -118,7 +118,7 @@ export class ContactsView extends ItemView {
         if (!(file instanceof TFile) || !this.plugin.isContactFile(file)) return;
         const fm = this.app.metadataCache.getFileCache(file)?.frontmatter;
         if (!fm) return;
-        this.contacts.set(file.path, Contact.fromCache(file, fm));
+        this.contacts.set(file.path, Contact.fromCache(file, fm, this.plugin.contactNote));
         this.renderCards();
       })
     );
@@ -205,7 +205,7 @@ export class ContactsView extends ItemView {
       if (!this.plugin.isContactFile(file)) continue;
       const fm = this.app.metadataCache.getFileCache(file)?.frontmatter;
       if (!fm) continue;
-      this.contacts.set(file.path, Contact.fromCache(file, fm));
+      this.contacts.set(file.path, Contact.fromCache(file, fm, this.plugin.contactNote));
     }
   }
 
@@ -336,7 +336,7 @@ export class ContactsView extends ItemView {
 
 		// Build contact cards
     for (const contact of filtered) {
-      buildContactCard(this.plugin.manifest.id, this.plugin.app, container, contact, { condensed, clickable: true, showDetails: showDetails, lastNameFirst: lastNameFirst });
+      buildContactCard(this.plugin.manifest.id, this.plugin.app, this.plugin.contactNote, container, contact, { condensed, clickable: true, showDetails: showDetails, lastNameFirst: lastNameFirst });
     }
   }
 }

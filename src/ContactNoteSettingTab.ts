@@ -14,6 +14,7 @@ export interface ContactNoteSettings {
   tag: string;
   viewName: string;
   baseFolderPath: string;
+  propertyOverrides: Record<string, string>;
 }
 
 //#endregion
@@ -25,7 +26,8 @@ export const DEFAULT_SETTINGS: ContactNoteSettings = {
   folderPath: "Contacts",
   tag: "contact",
   viewName: "Contacts",
-  baseFolderPath: ""
+  baseFolderPath: "",
+  propertyOverrides: {}
 };
 
 //#endregion
@@ -134,6 +136,35 @@ export class ContactNoteSettingTab extends PluginSettingTab {
           });
         new FolderSuggest(this.app, text.inputEl);
       });
+
+    /* Frontmatter Properties Customization */
+    new Setting(containerEl).setName("Frontmatter properties customization").setHeading();
+
+    containerEl.createEl("p", {
+      text:
+        "Override the frontmatter property names this plugin reads from and writes to. Leave a field blank to use the default. Renaming a property does not rewrite existing notes or base files. Existing base files that reference old property names will need to be updated manually.",
+      cls: "setting-item-description",
+    });
+
+    for (const field of this.plugin.contactNote.getFields()) {
+      if (field.origin !== "builtin") continue;
+      new Setting(containerEl)
+        .setName(field.key)
+        .addText((text) =>
+          text
+            .setPlaceholder(field.key)
+            .setValue(this.plugin.configuration.propertyOverrides[field.key] ?? "")
+            .onChange(async (value) => {
+              const trimmed = value.trim();
+              if (trimmed && trimmed !== field.key) {
+                this.plugin.configuration.propertyOverrides[field.key] = trimmed;
+              } else {
+                delete this.plugin.configuration.propertyOverrides[field.key];
+              }
+              await this.plugin.saveConfiguration();
+            })
+        );
+    }
   }
 }
 

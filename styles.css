@@ -46,6 +46,10 @@
   display: block;
 }
 
+.contact-note-card-photo-default.svg-icon {
+	stroke-width: 1px !important;
+}
+
 /* Info */
 .contact-note-card-info {
   flex: 1;

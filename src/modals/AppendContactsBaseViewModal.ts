@@ -55,7 +55,7 @@ export class AppendContactsBaseViewModal extends Modal {
 
 		// Append contacts base view
     const content = await app.vault.read(this.targetFile);
-    const result = appendContactsViewToBase(content, configuration.useFolder, configuration.folderPath, configuration.tag, viewName);
+    const result = appendContactsViewToBase(content, configuration.useFolder, configuration.folderPath, configuration.tag, viewName, this.plugin.contactNote);
     await app.vault.modify(this.targetFile, result.content);
 
     if (result.formulaMismatch) {

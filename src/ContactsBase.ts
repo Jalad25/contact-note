@@ -1,3 +1,4 @@
+import { ContactNote } from "./ContactNote";
 import { CONTACT_NOTE_LIST_VIEW_TYPE } from "./main";
 
 //#region Types/Objects/Interfaces
@@ -11,16 +12,18 @@ interface AppendViewResult {
 
 //#region Constants
 
-export const DEFAULT_PROPERTY_ORDER = [
-  "note.firstName",
-  "note.middleName",
-  "note.lastName",
-  "note.displayName",
-] as const;
+const DEFAULT_PROPERTY_ORDER_KEYS = ["firstName", "middleName", "lastName", "displayName"] as const;
 
 //#endregion
 
 //#region Builders
+
+export function getDefaultPropertyOrder(contactNote: ContactNote): string[] {
+  return DEFAULT_PROPERTY_ORDER_KEYS.map((key) => {
+    const field = contactNote.getField(key);
+    return `note.${field ? contactNote.getReadKey(field) : key}`;
+  });
+}
 
 function buildIsContactExpression(useFolder: boolean, folderPath: string, tag: string): string {
   return useFolder
@@ -28,7 +31,9 @@ function buildIsContactExpression(useFolder: boolean, folderPath: string, tag: s
     : `file.hasTag("${tag.replace(/^#/, "").replace(/"/g, '\\"')}")`;
 }
 
-function buildContactsBaseViewYaml(viewName: string): string[] {
+function buildContactsBaseViewYaml(viewName: string, contactNote: ContactNote): string[] {
+  const lastNameField = contactNote.getField("lastName");
+  const lastNameKey = lastNameField ? contactNote.getReadKey(lastNameField) : "lastName";
   return [
     `  - type: ${CONTACT_NOTE_LIST_VIEW_TYPE}`,
     `    name: ${viewName}`,
@@ -36,9 +41,9 @@ function buildContactsBaseViewYaml(viewName: string): string[] {
     "      and:",
     "        - formula.isContact",
     "    order:",
-    ...DEFAULT_PROPERTY_ORDER.map((p) => `      - ${p}`),
+    ...getDefaultPropertyOrder(contactNote).map((p) => `      - ${p}`),
     "    sort:",
-    "      - property: note.lastName",
+    `      - property: note.${lastNameKey}`,
     "        direction: ASC",
     "    condensed: true",
     "    lastNameFirst: true",
@@ -49,13 +54,14 @@ function buildContactsBaseViewYaml(viewName: string): string[] {
 export function buildContactsBaseFile(
   useFolder: boolean, folderPath: string, tag: string,
   viewName: string,
+  contactNote: ContactNote,
 ): string {
   const isContactExpr = buildIsContactExpression(useFolder, folderPath, tag);
   return [
     "formulas:",
     `  isContact: ${JSON.stringify(isContactExpr)}`,
     "views:",
-    ...buildContactsBaseViewYaml(viewName),
+    ...buildContactsBaseViewYaml(viewName, contactNote),
     "",
   ].join("\n");
 }
@@ -68,6 +74,7 @@ export function appendContactsViewToBase(
   existingContent: string,
   useFolder: boolean, folderPath: string, tag: string,
   viewName: string,
+  contactNote: ContactNote,
 ): AppendViewResult {
   const expectedExpr = buildIsContactExpression(useFolder, folderPath, tag);
 
@@ -98,7 +105,7 @@ export function appendContactsViewToBase(
      append after the last line; otherwise add a views: section.
      Bases keeps views as a top-level list, and any list-item starting
      with "  - " is treated as the next view */
-  const viewBlock = buildContactsBaseViewYaml(viewName).join("\n");
+  const viewBlock = buildContactsBaseViewYaml(viewName, contactNote).join("\n");
   const viewsHeader = /^views:\s*$/m.exec(updated);
   if (!updated.endsWith("\n")) updated += "\n";
   if (viewsHeader) {

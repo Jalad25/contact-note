@@ -4,6 +4,7 @@ import {
   TFile
 } from "obsidian";
 import { Contact, SocialEntry } from "./Contact";
+import { ContactNote } from "./ContactNote";
 
 //#region Constants
 
@@ -58,6 +59,7 @@ interface ContactCardOptions {
 export function buildContactCard(
   pluginId: string,
   app: App,
+  contactNote: ContactNote,
   container: HTMLElement,
   contact: Contact,
   options: ContactCardOptions = {}
@@ -78,8 +80,10 @@ export function buildContactCard(
 	// If invalid show error anywhere card is rendered
 	if (!contact.isValid) {
 		const missingFields: string[] = [];
-		if (!contact.firstName) missingFields.push("firstName");
-		if (!contact.lastName) missingFields.push("lastName");
+		const firstNameField = contactNote.getField("firstName");
+		const lastNameField = contactNote.getField("lastName");
+		if (!contact.firstName) missingFields.push(firstNameField ? contactNote.getReadKey(firstNameField) : "firstName");
+		if (!contact.lastName) missingFields.push(lastNameField ? contactNote.getReadKey(lastNameField) : "lastName");
 		const errorEl = card.createDiv({ cls: `${pluginId}-card-error` });
 		errorEl.createEl("strong", { text: "Contact note is missing required fields: " });
 		errorEl.createSpan({ text: missingFields.join(", ") });

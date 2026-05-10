@@ -1,5 +1,5 @@
 import { TFile } from "obsidian";
-import { BUILTIN_FIELDS } from "./ContactNote";
+import { ContactNote } from "./ContactNote";
 
 //#region Types/Objects/Interfaces
 
@@ -41,17 +41,18 @@ export class Contact {
     this.rawFrontmatter = {};
   }
 
-  static fromCache(file: TFile, frontmatter: Record<string, unknown>): Contact {
+  static fromCache(file: TFile, frontmatter: Record<string, unknown>, contactNote: ContactNote): Contact {
     const contact = new Contact(file);
-    contact.update(frontmatter);
+    contact.update(frontmatter, contactNote);
     return contact;
   }
 
-  update(frontmatter: Record<string, unknown>): void {
+  update(frontmatter: Record<string, unknown>, contactNote: ContactNote): void {
     this.rawFrontmatter = frontmatter;
 
-    for (const field of BUILTIN_FIELDS) {
-      const raw = frontmatter[field.key];
+    for (const field of contactNote.getFields()) {
+      if (field.kind === "socials") continue;
+      const raw = frontmatter[contactNote.getReadKey(field)];
       if (field.kind === "scalar") {
         (this as unknown as Record<string, string>)[field.key] = trimStr(raw);
       } else {
@@ -60,8 +61,11 @@ export class Contact {
     }
 
     this.socials = [];
-    if (Array.isArray(frontmatter.socials)) {
-      for (const item of frontmatter.socials) {
+    const socialsField = contactNote.getField("socials");
+    const socialsKey = socialsField ? contactNote.getReadKey(socialsField) : "socials";
+    const socialsRaw = frontmatter[socialsKey];
+    if (Array.isArray(socialsRaw)) {
+      for (const item of socialsRaw) {
         if (item && typeof item === "object") {
           for (const [name, handle] of Object.entries(item as Record<string, unknown>)) {
             const h = typeof handle === "string" ? handle.trim() : "";

@@ -91,6 +91,7 @@ export class NewContactsBaseModal extends Modal {
       configuration.folderPath,
       configuration.tag,
       viewName,
+      this.plugin.contactNote,
     );
 
     return app.vault.create(`${folderPrefix}${resolvedFileName}.base`, content);

@@ -13,6 +13,7 @@ import { buildContactCard } from "./ContactCard";
 import { NewContactsBaseModal } from "./modals/NewContactsBaseModal";
 import { AppendContactsBaseViewModal } from "./modals/AppendContactsBaseViewModal";
 import { ContactsBasesView } from "./views/ContactsBasesView";
+import { ContactNote } from "./ContactNote";
 import { migrate } from "./ConfigurationSchemaMigration";
 
 //#region Constants
@@ -33,6 +34,7 @@ export const DEFAULT_CONFIGURATION: ContactNoteConfiguration = {
 
 export default class ContactNotePlugin extends Plugin {
   configuration!: ContactNoteConfiguration;
+  contactNote = new ContactNote();
 	events = new Events();
   private renamingFiles = new Set<string>();
 
@@ -164,8 +166,8 @@ export default class ContactNotePlugin extends Plugin {
       if (!(file instanceof TFile)) return;
       if (!this.isContactFile(file)) return;
       if (!ctx.frontmatter) return;
-      const contact = Contact.fromCache(file, ctx.frontmatter as Record<string, unknown>);
-      buildContactCard(this.manifest.id, this.app, el, contact, { showDetails: true, lastNameFirst: false });
+      const contact = Contact.fromCache(file, ctx.frontmatter as Record<string, unknown>, this.contactNote);
+      buildContactCard(this.manifest.id, this.app, this.contactNote, el, contact, { showDetails: true, lastNameFirst: false });
     });
   }
 
@@ -189,11 +191,13 @@ export default class ContactNotePlugin extends Plugin {
     }
 
     this.configuration = Object.assign({}, DEFAULT_CONFIGURATION, filtered);
+    this.contactNote.applyOverrides(this.configuration.propertyOverrides);
     if (migrated || droppedAny) await this.saveConfiguration();
   }
 
   async saveConfiguration() {
     await this.saveData(this.configuration);
+    this.contactNote.applyOverrides(this.configuration.propertyOverrides);
 
 		//Re-load anything that updates after a change is made
   	this.events.trigger("configuration-changed");
@@ -238,9 +242,16 @@ export default class ContactNotePlugin extends Plugin {
   private async enforceContactFileName(file: TFile, frontmatter: Record<string, unknown> | undefined | null): Promise<void> {
     if (!frontmatter) return;
 
-    const firstName = frontmatter.firstName !== null && typeof frontmatter.firstName === "string" ? String(frontmatter.firstName).trim() : "";
-    const middleName = frontmatter.middleName !== null && typeof frontmatter.middleName === "string" ? String(frontmatter.middleName).trim() : "";
-    const lastName = frontmatter.lastName !== null && typeof frontmatter.lastName === "string" ? String(frontmatter.lastName).trim() : "";
+    const readField = (key: string): string => {
+      const field = this.contactNote.getField(key);
+      if (!field) return "";
+      const raw = frontmatter[this.contactNote.getReadKey(field)];
+      return raw !== null && typeof raw === "string" ? String(raw).trim() : "";
+    };
+
+    const firstName = readField("firstName");
+    const middleName = readField("middleName");
+    const lastName = readField("lastName");
 
     if (!firstName || !lastName) return;
 

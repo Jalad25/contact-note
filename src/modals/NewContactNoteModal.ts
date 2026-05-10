@@ -5,7 +5,6 @@ import {
 	Setting,
 	TFile
 } from "obsidian";
-import { buildContactNote } from "../ContactNote";
 import ContactNotePlugin from "../main";
 
 export class NewContactNoteModal extends Modal {
@@ -84,7 +83,7 @@ export class NewContactNoteModal extends Modal {
 
 		// File content
     const tag = !configuration.useFolder && configuration.tag.trim() ? configuration.tag.trim() : undefined;
-    const content = buildContactNote({ firstName, lastName, tag });
+    const content = this.plugin.contactNote.buildContactNote(firstName, lastName, tag);
 
     return app.vault.create(filePath, content);
   }

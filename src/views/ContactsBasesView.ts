@@ -10,9 +10,8 @@ import {
   Value
 } from "obsidian";
 import { Contact } from "../Contact";
-import { BUILTIN_FIELDS } from "../ContactNote";
 import { buildContactCard } from "../ContactCard";
-import { DEFAULT_PROPERTY_ORDER } from "../ContactsBase";
+import { getDefaultPropertyOrder } from "../ContactsBase";
 import { NewContactNoteModal } from "../modals/NewContactNoteModal";
 import ContactNotePlugin, { CONTACT_NOTE_LIST_VIEW_TYPE } from "../main";
 
@@ -52,7 +51,7 @@ export class ContactsBasesView extends BasesView {
         order.length === 0 ||
         (order.length === 1 && order[0] === "file.name");
       if (isFreshView) {
-        this.config.set("order", DEFAULT_PROPERTY_ORDER);
+        this.config.set("order", getDefaultPropertyOrder(this.plugin.contactNote));
       }
     }
 
@@ -96,23 +95,28 @@ export class ContactsBasesView extends BasesView {
       for (const entry of group.entries) {
         const fm: Record<string, unknown> = {};
 
-        for (const field of BUILTIN_FIELDS) {
-          const raw = entry.getValue(`note.${field.key}`);
-          fm[field.key] = field.kind === "scalar" ? readScalar(raw) : readStringList(raw);
+        for (const field of this.plugin.contactNote.getFields()) {
+          if (field.kind === "socials") continue;
+          const readKey = this.plugin.contactNote.getReadKey(field);
+          const raw = entry.getValue(`note.${readKey}`);
+          fm[readKey] = field.kind === "scalar" ? readScalar(raw) : readStringList(raw);
         }
 
-        /* socials is an array of single key objects. ObjectValue has no key 
-					 enumeration in the public API, so read this one field straight from the 
+        /* socials is an array of single key objects. ObjectValue has no key
+					 enumeration in the public API, so read this one field straight from the
 					 metadata cache */
+        const socialsField = this.plugin.contactNote.getField("socials");
+        const socialsKey = socialsField ? this.plugin.contactNote.getReadKey(socialsField) : "socials";
         const cached = this.plugin.app.metadataCache.getFileCache(entry.file);
-        fm.socials = cached?.frontmatter?.socials;
+        fm[socialsKey] = cached?.frontmatter?.[socialsKey];
 
-        const contact = Contact.fromCache(entry.file, fm);
+        const contact = Contact.fromCache(entry.file, fm, this.plugin.contactNote);
 
 				// Build contact card
         buildContactCard(
           this.plugin.manifest.id,
           this.plugin.app,
+          this.plugin.contactNote,
           groupContainer,
           contact,
           { condensed, clickable: true, showDetails, lastNameFirst: lastNameFirst },
