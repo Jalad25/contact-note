@@ -75,7 +75,7 @@ contact-note/
 ├── src/
 │   ├── main.ts                                # Plugin entry point, configuration, file events, view registration, ribbon, commands
 │   ├── Contact.ts                             # Runtime contact model (parsed frontmatter)
-│   ├── ContactNote.ts                         # On-disk contact note schema: BUILTIN_FIELDS and the frontmatter template builder
+│   ├── ContactNote.ts                         # On-disk contact note schema and the ContactNote class (built-in field list, key/icon resolution, customization application, template builder)
 │   ├── ContactCard.ts                         # Shared contact card builder (used by reading view, panel view, and bases view)
 │   ├── ContactsBase.ts                        # `.base` file builder and append-view mutator; owns DEFAULT_PROPERTY_ORDER
 │   ├── ContactNoteSettingTab.ts               # Settings tab UI; owns ContactNoteSettings and DEFAULT_SETTINGS
@@ -112,6 +112,35 @@ type ContactNoteConfiguration =
 
 `DEFAULT_CONFIGURATION` is the merged default of the two sub-defaults plus `schemaVersion`. `loadSettings()` runs the saved object through `migrate(...)` and then strips any keys not in `DEFAULT_CONFIGURATION`, so removed fields self-clean from `data.json` on the next save.
 
+`ContactNoteSettings` includes a `frontmatterCustomizations: Record<string, FrontmatterCustomization>` field that holds the per-field key/icon overrides edited from the settings tab's customization grid. See [Frontmatter Customization](#frontmatter-customization) for how that map is consumed.
+
+## Contact Note: Storage vs. Runtime
+
+The plugin splits contact-note concerns across two files:
+
+- **[`ContactNote.ts`](src/ContactNote.ts)** — the on-disk schema and the `ContactNote` class. Holds the canonical list of built-in fields (their kinds, origins, and default icons) and exposes `getFields()`, `getField(key)`, `getReadKey(field)`, `getIcon(field)`, `applyCustomizations(...)`, and `buildContactNote(firstName, lastName, tag?)`. A single instance lives on the plugin as `plugin.contactNote`. Anything that needs to know *what a contact note looks like on disk*, or *what frontmatter key/icon to use for a built-in field*, should ask this instance.
+- **[`Contact.ts`](src/Contact.ts)** — the runtime model. `Contact.fromCache(file, frontmatter, contactNote)` walks the field list, reads each value through `contactNote.getReadKey(field)`, and exposes typed fields (`firstName`, `emails`, `socials`, etc.) plus `isValid`. The card renderer, panel view, and bases view all consume `Contact` instances rather than raw frontmatter.
+
+Adding or removing a built-in frontmatter field starts in `BUILTIN_FIELD_DEFS` (in `ContactNote.ts`). The `Contact.update()` loop, `ContactNote.buildContactNote()`, the bases view's per-entry read loop, and the settings-tab customization grid all iterate `contactNote.getFields()`.
+
+## Frontmatter Customization
+
+Users can override the frontmatter key the plugin reads from / writes to for any built-in field, and (for fields with a `defaultIcon`) the Lucide icon name shown on the contact card. Overrides live in `configuration.frontmatterCustomizations` as a `Record<key, { keyOverride?: string; icon?: string }>` and are edited through the customization grid in [`ContactNoteSettingTab.ts`](src/ContactNoteSettingTab.ts).
+
+How it flows through the code:
+
+- On load and after every `saveConfiguration()`, [`main.ts`](src/main.ts) calls `plugin.contactNote.applyCustomizations(configuration.frontmatterCustomizations)`. That copies each override onto the matching `FieldDef` on the in-memory `ContactNote` instance.
+- `ContactNote.getReadKey(field)` returns the override if set, otherwise the field's stable internal key. `getIcon(field)` does the same for icons, falling back to `field.defaultIcon`.
+- All read/write sites use these resolvers rather than the literal field name: [`Contact.update()`](src/Contact.ts), [`ContactNote.buildContactNote()`](src/ContactNote.ts), [`buildContactCard()`](src/ContactCard.ts) (icons + the missing-required-fields error), [`ContactsBasesView.onDataUpdated()`](src/views/ContactsBasesView.ts), and the YAML emitted by [`ContactsBase.ts`](src/ContactsBase.ts) (`getDefaultPropertyOrder` and the `sort` block).
+
+What overrides intentionally do NOT touch:
+
+- Existing contact notes' frontmatter on disk: there is no rewrite step.
+- Existing `.base` files: `order` and `sort` are written once at base creation time.
+- The frontmatter filter editor in [`EditViewFilterModal`](src/modals/EditViewFilterModal.ts): it operates on raw frontmatter using whatever key the user types in.
+
+When adding a new built-in field that should support customization, add it to `BUILTIN_FIELD_DEFS` with `origin: "builtin"`. The grid will pick it up automatically. Set `defaultIcon` only if the field renders an icon on the card; the grid uses `defaultIcon` to decide whether the icon column is editable for that row.
+
 ## Contacts Views in a (Sidebar) Panel or Base
 
 The plugin registers two views under the same view type `CONTACT_NOTE_LIST_VIEW_TYPE`:
@@ -124,7 +153,7 @@ A few things worth knowing before changing the bases view:
 - **Per-base options.** The `static getViewOptions(config)` method returns the toggle group rendered in Bases' options panel. Toggle values are read at render time via `this.config.get(...)` in `onDataUpdated`.
 - **Property reads.** Scalar and list frontmatter fields are read through Bases' query API (`entry.getValue("note.<field>")`). The `socials` field is read directly from `metadataCache` because Bases' `ObjectValue` has no public key-enumeration API.
 - **Injected New button.** Bases' native New button creates a file at the vault root using only the visible columns' frontmatter, which is the wrong location and shape for a contact. It cannot be intercepted, so the native button is hidden via CSS scoped to the plugin's bases view, and `injectNewButton()` adds a replacement that opens `NewContactNoteModal`.
-- **Default property order.** On first render of a fresh view, `ContactsBasesView` seeds the property order with `DEFAULT_PROPERTY_ORDER` from [`ContactsBase.ts`](src/ContactsBase.ts) (`firstName`, `middleName`, `lastName`, `displayName`) so the column picker is populated. Once the user customises the order, the seed is not reapplied.
+- **Default property order.** On first render of a fresh view, `ContactsBasesView` seeds the property order with `getDefaultPropertyOrder(plugin.contactNote)` from [`ContactsBase.ts`](src/ContactsBase.ts), which resolves the keys for `firstName`, `middleName`, `lastName`, and `displayName` through the user's frontmatter overrides before prefixing each with `note.`. Once the user customises the order, the seed is not reapplied.
 
 ## Base File Generation and Mutation
 
@@ -145,6 +174,7 @@ Plugin configurations are versioned through [`ConfigurationSchemaMigration.ts`](
 
 On every plugin load, `loadSettings()` runs the user's saved data through `migrate(...)`, which steps the data forward one version at a time using the entries in the `MIGRATIONS` array. If anything was migrated, the upgraded settings are written back to disk so the user only pays the migration cost once.
 
+> [!IMPORTANT]
 > Adding or removing a field that doesn't conflict with existing data does **not** require a migration. `loadSettings()` merges saved data over `DEFAULT_CONFIGURATION` (so new fields get their default) and drops keys that aren't in `DEFAULT_CONFIGURATION` (so removed fields disappear from `data.json` on the next save). A migration is only needed when an existing field needs to be renamed, restructured, or replaced with a non-default value.
 
 ### Adding a new migration
@@ -173,6 +203,7 @@ Currently, the project relies on manual testing within an Obsidian vault. When m
 - Both folder-based and tag-based contact identification work.
 - Auto-rename collision handling: creating a second contact with the same `First [Middle] Last` produces `First [Middle] Last 1.md` and surfaces a notice.
 - Loading a `data.json` from a previous schema version triggers migration on first start, after which the file is rewritten in the current shape with `schemaVersion` stamped. Removed fields are stripped on save.
+- Frontmatter customization: setting an override name for a built-in field causes new contact notes and newly created `.base` files to use the override; existing contact notes and existing `.base` files are unchanged. Setting a custom icon for frontmatter properties updates the contact card's icon for that field on the next render.
 - The plugin renders and functions correctly in **both desktop and mobile**. All bugs, features, and UI changes should be verified against both before submission.
 - The plugin renders correctly in **both light and dark mode**. All bugs, features, and UI changes should be verified against both themes before submission.
 

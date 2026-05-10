@@ -43,5 +43,5 @@ Closes #
 - [ ] I have tested with existing contact notes to confirm no regression.
 - [ ] I have tested the affected UI in both light and dark mode (if any styles or DOM structure were touched).
 - [ ] I have tested the feature on both the Obsidian desktop application and the Obsidian mobile app (if relevant).
-- [ ] I have added a schema migration in `SchemaMigration.ts` if this PR changes the on-disk shape of `ContactNoteConfiguration`.
+- [ ] I have added a schema migration in `ConfigurationSchemaMigration.ts` if this PR changes the on-disk shape of `ContactNoteConfiguration`.
 - [ ] Configuration persist correctly across reloads (if configurations were changed).

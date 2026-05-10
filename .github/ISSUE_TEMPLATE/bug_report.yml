@@ -120,6 +120,7 @@ body:
         - Contacts view (sidebar view)
         - Contacts base (.base file using the plugin's view)
         - Settings
+        - Frontmatter / property customization
         - File rename / naming enforcement
         - Other / not sure
     validations:

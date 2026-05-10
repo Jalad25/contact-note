@@ -15,6 +15,10 @@
 > emails and phone numbers will not appear on contact cards until
 > renamed. Update each note's frontmatter (or run a vault-wide
 > find-and-replace) to migrate.
+>
+> **Workaround in 2.1.0**: If you'd rather keep using the old keys, you can rename the plugin's
+> built-in property names back to `email` and `phone` (or anything else)
+> in settings under [Frontmatter Properties Customization](#frontmatter-properties-customization).
 
 # Contact Note
 
@@ -99,6 +103,9 @@ Both surfaces render the same contact cards and offer the same display options (
 
 All fields are optional except `firstName` and `lastName`.
 
+> [!NOTE]
+> Any of the property names below can be renamed to suit your existing notes. See [Frontmatter Properties Customization](#frontmatter-properties-customization) in the Settings Reference.
+
 | Field | Type | Description |
 |---|---|---|
 | `firstName` | text | **Required.** The contact's first name. |
@@ -108,7 +115,7 @@ All fields are optional except `firstName` and `lastName`.
 | `title` | text | Job title or role. |
 | `company` | text | Company or organization name. |
 | `emails` | text or list | One or more email addresses. |
-| `phoneNumbers` | string or list | One or more phone numbers. |
+| `phoneNumbers` | text or list | One or more phone numbers. |
 | `photo` | text | Vault path to a photo file (e.g. `Attachments/jane.jpg`). |
 | `aliases` | list | Obsidian aliases for the note. Pre-populated with `firstName` on creation when using the new contact dialog. Not used directly by plugin. |
 | `socials` | list | List of social media handles. See [Socials](#socials) below. |
@@ -356,6 +363,22 @@ The simplest way to add a contacts view to an existing base is to run **Add cont
 | New base folder path | Folder where new contacts bases are created, relative to the vault root. Leave empty to place them in the vault root. | *(empty)* |
 
 > The base file name and the in-base view name are entered in the dialog opened by **Create new base with contacts view** or **Add contacts view to base**, not in settings.
+
+### Frontmatter Properties Customization
+
+This section lets you override the frontmatter property names the plugin reads from and writes to, and the icons it displays for properties that show one.
+
+| Column | What it does |
+|---|---|
+| Property | The plugin's built-in name for the property. This is fixed and is what the plugin uses internally. |
+| Override name | The frontmatter key the plugin will read from and write to instead of the built-in name. Leave blank to use the built-in name. |
+| Icon | The [Lucide icon](https://lucide.dev/icons/) name shown beside the property's value(s) on the contact card. Leave blank to use the default icon. |
+
+#### Caveats
+
+- **Existing notes are not rewritten.** Renaming `emails` to `email` does not touch any contact note already in your vault. Notes still using the old name will stop being read until you either rename them by hand or change the override back.
+- **Existing `.base` files are not rewritten either.** A base created before you changed an override still references the old property name in its `order` (properties) and `sort`. New bases created via **Create new base with contacts view** or **Add contacts view to base** pick up the current override.
+- **Icons are restricted to Lucide names.** Obsidian ships with the [Lucide](https://lucide.dev/icons/) icon set built in, so any name listed there can be used. Names not in that set will render nothing.
 
 ## Contributing
 

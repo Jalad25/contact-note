@@ -27,6 +27,7 @@ body:
         - Contacts view (sidebar view)
         - Contacts base (.base file using the plugin's view)
         - Settings
+        - Frontmatter / property customization
         - File naming / frontmatter
         - Other / not sure
     validations:
