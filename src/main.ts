@@ -191,13 +191,13 @@ export default class ContactNotePlugin extends Plugin {
     }
 
     this.configuration = Object.assign({}, DEFAULT_CONFIGURATION, filtered);
-    this.contactNote.applyOverrides(this.configuration.propertyOverrides);
+    this.contactNote.applyCustomizations(this.configuration.frontmatterCustomizations);
     if (migrated || droppedAny) await this.saveConfiguration();
   }
 
   async saveConfiguration() {
     await this.saveData(this.configuration);
-    this.contactNote.applyOverrides(this.configuration.propertyOverrides);
+    this.contactNote.applyCustomizations(this.configuration.frontmatterCustomizations);
 
 		//Re-load anything that updates after a change is made
   	this.events.trigger("configuration-changed");

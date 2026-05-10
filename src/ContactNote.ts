@@ -9,22 +9,29 @@ export interface FieldDef {
   kind: FieldKind;
   origin: FieldOrigin;
   defaultValue?: string;
+  defaultIcon?: string;
   keyOverride?: string;
+  icon?: string;
+}
+
+export interface FrontmatterCustomization {
+  keyOverride?: string;
+  icon?: string;
 }
 
 //#endregion
 
 //#region Constants
 
-const BUILTIN_FIELD_DEFS: readonly Omit<FieldDef, "keyOverride">[] = [
+const BUILTIN_FIELD_DEFS: readonly Omit<FieldDef, "keyOverride" | "icon">[] = [
   { key: "firstName", kind: "scalar", origin: "builtin" },
   { key: "middleName", kind: "scalar", origin: "builtin" },
   { key: "lastName", kind: "scalar", origin: "builtin" },
   { key: "displayName", kind: "scalar", origin: "builtin" },
   { key: "company", kind: "scalar", origin: "builtin" },
   { key: "title", kind: "scalar", origin: "builtin" },
-  { key: "emails", kind: "list",   origin: "builtin" },
-  { key: "phoneNumbers", kind: "list",   origin: "builtin" },
+  { key: "emails", kind: "list", origin: "builtin", defaultIcon: "mail" },
+  { key: "phoneNumbers", kind: "list", origin: "builtin", defaultIcon: "phone" },
   { key: "photo", kind: "scalar", origin: "builtin" },
   { key: "socials", kind: "socials", origin: "builtin" }
 ];
@@ -55,17 +62,28 @@ export class ContactNote {
   }
 
   /* Frontmatter property name to read from / write to a note for the given field.
-     If a user has set a custom override, that key is used. Otherwise the stable 
+     If a user has set a custom override, that key is used. Otherwise the stable
 		 internal key is used. */
   getReadKey(field: FieldDef): string {
     return field.keyOverride && field.keyOverride.trim() ? field.keyOverride.trim() : field.key;
   }
 
-  applyOverrides(overrides: Record<string, string> | undefined): void {
+  /* Lucide icon name to display alongside the field's value(s). Returns the
+     user's custom icon if set, otherwise the field's default. May be undefined
+     for fields that don't render an icon. */
+  getIcon(field: FieldDef): string | undefined {
+    if (field.icon && field.icon.trim()) return field.icon.trim();
+    return field.defaultIcon;
+  }
+
+  applyCustomizations(customizations: Record<string, FrontmatterCustomization> | undefined): void {
     for (const field of this.fields) {
       if (field.origin !== "builtin") continue;
-      const override = overrides?.[field.key];
-      field.keyOverride = override && override.trim() ? override.trim() : undefined;
+      const c = customizations?.[field.key];
+      const keyOverride = c?.keyOverride?.trim();
+      const icon = c?.icon?.trim();
+      field.keyOverride = keyOverride ? keyOverride : undefined;
+      field.icon = icon ? icon : undefined;
     }
   }
 

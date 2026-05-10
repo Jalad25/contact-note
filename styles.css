@@ -306,3 +306,54 @@
 }
 
 /* #endregion */
+
+/* #region Frontmatter Customization Grid */
+
+.contact-note-settings-fm-grid {
+	display: grid;
+	grid-template-columns: auto 1fr 1fr;
+	gap: var(--size-4-2);
+	align-items: center;
+	margin-top: var(--size-4-2);
+}
+
+.contact-note-settings-fm-grid-header {
+	font-weight: var(--font-semibold);
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	padding-bottom: var(--size-2-2);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.contact-note-settings-fm-grid-name {
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-small);
+}
+
+.contact-note-settings-fm-grid-cell {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-2);
+}
+
+.contact-note-settings-fm-grid-cell input[type="text"] {
+	flex: 1;
+	min-width: 0;
+}
+
+.contact-note-settings-icon-preview {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+/* #endregion */
+
+/* Version */
+.contact-note-version {
+	text-align: right;
+}

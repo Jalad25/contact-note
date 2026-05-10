@@ -1,9 +1,11 @@
-import { 
-	App, 
-	PluginSettingTab, 
-	Setting 
+import {
+	App,
+	PluginSettingTab,
+	setIcon,
+	Setting
 } from "obsidian";
 import ContactNotePlugin from "./main";
+import { FrontmatterCustomization } from "./ContactNote";
 import { FolderSuggest } from "./suggesters/FolderSuggest";
 
 //#region Types/Objects/Interfaces
@@ -14,7 +16,7 @@ export interface ContactNoteSettings {
   tag: string;
   viewName: string;
   baseFolderPath: string;
-  propertyOverrides: Record<string, string>;
+  frontmatterCustomizations: Record<string, FrontmatterCustomization>;
 }
 
 //#endregion
@@ -27,7 +29,7 @@ export const DEFAULT_SETTINGS: ContactNoteSettings = {
   tag: "contact",
   viewName: "Contacts",
   baseFolderPath: "",
-  propertyOverrides: {}
+  frontmatterCustomizations: {}
 };
 
 //#endregion
@@ -48,7 +50,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 
 		// Plugin version for quick view
     containerEl.createDiv({
-      attr: { style: "text-align:right;" },
+			cls: "contact-note-version",
       text: `Version: ${this.plugin.manifest.version}`,
     });
 
@@ -142,28 +144,66 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 
     containerEl.createEl("p", {
       text:
-        "Override the frontmatter property names this plugin reads from and writes to. Leave a field blank to use the default. Renaming a property does not rewrite existing notes or base files. Existing base files that reference old property names will need to be updated manually.",
+        "Override the frontmatter property names this plugin reads from and writes to, and the lucide icons displayed for properties that show one. Leave a field blank to use the default. Renaming a property does not rewrite existing notes or base files. Existing base files that reference old property names will need to be updated manually.",
       cls: "setting-item-description",
     });
 
+    const grid = containerEl.createDiv({ cls: "contact-note-settings-fm-grid" });
+
+    grid.createDiv({ cls: "contact-note-settings-fm-grid-header", text: "Property" });
+    grid.createDiv({ cls: "contact-note-settings-fm-grid-header", text: "Override name" });
+    grid.createDiv({ cls: "contact-note-settings-fm-grid-header", text: "Icon" });
+
     for (const field of this.plugin.contactNote.getFields()) {
       if (field.origin !== "builtin") continue;
-      new Setting(containerEl)
-        .setName(field.key)
-        .addText((text) =>
-          text
-            .setPlaceholder(field.key)
-            .setValue(this.plugin.configuration.propertyOverrides[field.key] ?? "")
-            .onChange(async (value) => {
-              const trimmed = value.trim();
-              if (trimmed && trimmed !== field.key) {
-                this.plugin.configuration.propertyOverrides[field.key] = trimmed;
-              } else {
-                delete this.plugin.configuration.propertyOverrides[field.key];
-              }
-              await this.plugin.saveConfiguration();
-            })
-        );
+
+      grid.createDiv({ cls: "contact-note-settings-fm-grid-name", text: field.key });
+
+      const keyCell = grid.createDiv({ cls: "contact-note-settings-fm-grid-cell" });
+      const keyInput = keyCell.createEl("input", { type: "text" });
+      keyInput.placeholder = field.key;
+      keyInput.value = this.plugin.configuration.frontmatterCustomizations[field.key]?.keyOverride ?? "";
+      keyInput.addEventListener("change", () => {
+        const trimmed = keyInput.value.trim();
+        const current = this.plugin.configuration.frontmatterCustomizations[field.key] ?? {};
+        const next: FrontmatterCustomization = { ...current };
+        if (trimmed && trimmed !== field.key) next.keyOverride = trimmed;
+        else delete next.keyOverride;
+        this.setOrClearCustomization(field.key, next);
+        void this.plugin.saveConfiguration();
+      });
+
+      const iconCell = grid.createDiv({ cls: "contact-note-settings-fm-grid-cell" });
+      if (field.defaultIcon) {
+        const iconPreview = iconCell.createSpan({ cls: "contact-note-settings-icon-preview" });
+        const renderPreview = (name: string) => {
+          iconPreview.empty();
+          if (name) setIcon(iconPreview, name);
+        };
+        renderPreview(this.plugin.contactNote.getIcon(field) ?? "");
+
+        const iconInput = iconCell.createEl("input", { type: "text" });
+        iconInput.placeholder = field.defaultIcon;
+        iconInput.value = this.plugin.configuration.frontmatterCustomizations[field.key]?.icon ?? "";
+        iconInput.addEventListener("change", () => {
+          const trimmed = iconInput.value.trim();
+          const current = this.plugin.configuration.frontmatterCustomizations[field.key] ?? {};
+          const next: FrontmatterCustomization = { ...current };
+          if (trimmed && trimmed !== field.defaultIcon) next.icon = trimmed;
+          else delete next.icon;
+          this.setOrClearCustomization(field.key, next);
+          void this.plugin.saveConfiguration();
+          renderPreview(trimmed || (field.defaultIcon ?? ""));
+        });
+      }
+    }
+  }
+
+  private setOrClearCustomization(key: string, c: FrontmatterCustomization): void {
+    if (c.keyOverride || c.icon) {
+      this.plugin.configuration.frontmatterCustomizations[key] = c;
+    } else {
+      delete this.plugin.configuration.frontmatterCustomizations[key];
     }
   }
 }

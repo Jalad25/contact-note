@@ -153,22 +153,26 @@ export function buildContactCard(
 
     // Emails
     if (contact.emails.length > 0) {
+      const emailsField = contactNote.getField("emails");
+      const emailIconName = (emailsField && contactNote.getIcon(emailsField)) || "mail";
       const emailsEl = detailsEl.createDiv({ cls: `${pluginId}-card-emails` });
       for (const email of contact.emails) {
         const row = emailsEl.createDiv({ cls: `${pluginId}-card-detail-row` });
         const emailIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
-        setIcon(emailIcon, "mail");
+        setIcon(emailIcon, emailIconName);
         row.createEl("a", { cls: `${pluginId}-card-detail-value`, text: email, href: `mailto:${email}` });
       }
     }
 
     // Phone Numbers
     if (contact.phoneNumbers.length > 0) {
+      const phoneNumbersField = contactNote.getField("phoneNumbers");
+      const phoneIconName = (phoneNumbersField && contactNote.getIcon(phoneNumbersField)) || "phone";
       const phonesEl = detailsEl.createDiv({ cls: `${pluginId}-card-phones` });
       for (const phone of contact.phoneNumbers) {
         const row = phonesEl.createDiv({ cls: `${pluginId}-card-detail-row` });
         const phoneIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
-        setIcon(phoneIcon, "phone");
+        setIcon(phoneIcon, phoneIconName);
         row.createEl("a", {
           cls: `${pluginId}-card-detail-value`,
           text: phone,
