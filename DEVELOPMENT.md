@@ -172,10 +172,10 @@ Both flows take `useFolder`, `folderPath`, `tag`, and the user-entered `viewName
 
 Plugin configurations are versioned through [`ConfigurationSchemaMigration.ts`](src/ConfigurationSchemaMigration.ts). The `schemaVersion` field on `ContactNoteConfiguration` records the version of the data on disk, and `CURRENT_SCHEMA_VERSION` (defined in [`main.ts`](src/main.ts)) records the version the running code expects.
 
-On every plugin load, `loadSettings()` runs the user's saved data through `migrate(...)`, which steps the data forward one version at a time using the entries in the `MIGRATIONS` array. If anything was migrated, the upgraded settings are written back to disk so the user only pays the migration cost once.
+On every plugin load, `loadConfiguration()` runs the user's saved data through `migrate(...)`, which steps the data forward one version at a time using the entries in the `MIGRATIONS` array. If anything was migrated, the upgraded settings are written back to disk so the user only pays the migration cost once.
 
 > [!IMPORTANT]
-> Adding or removing a field that doesn't conflict with existing data does **not** require a migration. `loadSettings()` merges saved data over `DEFAULT_CONFIGURATION` (so new fields get their default) and drops keys that aren't in `DEFAULT_CONFIGURATION` (so removed fields disappear from `data.json` on the next save). A migration is only needed when an existing field needs to be renamed, restructured, or replaced with a non-default value.
+> Adding or removing a field that doesn't conflict with existing data does **not** require a migration. `loadConfiguration()` merges saved data over `DEFAULT_CONFIGURATION` (so new fields get their default) and drops keys that aren't in `DEFAULT_CONFIGURATION` (so removed fields disappear from `data.json` on the next save). A migration is only needed when an existing field needs to be renamed, restructured, or replaced with a non-default value.
 
 ### Adding a new migration
 
@@ -213,7 +213,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow, including how to f
 
 ## Releasing
 
-> [!IMPORTANT] 
+> [!IMPORTANT]
 > Releasing is restricted to project maintainers.
 
 The release process is automated through two GitHub Actions workflows:
