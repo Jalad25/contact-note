@@ -79,7 +79,7 @@ A note is treated as a contact note in one of two ways, configured in settings:
 
 ### Creating a Contact Note
 
-To manually create a new contact, create a new note with at least the `firstName` and `lastName` frontmatter properties in either the path of contact notes or with the contact tag specified in the plugin settings. For a list of all frontmatter properties recognized by the plugin, see [Contact Note Frontmatter Reference](#contact-note-frontmatter-reference) below. 
+To manually create a new contact, create a new note with at least the `firstName` and `lastName` frontmatter properties in either the path of contact notes or with the contact tag specified in the plugin settings. For a list of all frontmatter properties recognized by the plugin, see [Contact Note Frontmatter Reference](#contact-note-frontmatter-reference) below.
 
 To create a new contact using the plugin's template, select the **user-plus** button in the panel header or the **New** button in the base view to open the new contact dialog. Enter a first and last name and select **Create**.
 
@@ -385,6 +385,10 @@ This section lets you override the frontmatter property names the plugin reads f
 Contributions of all kinds are welcome!
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines.
+
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for current focus and planned features.
 
 ## License
 
