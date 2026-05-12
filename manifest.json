@@ -3,7 +3,7 @@
   "name": "Contact Note",
   "version": "2.1.0",
   "minAppVersion": "1.12.7",
-  "description": "Turn frontmatter in notes designated as contacts into visual contact cards. Browse them with a built-in searchable, filterable view or surface them through an Obsidian Bases view that adds sorting, grouping, and extensive filtering and searching.",
+  "description": "Turn frontmatter in notes designated as contacts into visual contact cards. Browse them with a built-in searchable, filterable view or surface them through an Bases view that adds sorting, grouping, and extensive filtering and searching.",
   "author": "Jalad",
   "authorUrl": "https://jalad.ncc-1701.enterprises",
   "isDesktopOnly": false
