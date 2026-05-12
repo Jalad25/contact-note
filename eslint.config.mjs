@@ -11,10 +11,7 @@ export default [
     },
     rules: {
       "no-prototype-builtins": "off",
-      "no-case-declarations": "off",
-			"@typescript-eslint/no-unsafe-assignment": "off",
-			"@typescript-eslint/no-unsafe-member-access": "off",
-			"@typescript-eslint/no-explicit-any": "off"
+      "no-case-declarations": "off"
     },
   },
 ];

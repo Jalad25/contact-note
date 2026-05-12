@@ -14,7 +14,6 @@ import { NewContactsBaseModal } from "./modals/NewContactsBaseModal";
 import { AppendContactsBaseViewModal } from "./modals/AppendContactsBaseViewModal";
 import { ContactsBasesView } from "./views/ContactsBasesView";
 import { ContactNote } from "./ContactNote";
-import { migrate } from "./ConfigurationSchemaMigration";
 
 //#region Constants
 
@@ -40,7 +39,7 @@ export default class ContactNotePlugin extends Plugin {
 
   async onload() {
     // Configuration
-    await this.loadConfiguration();
+    await this.loadSettings();
 
 		// Settings Tab
     this.addSettingTab(new ContactNoteSettingTab(this.app, this));
@@ -173,17 +172,15 @@ export default class ContactNotePlugin extends Plugin {
 
 //#region Configuration
 
-  async loadConfiguration() {
-    const raw = await this.loadData();
-    const { values, migrated } = migrate(raw);
+  async loadSettings() {
+    const raw: unknown = await this.loadData();
 
-    /* Remove properties from data.json object that are no longer used
-		   Does not include migrated properties (usually a rename) */
+    /* Remove properties from data.json object that are no longer used */
     const known = new Set(Object.keys(DEFAULT_CONFIGURATION));
     const filtered: Record<string, unknown> = {};
     let droppedAny = false;
-    if (values && typeof values === "object") {
-      for (const [k, v] of Object.entries(values as Record<string, unknown>)) {
+    if (raw && typeof raw === "object") {
+      for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
         if (known.has(k)) filtered[k] = v;
         else droppedAny = true;
       }
@@ -191,7 +188,7 @@ export default class ContactNotePlugin extends Plugin {
 
     this.configuration = Object.assign({}, DEFAULT_CONFIGURATION, filtered);
     this.contactNote.applyCustomizations(this.configuration.frontmatterCustomizations);
-    if (migrated || droppedAny) await this.saveConfiguration();
+    if (droppedAny) await this.saveConfiguration();
   }
 
   async saveConfiguration() {
@@ -223,7 +220,7 @@ export default class ContactNotePlugin extends Plugin {
 
     const tags: string[] = [];
 
-    const fmTags = cache.frontmatter?.tags;
+    const fmTags: unknown = cache.frontmatter?.tags;
     if (Array.isArray(fmTags)) {
       tags.push(...fmTags.map((t: unknown) => String(t).replace(/^#/, "").toLowerCase()));
     } else if (typeof fmTags === "string") {
