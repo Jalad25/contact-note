@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access -- This module reads untyped JSON of unknown shape from prior plugin versions. Strict typing here would only obscure the runtime guards that actually protect against malformed input. */
-
 import { ContactNoteConfiguration, CURRENT_SCHEMA_VERSION } from "./main";
 
 //#region Constants
@@ -50,7 +48,7 @@ export function migrate(raw: unknown): MigrationResult {
 
 //#region Migration Step Functions
 
-/* This is a per-version migration steps. Append new functions below for each schema change 	
+/* This is a per-version migration steps. Append new functions below for each schema change
 	 and add it to MIGRATIONS. Never edit existing steps. */
 
 //#endregion
