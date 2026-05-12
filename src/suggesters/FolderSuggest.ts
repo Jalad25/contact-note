@@ -1,7 +1,7 @@
-import { 
-	AbstractInputSuggest, 
-	App, 
-	TFolder 
+import {
+	AbstractInputSuggest,
+	App,
+	TFolder
 } from "obsidian";
 
 export class FolderSuggest extends AbstractInputSuggest<string> {

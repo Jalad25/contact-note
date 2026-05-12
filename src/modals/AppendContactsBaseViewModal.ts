@@ -19,7 +19,7 @@ export class AppendContactsBaseViewModal extends Modal {
 
   onOpen(): void {
 		this.setTitle("Add contacts view");
-		
+
     const { contentEl } = this;
 
     let viewName = "";

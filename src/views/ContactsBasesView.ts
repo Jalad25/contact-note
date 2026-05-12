@@ -133,7 +133,7 @@ export class ContactsBasesView extends BasesView {
      frontmatter at the vault root, wrong location and wrong shape for a
      contact. It cannot be intercepted (createFileForView is a helper for views
      to call, not a hook Bases calls on us), so the native button is hidden
-     via CSS (scoped to leaves containing the plugin's bases' view) 
+     via CSS (scoped to leaves containing the plugin's bases' view)
 		 and the plugin injects its own */
   private newButtonInjected = false;
 

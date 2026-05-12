@@ -52,7 +52,7 @@ export class NewContactNoteModal extends Modal {
     this.contentEl.empty();
   }
 
-	//#region Utilities 
+	//#region Utilities
 
   private async createContactNote(firstName: string, lastName: string): Promise<TFile> {
     const { app, configuration } = this.plugin;

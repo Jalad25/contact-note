@@ -1,6 +1,6 @@
-import { 
-	Modal, 
-	Setting 
+import {
+	Modal,
+	Setting
 } from "obsidian";
 import ContactNotePlugin from "../main";
 import { FrontmatterFilter } from "../views/ContactsView";
@@ -19,7 +19,7 @@ export class EditViewFilterModal extends Modal {
   onOpen(): void {
     const { contentEl } = this;
     new Setting(contentEl).setName("Edit view filter").setHeading().setDesc("Contacts in the view will be limited to those matching all conditions below.");
-    
+
 		const listEl = contentEl.createDiv({ cls: `${this.plugin.manifest.id}-filter-container` });
     this.renderRows(listEl);
 

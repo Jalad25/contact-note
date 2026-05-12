@@ -46,7 +46,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 
   display(): void {
     const { containerEl } = this;
-    containerEl.empty();    
+    containerEl.empty();
 
 		// Plugin version for quick view
     containerEl.createDiv({
