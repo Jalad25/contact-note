@@ -39,7 +39,7 @@ export default class ContactNotePlugin extends Plugin {
 
   async onload() {
     // Configuration
-    await this.loadSettings();
+    await this.loadConfiguration();
 
 		// Settings Tab
     this.addSettingTab(new ContactNoteSettingTab(this.app, this));
@@ -172,7 +172,7 @@ export default class ContactNotePlugin extends Plugin {
 
 //#region Configuration
 
-  async loadSettings() {
+  async loadConfiguration() {
     const raw: unknown = await this.loadData();
 
     /* Remove properties from data.json object that are no longer used */
