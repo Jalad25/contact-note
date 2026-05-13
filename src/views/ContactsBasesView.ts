@@ -164,10 +164,10 @@ export class ContactsBasesView extends BasesView {
   private tagHeader(): void {
     const cls = `${this.plugin.manifest.id}-bases-view-header`;
     let prev = this.scrollEl.previousElementSibling;
-    while (prev && !(prev instanceof HTMLElement && prev.matches("div.bases-header"))) {
+    while (prev && !(prev.instanceOf(HTMLElement) && prev.matches("div.bases-header"))) {
       prev = prev.previousElementSibling;
     }
-    if (!(prev instanceof HTMLElement)) return;
+    if (!prev?.instanceOf(HTMLElement)) return;
     if (prev.classList.contains(cls)) return;
     prev.addClass(cls);
   }
