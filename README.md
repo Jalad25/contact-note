@@ -8,7 +8,6 @@
   <img src="https://img.shields.io/github/downloads/Jalad25/contact-note/total" alt="Assets downloaded">
 </p>
 
-> [!WARNING]
 > **Breaking change in 2.0.0:** The `email` and `phone` frontmatter
 > properties were renamed to `emails` and `phoneNumbers`. Existing
 > contact notes using the old keys will continue to load but their
@@ -85,7 +84,6 @@ To create a new contact using the plugin's template, select the **user-plus** bu
 
 A new note will be created with a pre-populated frontmatter template and opened automatically.
 
-> [!IMPORTANT]
 > The plugin automatically renames contact notes to match the format `First Middle Last` whenever the `firstName`, `middleName`, or `lastName` frontmatter values change. Manual renames are also corrected.
 >
 > If a file with the target name already exists, the new contact is renamed to `First Middle Last 1` (incrementing the suffix until the name is unique) and a notice is shown so you know the disambiguation happened.
@@ -103,7 +101,6 @@ Both surfaces render the same contact cards and offer the same display options (
 
 All fields are optional except `firstName` and `lastName`.
 
-> [!NOTE]
 > Any of the property names below can be renamed to suit your existing notes. See [Frontmatter Properties Customization](#frontmatter-properties-customization) in the Settings Reference.
 
 | Field | Type | Description |
@@ -252,7 +249,6 @@ Both commands prompt for a view name (and a base file name in the case of **Crea
 
 When **Add contacts view to base** is run on a base whose existing `isContact` formula does not match your current contact identification settings, the existing formula is left untouched and a notice is shown so you can update it by hand.
 
-> [!IMPORTANT]
 > Creating a Contacts view in a `.base` file without using the listed commands will result in a view without the pre-configured sorting, formulas, and filtering.
 
 ### `+ New` Button
@@ -269,7 +265,6 @@ The contacts view exposes three toggles in the Bases options panel under **Displ
 | Show contact details | Expand each card to include emails, phone numbers, and socials. Hidden while **Condensed** is enabled. |
 | Last name first | Overrides the resolved display name and displays names as `Last, First Middle`. Does not affect the contact card within a note. |
 
-> [!IMPORTANT]
 > Though the Contacts view looks simliar to the Obsidian Bases built-in Cards View, the Contacts View will not change what it displays in the card based off the Properties selected (or `order` set in the raw `.base` file). The card will only change its display based on the display options set.
 
 ### Default New Base Configuration
