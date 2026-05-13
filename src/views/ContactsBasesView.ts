@@ -39,6 +39,9 @@ export class ContactsBasesView extends BasesView {
 		// Hide obsidian bases + New and show plugin version instead
     this.injectNewButton();
 
+    // Tag the bases header sibling so styles can target it
+    this.tagHeader();
+
 		// Empty container
     this.containerEl.empty();
 
@@ -127,6 +130,13 @@ export class ContactsBasesView extends BasesView {
 
   onunload(): void {
     this.containerEl.remove();
+
+    // Remove the injected new button and the header tag so other Bases views
+    // in this leaf get the native chrome back.
+    const leaf = this.scrollEl.closest(".workspace-leaf");
+    leaf?.querySelector(`.${this.plugin.manifest.id}-bases-view-new-btn`)?.remove();
+    leaf?.querySelector(`.${this.plugin.manifest.id}-bases-view-header`)
+      ?.removeClass(`${this.plugin.manifest.id}-bases-view-header`);
   }
 
   /* Bases' native New button creates a file using the visible columns'
@@ -135,15 +145,12 @@ export class ContactsBasesView extends BasesView {
      to call, not a hook Bases calls on us), so the native button is hidden
      via CSS (scoped to leaves containing the plugin's bases' view)
 		 and the plugin injects its own */
-  private newButtonInjected = false;
-
   private injectNewButton(): void {
-    if (this.newButtonInjected) return;
-
     const native = activeDocument.querySelector<HTMLElement>(
       `.workspace-leaf:has(.${this.plugin.manifest.id}-bases-view) .bases-toolbar-new-item-menu`,
     );
     if (!native) return;
+    if (native.querySelector(`:scope > .${this.plugin.manifest.id}-bases-view-new-btn`)) return;
 
     const ourBtn = native.createEl("button", {
       cls: `${this.plugin.manifest.id}-bases-view-new-btn clickable-icon`,
@@ -152,8 +159,17 @@ export class ContactsBasesView extends BasesView {
     setIcon(ourBtn, "lucide-plus");
 		ourBtn.createSpan({ cls: "text-button-label", text: "New"});
     ourBtn.addEventListener("click", () => new NewContactNoteModal(this.plugin).open());
+  }
 
-    this.newButtonInjected = true;
+  private tagHeader(): void {
+    const cls = `${this.plugin.manifest.id}-bases-view-header`;
+    let prev = this.scrollEl.previousElementSibling;
+    while (prev && !(prev instanceof HTMLElement && prev.matches("div.bases-header"))) {
+      prev = prev.previousElementSibling;
+    }
+    if (!(prev instanceof HTMLElement)) return;
+    if (prev.classList.contains(cls)) return;
+    prev.addClass(cls);
   }
 
 	// Bases Options

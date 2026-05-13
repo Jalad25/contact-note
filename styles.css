@@ -38,16 +38,16 @@
 
 .contact-note-card-photo-img,
 .contact-note-card-photo-default {
-  width: 150px !important;
-  height: 150px !important;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--background-modifier-border);
   display: block;
 }
 
-.contact-note-card-photo-default.svg-icon {
-	stroke-width: 1px !important;
+.contact-note-card-photo-default {
+	stroke-width: 1px;
 }
 
 /* Info */
@@ -153,8 +153,8 @@
 .contact-note-view .contact-note-card-photo-default,
 .contact-note-bases-view .contact-note-card-photo-img,
 .contact-note-bases-view .contact-note-card-photo-default {
-  width: 108px !important;
-  height: 108px !important;
+  width: 108px;
+  height: 108px;
 }
 
 .contact-note-view .contact-note-card-name,
@@ -178,8 +178,8 @@
 
 .contact-note-cards-condensed .contact-note-card-photo-img,
 .contact-note-cards-condensed .contact-note-card-photo-default {
-  width: 40px !important;
-  height: 40px !important;
+  width: 40px;
+  height: 40px;
 }
 
 .contact-note-cards-condensed .contact-note-card-name {
@@ -194,7 +194,7 @@
    The class is applied directly to the .mod-frontmatter
    element by the post-processor. */
 .contact-note .mod-header {
-  display: none !important;
+  display: none;
 }
 
 /* #endregion */
@@ -203,7 +203,7 @@
 
 /* Horizontal Lines */
 .contact-note-view hr {
-	margin: 15px 0 15px 0 !important;
+	margin: 15px 0 15px 0;
 }
 
 /* Header */
@@ -276,9 +276,9 @@
 }
 
 /* Hide the native Bases New button (but not the injected replacement) */
-.workspace-leaf:has(.contact-note-bases-view)
+.contact-note-bases-view-header
   .bases-toolbar-new-item-menu .text-icon-button {
-  display: none !important;
+  display: none;
 }
 
 .contact-note-bases-view-new-btn {

@@ -100,12 +100,14 @@ export function buildContactCard(
       img.src = app.vault.getResourcePath(photoFile);
       img.alt = displayName || "Contact photo";
     } else {
-		setIcon(photoContainer, "user-round");
-		photoContainer.children[0].classList.add(`${pluginId}-card-photo-default`);
+			setIcon(photoContainer, "user-round");
+			photoContainer.children[0].classList.add(`${pluginId}-card-photo-default`);
+			photoContainer.children[0].classList.remove("svg-icon");
   	}
   } else {
     setIcon(photoContainer, "user-round");
     photoContainer.children[0].classList.add(`${pluginId}-card-photo-default`);
+		photoContainer.children[0].classList.remove("svg-icon");
   }
 
   /* Name, Company, and Title */
