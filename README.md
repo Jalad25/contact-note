@@ -32,7 +32,7 @@ An [Obsidian](https://obsidian.md/) plugin that turns frontmatter in notes desig
 - **Contacts View in a dedicated panel** — A dedicated sidebar view that lists all contact notes with search, alphabet filter, display options, and a filter limiting the view to entries that match one or more frontmatter conditions.
 - **Contacts View in an Obsidian Base** — Render the same contact cards inside an Obsidian `.base` file, with grouping, sorting, searching, and filtering driven by Bases.
 - **Contact Note Template** — Create new contacts from the contacts panel or a base view with an auto-generated frontmatter template.
-- **Contact File Naming Enforcement** — Enforces file naming in `First [Middle] Last` format automatically. Duplicate names are disambiguated with a numeric suffix.
+- **Contact File Naming Enforcement** — Enforces file naming in `First Middle Last` format automatically. Duplicate names are disambiguated with a numeric suffix.
 - **Multiple Values for Certain Frontmatter Properties** — Supports multiple emails, phone numbers, and social media profiles per contact.
 - **Contact Note Identification** — Contacts identified by folder or tag.
 - **Light and Dark Mode Support** — All plugin UI is styled for both Obsidian themes.
@@ -86,9 +86,9 @@ To create a new contact using the plugin's template, select the **user-plus** bu
 A new note will be created with a pre-populated frontmatter template and opened automatically.
 
 > [!IMPORTANT]
-> The plugin automatically renames contact notes to match the format `First [Middle] Last` whenever the `firstName`, `middleName`, or `lastName` frontmatter values change. Manual renames are also corrected.
+> The plugin automatically renames contact notes to match the format `First Middle Last` whenever the `firstName`, `middleName`, or `lastName` frontmatter values change. Manual renames are also corrected.
 >
-> If a file with the target name already exists, the new contact is renamed to `First [Middle] Last 1` (incrementing the suffix until the name is unique) and a notice is shown so you know the disambiguation happened.
+> If a file with the target name already exists, the new contact is renamed to `First Middle Last 1` (incrementing the suffix until the name is unique) and a notice is shown so you know the disambiguation happened.
 
 ### Browsing Contacts
 
