@@ -3,11 +3,12 @@
 </p>
 
 <p align="center">
-  <!--FOR THE FUTURE <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json" alt="Obsidian plugin"> -->
+  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json" alt="Obsidian plugin">
   <img src="https://img.shields.io/github/v/release/Jalad25/contact-note" alt="GitHub release">
   <img src="https://img.shields.io/github/downloads/Jalad25/contact-note/total" alt="Assets downloaded">
 </p>
 
+> [!WARNING]
 > **Breaking change in 2.0.0:** The `email` and `phone` frontmatter
 > properties were renamed to `emails` and `phoneNumbers`. Existing
 > contact notes using the old keys will continue to load but their
@@ -31,7 +32,7 @@ An [Obsidian](https://obsidian.md/) plugin that turns frontmatter in notes desig
 - **Contacts View in a dedicated panel** — A dedicated sidebar view that lists all contact notes with search, alphabet filter, display options, and a filter limiting the view to entries that match one or more frontmatter conditions.
 - **Contacts View in an Obsidian Base** — Render the same contact cards inside an Obsidian `.base` file, with grouping, sorting, searching, and filtering driven by Bases.
 - **Contact Note Template** — Create new contacts from the contacts panel or a base view with an auto-generated frontmatter template.
-- **Contact File Naming Enforcement** — Enforces file naming in `First Middle Last` format automatically. Duplicate names are disambiguated with a numeric suffix.
+- **Contact File Naming Enforcement** — Enforces file naming in `First [Middle] Last` format automatically. Duplicate names are disambiguated with a numeric suffix.
 - **Multiple Values for Certain Frontmatter Properties** — Supports multiple emails, phone numbers, and social media profiles per contact.
 - **Contact Note Identification** — Contacts identified by folder or tag.
 - **Light and Dark Mode Support** — All plugin UI is styled for both Obsidian themes.
@@ -84,9 +85,10 @@ To create a new contact using the plugin's template, select the **user-plus** bu
 
 A new note will be created with a pre-populated frontmatter template and opened automatically.
 
-> The plugin automatically renames contact notes to match the format `First Middle Last` whenever the `firstName`, `middleName`, or `lastName` frontmatter values change. Manual renames are also corrected.
+> [!IMPORTANT]
+> The plugin automatically renames contact notes to match the format `First [Middle] Last` whenever the `firstName`, `middleName`, or `lastName` frontmatter values change. Manual renames are also corrected.
 >
-> If a file with the target name already exists, the new contact is renamed to `First Middle Last 1` (incrementing the suffix until the name is unique) and a notice is shown so you know the disambiguation happened.
+> If a file with the target name already exists, the new contact is renamed to `First [Middle] Last 1` (incrementing the suffix until the name is unique) and a notice is shown so you know the disambiguation happened.
 
 ### Browsing Contacts
 
@@ -101,6 +103,7 @@ Both surfaces render the same contact cards and offer the same display options (
 
 All fields are optional except `firstName` and `lastName`.
 
+> [!NOTE]
 > Any of the property names below can be renamed to suit your existing notes. See [Frontmatter Properties Customization](#frontmatter-properties-customization) in the Settings Reference.
 
 | Field | Type | Description |
@@ -249,6 +252,7 @@ Both commands prompt for a view name (and a base file name in the case of **Crea
 
 When **Add contacts view to base** is run on a base whose existing `isContact` formula does not match your current contact identification settings, the existing formula is left untouched and a notice is shown so you can update it by hand.
 
+> [!IMPORTANT]
 > Creating a Contacts view in a `.base` file without using the listed commands will result in a view without the pre-configured sorting, formulas, and filtering.
 
 ### `+ New` Button
@@ -265,6 +269,7 @@ The contacts view exposes three toggles in the Bases options panel under **Displ
 | Show contact details | Expand each card to include emails, phone numbers, and socials. Hidden while **Condensed** is enabled. |
 | Last name first | Overrides the resolved display name and displays names as `Last, First Middle`. Does not affect the contact card within a note. |
 
+> [!IMPORTANT]
 > Though the Contacts view looks simliar to the Obsidian Bases built-in Cards View, the Contacts View will not change what it displays in the card based off the Properties selected (or `order` set in the raw `.base` file). The card will only change its display based on the display options set.
 
 ### Default New Base Configuration
