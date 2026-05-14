@@ -285,7 +285,7 @@ views:
     filters:
       and:
         - formula.isContact
-    order: #Properties in the view
+    order:
       - note.firstName
       - note.middleName
       - note.lastName
