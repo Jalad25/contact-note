@@ -1,5 +1,5 @@
 # Roadmap
-> **Last updated: 2026-05-10**
+> **Last updated: 2026-05-14**
 
 High-level direction for this plugin.
 
@@ -13,8 +13,9 @@ What I'm actively working on.
 
 Planned for upcoming releases, roughly in order.
 
+- **Allow internal links for `company` and `title` properties** — This will allow users to use internal links as values in the `company` and `title` frontmatter properties. Links will be treated as such in the contact card.
 - **New built-in property: `birthday`** — a date property for tracking contact birthdays. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear under the company in the contact card with an icon.
-- **New built-in property: `department`** — a text property for the contact's department within their company, complementing the existing title and company fields. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear under the company in the contact card and before the birthday.
+- **New built-in property: `department`** — a text/internal link property for the contact's department within their company, complementing the existing title and company fields. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear under the company in the contact card and before the birthday.
 - **New built-in property: `lastInteraction`** — a date property recording when last interacted with the contact (maintained by the user). Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear only in a Contact Note contact card at the top right-side corner of the card.
 - **New built-in property: `lastModified`** — an automatically maintained date property reflecting when the contact note was last edited. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will not appear in the contact card.
 
