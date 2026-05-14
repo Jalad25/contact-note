@@ -3,15 +3,13 @@
 
 High-level direction for this plugin.
 
-## In Progress
+## Currently Scheduled
 
-What I'm actively working on.
-
-> Currently not working on any specific feature. Will start back up soon.
+See [Milestones](https://github.com/Jalad25/contact-note/milestones) for currently tracked changes.
 
 ## Planned
 
-Planned for upcoming releases, roughly in order.
+Planned for upcoming releases. Order is approximate and may change.
 
 - **Allow internal links for `company` and `title` properties** — This will allow users to use internal links as values in the `company` and `title` frontmatter properties. Links will be treated as such in the contact card.
 - **New built-in property: `birthday`** — a date property for tracking contact birthdays. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear under the company in the contact card with an icon.
@@ -21,7 +19,7 @@ Planned for upcoming releases, roughly in order.
 
 ## Wishlist
 
-Features being considered, but would like more feedback before persuing. Order is not priority and some of these may never happen. See [Contributing](#contributing) on how to provide feedback!
+Features being considered, but would like more feedback before pursuing. Order is not priority and some of these may never happen. See [CONTRIBUTING.md](CONTRIBUTING.md) on how to provide feedback!
 
 - **VCF importing support** — bring contacts from another address book (phone, Google Contacts, iCloud, etc.) into the vault by importing a .vcf file. Each card lands as a standard contact note with the plugin's frontmatter shape, so imported contacts behave identically to ones created in-vault.
 - **Custom frontmatter properties** — let users define their own contact properties beyond the built-in set (e.g., relationship, nickname, pronouns), with the same first-class treatment built-ins get: appear in the new-contact template, render on the contact card, and respect the same renaming and icon customization.

@@ -22,7 +22,7 @@ Before opening a new bug report:
 
 Feature requests are tracked as GitHub issues using the [feature request template](https://github.com/Jalad25/contact-note/issues/new?template=feature_request.yml). The template focuses on the *problem* you're trying to solve before the proposed solution.
 
-Before opening an issue, check the [ROADMAP.md](ROADMAP.md) to make sure your idea isn't already planned, currently being worked on, or out of scope for this plugin.
+Before opening an issue, check the [ROADMAP.md](ROADMAP.md) to make sure your idea isn't already planned or out of scope for this plugin, and check the [milestones page](https://github.com/Jalad25/contact-note/milestones) to make sure it isn't already scheduled for a release.
 
 If your idea is still in an early stage and you'd like to discuss it before filing a formal request, open an [Ideas discussion](https://github.com/Jalad25/contact-note/discussions) instead.
 
@@ -36,7 +36,7 @@ For usage questions, configuration help, or sharing how you use the plugin, plea
 
 ### Before you start...
 
-- **Check the [ROADMAP.md](ROADMAP.md)** to make sure the same feature isn't already being worked on.
+- **Check the [ROADMAP.md](ROADMAP.md)** to make sure the same feature isn't already planned.
 - **Check the [milestones page](https://github.com/Jalad25/contact-note/milestones)** to see which release an issue is scheduled for. If you'd like to work on an issue, comment on it before starting so it can be confirmed available and not in progress by someone else.
 - **Open an issue or discussion** for non-trivial changes so we can agree on the approach. Small fixes (typos, doc improvements, obvious bugs) can skip this.
 - **Scope each pull request to one issue, bug, or feature**. Bundled changes are harder to review.
