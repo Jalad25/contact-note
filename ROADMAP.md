@@ -11,11 +11,7 @@ See [Milestones](https://github.com/Jalad25/contact-note/milestones) for current
 
 Planned for upcoming releases. Order is approximate and may change.
 
-- **Allow internal links for `company` and `title` properties** — This will allow users to use internal links as values in the `company` and `title` frontmatter properties. Links will be treated as such in the contact card.
-- **New built-in property: `birthday`** — a date property for tracking contact birthdays. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear under the company in the contact card with an icon.
-- **New built-in property: `department`** — a text/internal link property for the contact's department within their company, complementing the existing title and company fields. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear under the company in the contact card and before the birthday.
-- **New built-in property: `lastInteraction`** — a date property recording when last interacted with the contact (maintained by the user). Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will appear only in a Contact Note contact card at the top right-side corner of the card.
-- **New built-in property: `lastModified`** — an automatically maintained date property reflecting when the contact note was last edited. Available alongside the existing built-in fields and respecting the same frontmatter customization (rename, icon). Will not appear in the contact card.
+> Nothing specifically planned yet. See currently scheduled for what's being worked on.
 
 ## Wishlist
 
