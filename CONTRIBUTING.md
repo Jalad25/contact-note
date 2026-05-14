@@ -26,6 +26,8 @@ Before opening an issue, check the [ROADMAP.md](ROADMAP.md) to make sure your id
 
 If your idea is still in an early stage and you'd like to discuss it before filing a formal request, open an [Ideas discussion](https://github.com/Jalad25/contact-note/discussions) instead.
 
+Accepted feature requests are assigned a [milestone](https://github.com/Jalad25/contact-note/milestones) (e.g. `v2.3.0`) indicating which release they're planned for. Issues without a milestone have not yet been scheduled — they may still be accepted, but no release has been committed to.
+
 ## Questions and Discussion
 
 For usage questions, configuration help, or sharing how you use the plugin, please open a [discussion](https://github.com/Jalad25/contact-note/discussions) rather than an issue. Discussion categories include Q&A, Ideas, and Show & Tell, each with its own template.
@@ -35,6 +37,7 @@ For usage questions, configuration help, or sharing how you use the plugin, plea
 ### Before you start...
 
 - **Check the [ROADMAP.md](ROADMAP.md)** to make sure the same feature isn't already being worked on.
+- **Check the [milestones page](https://github.com/Jalad25/contact-note/milestones)** to see which release an issue is scheduled for. If you'd like to work on an issue, comment on it before starting so it can be confirmed available and not in progress by someone else.
 - **Open an issue or discussion** for non-trivial changes so we can agree on the approach. Small fixes (typos, doc improvements, obvious bugs) can skip this.
 - **Scope each pull request to one issue, bug, or feature**. Bundled changes are harder to review.
 - **Consider whether your changes need new dependencies**. If a change requires a new dependency, mention why in the issue first.
