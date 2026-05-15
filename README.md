@@ -112,8 +112,8 @@ All fields are optional except `firstName` and `lastName`.
 | `lastName` | text | **Required.** The contact's last name. |
 | `middleName` | text | Middle name or initial. Used in the display name and file name. |
 | `displayName` | text | Overrides the resolved display name everywhere if set. |
-| `title` | text | Job title or role. |
-| `company` | text | Company or organization name. |
+| `title` | text or `[[wikilink]]` | Job title or role. If set to an internal link, the contact card renders it as a clickable link. See [Internal Links](#internal-links). |
+| `company` | text or `[[wikilink]]` | Company or organization name. If set to an internal link, the contact card renders it as a clickable link. See [Internal Links](#internal-links). |
 | `emails` | text or list | One or more email addresses. |
 | `phoneNumbers` | text or list | One or more phone numbers. |
 | `photo` | text | Vault path to a photo file (e.g. `Attachments/jane.jpg`). |
@@ -191,6 +191,17 @@ The display name is resolved in the following order:
 ### Photo Display
 
 If the `photo` path is not set, the contact card displays a default person icon in its place.
+
+### Internal Links
+
+The `title` and `company` properties accept Obsidian internal links (`[[Some Note]]` or `[[some-note|Display Text]]`). When the linked note exists in the vault, the contact card renders the value as a clickable internal link with hover preview support. When the linked note does not exist, the card renders the display text as plain text.
+
+```yaml
+company: "[[Acme Corp]]"
+title: "[[Senior Engineer|Sr. Engineer]]"
+```
+
+If the value is plain text rather than a wikilink, it renders unchanged.
 
 ## Contacts View in a Panel
 
