@@ -96,9 +96,9 @@ export class ContactsView extends ItemView {
 
         const existing = this.contacts.get(file.path);
         if (existing) {
-          existing.update(fm, this.plugin.contactNote);
+          existing.update(fm, cache.frontmatterLinks, this.plugin.contactNote);
         } else {
-          this.contacts.set(file.path, Contact.fromCache(file, fm, this.plugin.contactNote));
+          this.contacts.set(file.path, Contact.fromCache(file, fm, cache.frontmatterLinks, this.plugin.contactNote));
         }
         this.renderCards();
       })
@@ -116,9 +116,10 @@ export class ContactsView extends ItemView {
       this.app.vault.on("rename", (file, oldPath) => {
         this.contacts.delete(oldPath);
         if (!(file instanceof TFile) || !this.plugin.isContactFile(file)) return;
-        const fm = this.app.metadataCache.getFileCache(file)?.frontmatter;
+        const cache = this.app.metadataCache.getFileCache(file);
+        const fm = cache?.frontmatter;
         if (!fm) return;
-        this.contacts.set(file.path, Contact.fromCache(file, fm, this.plugin.contactNote));
+        this.contacts.set(file.path, Contact.fromCache(file, fm, cache?.frontmatterLinks, this.plugin.contactNote));
         this.renderCards();
       })
     );
@@ -203,9 +204,10 @@ export class ContactsView extends ItemView {
     this.contacts.clear();
     for (const file of this.app.vault.getMarkdownFiles()) {
       if (!this.plugin.isContactFile(file)) continue;
-      const fm = this.app.metadataCache.getFileCache(file)?.frontmatter;
+      const cache = this.app.metadataCache.getFileCache(file);
+      const fm = cache?.frontmatter;
       if (!fm) continue;
-      this.contacts.set(file.path, Contact.fromCache(file, fm, this.plugin.contactNote));
+      this.contacts.set(file.path, Contact.fromCache(file, fm, cache?.frontmatterLinks, this.plugin.contactNote));
     }
   }
 

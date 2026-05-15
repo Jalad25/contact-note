@@ -10,6 +10,7 @@ export interface FieldDef {
   origin: FieldOrigin;
   defaultValue?: string;
   defaultIcon?: string;
+  allowsInternalLink?: boolean;
   keyOverride?: string;
   icon?: string;
 }
@@ -28,8 +29,8 @@ const BUILTIN_FIELD_DEFS: readonly Omit<FieldDef, "keyOverride" | "icon">[] = [
   { key: "middleName", kind: "scalar", origin: "builtin" },
   { key: "lastName", kind: "scalar", origin: "builtin" },
   { key: "displayName", kind: "scalar", origin: "builtin" },
-  { key: "company", kind: "scalar", origin: "builtin" },
-  { key: "title", kind: "scalar", origin: "builtin" },
+  { key: "company", kind: "scalar", origin: "builtin", allowsInternalLink: true },
+  { key: "title", kind: "scalar", origin: "builtin", allowsInternalLink: true },
   { key: "emails", kind: "list", origin: "builtin", defaultIcon: "mail" },
   { key: "phoneNumbers", kind: "list", origin: "builtin", defaultIcon: "phone" },
   { key: "photo", kind: "scalar", origin: "builtin" },

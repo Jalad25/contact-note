@@ -118,11 +118,13 @@ export function buildContactCard(
   }
 
   if (!condensed && contact.title) {
-    infoEl.createDiv({ cls: `${pluginId}-card-title`, text: contact.title });
+    const titleEl = infoEl.createDiv({ cls: `${pluginId}-card-title` });
+    renderLinkableValue(app, contactNote, contact, "title", contact.title, titleEl);
   }
 
   if (!condensed && contact.company) {
-    infoEl.createDiv({ cls: `${pluginId}-card-company`, text: contact.company });
+    const companyEl = infoEl.createDiv({ cls: `${pluginId}-card-company` });
+    renderLinkableValue(app, contactNote, contact, "company", contact.company, companyEl);
   }
 
   /* Details: Socials, Emails, and Phones */
@@ -188,6 +190,53 @@ export function buildContactCard(
 //#endregion
 
 //#region Utilities
+
+function renderLinkableValue(
+  app: App,
+  contactNote: ContactNote,
+  contact: Contact,
+  fieldKey: string,
+  fallbackText: string,
+  parent: HTMLElement,
+): void {
+  const field = contactNote.getField(fieldKey);
+  if (!field?.allowsInternalLink) {
+    parent.setText(fallbackText);
+    return;
+  }
+
+  const linkEntry = contact.getFieldLink(contactNote.getReadKey(field));
+  if (!linkEntry) {
+    parent.setText(fallbackText);
+    return;
+  }
+
+  const displayText = linkEntry.displayText && linkEntry.displayText.trim()
+    ? linkEntry.displayText
+    : linkEntry.link;
+
+  const dest = app.metadataCache.getFirstLinkpathDest(linkEntry.link, contact.file.path);
+  if (!dest) {
+    parent.setText(displayText);
+    return;
+  }
+
+  const anchor = parent.createEl("a", {
+    cls: "internal-link",
+    text: displayText,
+    attr: {
+      href: linkEntry.link,
+      "data-href": linkEntry.link,
+      target: "_blank",
+      rel: "noopener",
+    },
+  });
+  anchor.addEventListener("click", (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    void app.workspace.openLinkText(linkEntry.link, contact.file.path, evt.ctrlKey || evt.metaKey);
+  });
+}
 
 function resolveDisplayName(contact: Contact, lastNameFirst: boolean): string {
   if (lastNameFirst) {

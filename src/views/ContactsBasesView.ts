@@ -113,7 +113,7 @@ export class ContactsBasesView extends BasesView {
         const cached = this.plugin.app.metadataCache.getFileCache(entry.file);
         fm[socialsKey] = cached?.frontmatter?.[socialsKey];
 
-        const contact = Contact.fromCache(entry.file, fm, this.plugin.contactNote);
+        const contact = Contact.fromCache(entry.file, fm, cached?.frontmatterLinks, this.plugin.contactNote);
 
 				// Build contact card
         buildContactCard(
