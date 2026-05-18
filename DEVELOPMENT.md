@@ -119,7 +119,7 @@ type ContactNoteConfiguration =
 The plugin splits contact-note concerns across two files:
 
 - **[`ContactNote.ts`](src/ContactNote.ts)** — the on-disk schema and the `ContactNote` class. Holds the canonical list of built-in fields (their kinds, origins, and default icons) and exposes `getFields()`, `getField(key)`, `getReadKey(field)`, `getIcon(field)`, `applyCustomizations(...)`, and `buildContactNote(firstName, lastName, tag?)`. A single instance lives on the plugin as `plugin.contactNote`. Anything that needs to know *what a contact note looks like on disk*, or *what frontmatter key/icon to use for a built-in field*, should ask this instance.
-- **[`Contact.ts`](src/Contact.ts)** — the runtime model. `Contact.fromCache(file, frontmatter, contactNote)` walks the field list, reads each value through `contactNote.getReadKey(field)`, and exposes typed fields (`firstName`, `emails`, `socials`, etc.) plus `isValid`. The card renderer, panel view, and bases view all consume `Contact` instances rather than raw frontmatter.
+- **[`Contact.ts`](src/Contact.ts)** — the runtime model. `Contact.fromCache(file, frontmatter, frontmatterLinks, contactNote)` walks the field list, reads each value through `contactNote.getReadKey(field)`, and exposes typed fields (`firstName`, `emails`, `socials`, etc.) plus `isValid` and `getFieldLink(readKey)` for fields the user wrote as `[[Target]]` in frontmatter. The card renderer, panel view, and bases view all consume `Contact` instances rather than raw frontmatter.
 
 Adding or removing a built-in frontmatter field starts in `BUILTIN_FIELD_DEFS` (in `ContactNote.ts`). The `Contact.update()` loop, `ContactNote.buildContactNote()`, the bases view's per-entry read loop, and the settings-tab customization grid all iterate `contactNote.getFields()`.
 
@@ -140,6 +140,19 @@ What overrides intentionally do NOT touch:
 - The frontmatter filter editor in [`EditViewFilterModal`](src/modals/EditViewFilterModal.ts): it operates on raw frontmatter using whatever key the user types in.
 
 When adding a new built-in field that should support customization, add it to `BUILTIN_FIELD_DEFS` with `origin: "builtin"`. The grid will pick it up automatically. Set `defaultIcon` only if the field renders an icon on the card; the grid uses `defaultIcon` to decide whether the icon column is editable for that row.
+
+## Internal Links in Frontmatter Values
+
+Scalar built-in fields can opt in to rendering an Obsidian internal link (`[[Target]]` or `[[target|Display]]`) instead of plain text.
+
+How it flows through the code:
+
+- A field opts in via `allowsInternalLink: true` on its `FieldDef` in `BUILTIN_FIELD_DEFS`.
+- `Contact` stores `frontmatterLinks: FrontmatterLinkCache[]` populated from `cache.frontmatterLinks` at parse time. Every `Contact.fromCache` call site reads from the metadata cache and passes this list in.
+- `Contact.getFieldLink(readKey)` returns the matching `FrontmatterLinkCache` entry (if any) for a given resolved frontmatter key.
+- [`ContactCard.ts`](src/ContactCard.ts) `renderLinkableValue(...)` does the rendering: if the field is `allowsInternalLink` and `getFieldLink` returns an entry and `app.metadataCache.getFirstLinkpathDest(...)` resolves to a real file, it emits an `<a class="internal-link">` and wires a click handler to `app.workspace.openLinkText(...)` (respecting CTRL/Command-click for a new pane). Unresolved or non-link values fall back to plain text.
+
+When adding a new field that should accept internal links, set `allowsInternalLink: true` on its `FieldDef` and call `renderLinkableValue(...)` instead of `setText(...)` at the render site. No other plumbing is required — the `frontmatterLinks` plumbing into `Contact` already covers any field.
 
 ## Contacts Views in a (Sidebar) Panel or Base
 
@@ -204,6 +217,7 @@ Currently, the project relies on manual testing within an Obsidian vault. When m
 - Auto-rename collision handling: creating a second contact with the same `First [Middle] Last` produces `First [Middle] Last 1.md` and surfaces a notice.
 - Loading a `data.json` from a previous schema version triggers migration on first start, after which the file is rewritten in the current shape with `schemaVersion` stamped. Removed fields are stripped on save.
 - Frontmatter customization: setting an override name for a built-in field causes new contact notes and newly created `.base` files to use the override; existing contact notes and existing `.base` files are unchanged. Setting a custom icon for frontmatter properties updates the contact card's icon for that field on the next render.
+- Internal links in frontmatter properties: setting a link-aware field to `[[Target]]` where the target exists renders a clickable internal link on the contact card with hover-preview; setting it to `[[Missing]]` where no file exists renders the display text as plain text; setting it to plain text renders unchanged. The link rendering reflects target rename/create/delete on the next render.
 - The plugin renders and functions correctly in **both desktop and mobile**. All bugs, features, and UI changes should be verified against both before submission.
 - The plugin renders correctly in **both light and dark mode**. All bugs, features, and UI changes should be verified against both themes before submission.
 
