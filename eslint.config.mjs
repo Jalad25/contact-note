@@ -1,17 +1,20 @@
+import tsparser from "@typescript-eslint/parser";
+import { defineConfig } from "eslint/config";
 import obsidianmd from "eslint-plugin-obsidianmd";
 
-export default [
+export default defineConfig([
   ...obsidianmd.configs.recommended,
   {
+    files: ["**/*.ts"],
     languageOptions: {
+      parser: tsparser,
       parserOptions: {
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
+      	project: "./tsconfig.json",
       },
     },
     rules: {
       "no-prototype-builtins": "off",
-      "no-case-declarations": "off"
+      "no-case-declarations": "off",
     },
   },
-];
+]);

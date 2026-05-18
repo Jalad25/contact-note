@@ -1,4 +1,4 @@
-import { TFile } from "obsidian";
+import { FrontmatterLinkCache, TFile } from "obsidian";
 import { ContactNote } from "./ContactNote";
 
 //#region Types/Objects/Interfaces
@@ -25,6 +25,7 @@ export class Contact {
   photo: string;
   socials: SocialEntry[];
   rawFrontmatter: Record<string, unknown>;
+  frontmatterLinks: FrontmatterLinkCache[];
 
   private constructor(file: TFile) {
     this.file = file;
@@ -39,16 +40,27 @@ export class Contact {
     this.phoneNumbers = [];
     this.socials = [];
     this.rawFrontmatter = {};
+    this.frontmatterLinks = [];
   }
 
-  static fromCache(file: TFile, frontmatter: Record<string, unknown>, contactNote: ContactNote): Contact {
+  static fromCache(
+    file: TFile,
+    frontmatter: Record<string, unknown>,
+    frontmatterLinks: FrontmatterLinkCache[] | undefined,
+    contactNote: ContactNote,
+  ): Contact {
     const contact = new Contact(file);
-    contact.update(frontmatter, contactNote);
+    contact.update(frontmatter, frontmatterLinks, contactNote);
     return contact;
   }
 
-  update(frontmatter: Record<string, unknown>, contactNote: ContactNote): void {
+  update(
+    frontmatter: Record<string, unknown>,
+    frontmatterLinks: FrontmatterLinkCache[] | undefined,
+    contactNote: ContactNote,
+  ): void {
     this.rawFrontmatter = frontmatter;
+    this.frontmatterLinks = frontmatterLinks ?? [];
 
     for (const field of contactNote.getFields()) {
       if (field.kind === "socials") continue;
@@ -79,6 +91,10 @@ export class Contact {
 
   get isValid(): boolean {
     return !!(this.firstName && this.lastName);
+  }
+
+  getFieldLink(readKey: string): FrontmatterLinkCache | undefined {
+    return this.frontmatterLinks.find((l) => l.key === readKey);
   }
 }
 

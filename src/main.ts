@@ -165,7 +165,8 @@ export default class ContactNotePlugin extends Plugin {
       if (!(file instanceof TFile)) return;
       if (!this.isContactFile(file)) return;
       if (!ctx.frontmatter) return;
-      const contact = Contact.fromCache(file, ctx.frontmatter as Record<string, unknown>, this.contactNote);
+      const cache = this.app.metadataCache.getFileCache(file);
+      const contact = Contact.fromCache(file, ctx.frontmatter as Record<string, unknown>, cache?.frontmatterLinks, this.contactNote);
       buildContactCard(this.manifest.id, this.app, this.contactNote, el, contact, { showDetails: true, lastNameFirst: false });
     });
   }
