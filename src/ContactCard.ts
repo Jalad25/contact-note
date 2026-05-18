@@ -124,7 +124,11 @@ export function buildContactCard(
 
   if (!condensed && contact.company) {
     const companyEl = infoEl.createDiv({ cls: `${pluginId}-card-company` });
-    renderLinkableValue(app, contactNote, contact, "company", contact.company, companyEl);
+    const companyField = contactNote.getField("company");
+    const iconEl = companyEl.createSpan({ cls: `${pluginId}-card-detail-icon` });
+    setIcon(iconEl, contactNote.getIcon(companyField!) ?? "");
+    const valueEl = companyEl.createSpan();
+    renderLinkableValue(app, contactNote, contact, "company", contact.company, valueEl);
   }
 
   /* Details: Socials, Emails, and Phones */
@@ -158,12 +162,11 @@ export function buildContactCard(
     // Emails
     if (contact.emails.length > 0) {
       const emailsField = contactNote.getField("emails");
-      const emailIconName = (emailsField && contactNote.getIcon(emailsField)) || "mail";
       const emailsEl = detailsEl.createDiv({ cls: `${pluginId}-card-emails` });
       for (const email of contact.emails) {
         const row = emailsEl.createDiv({ cls: `${pluginId}-card-detail-row` });
         const emailIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
-        setIcon(emailIcon, emailIconName);
+        setIcon(emailIcon, contactNote.getIcon(emailsField!) ?? "");
         row.createEl("a", { cls: `${pluginId}-card-detail-value`, text: email, href: `mailto:${email}` });
       }
     }
@@ -171,12 +174,11 @@ export function buildContactCard(
     // Phone Numbers
     if (contact.phoneNumbers.length > 0) {
       const phoneNumbersField = contactNote.getField("phoneNumbers");
-      const phoneIconName = (phoneNumbersField && contactNote.getIcon(phoneNumbersField)) || "phone";
       const phonesEl = detailsEl.createDiv({ cls: `${pluginId}-card-phones` });
       for (const phone of contact.phoneNumbers) {
         const row = phonesEl.createDiv({ cls: `${pluginId}-card-detail-row` });
         const phoneIcon = row.createSpan({ cls: `${pluginId}-card-detail-icon` });
-        setIcon(phoneIcon, phoneIconName);
+        setIcon(phoneIcon, contactNote.getIcon(phoneNumbersField!) ?? "");
         row.createEl("a", {
           cls: `${pluginId}-card-detail-value`,
           text: phone,
