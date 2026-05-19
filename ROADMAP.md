@@ -1,5 +1,5 @@
 # Roadmap
-> **Last updated: 2026-05-14**
+> **Last updated: 2026-05-19**
 
 High-level direction for this plugin.
 
@@ -22,6 +22,7 @@ Features being considered, but would like more feedback before pursuing. Order i
 
 ## Recently Shipped
 
+- [**2.2.0**](https://github.com/Jalad25/contact-note/releases/tag/2.2.0) — Added `birthday`, `department`, and `lastInteraction` built-in properties. Added toggle for showing last modified date and time of a contact note in the contact note's contact card within the settings. Added a default icon for `company`. Added ability to include internal links in `company`, `title` and `department` values.
 - [**2.1.0**](https://github.com/Jalad25/contact-note/releases/tag/2.1.0) — Customize built-in frontmatter property names and icons to match vault's existing conventions.
 - [**2.0.0**](https://github.com/Jalad25/contact-note/releases/tag/2.0.0) — Render contacts as cards inside Obsidian Bases.
 - [**1.0.0**](https://github.com/Jalad25/contact-note/releases/tag/1.0.0) — Initial release: contact card preview in contact notes and a sidebar panel listing all contacts in the vault.
