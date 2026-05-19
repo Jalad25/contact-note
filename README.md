@@ -114,6 +114,7 @@ All fields are optional except `firstName` and `lastName`.
 | `displayName` | text | Overrides the resolved display name everywhere if set. |
 | `title` | text or `[[wikilink]]` | Job title or role. If set to an internal link, the contact card renders it as a clickable link. See [Internal Links](#internal-links). |
 | `company` | text or `[[wikilink]]` | Company or organization name. If set to an internal link, the contact card renders it as a clickable link. See [Internal Links](#internal-links). |
+| `department` | text or `[[wikilink]]` | Department, team, or division within the company. If set to an internal link, the contact card renders it as a clickable link. See [Internal Links](#internal-links). |
 | `emails` | text or list | One or more email addresses. |
 | `phoneNumbers` | text or list | One or more phone numbers. |
 | `photo` | text | Vault path to a photo file (e.g. `Attachments/jane.jpg`). |
@@ -129,6 +130,7 @@ middleName: Terror
 lastName: La Forge
 displayName: Papa
 company: Geordi Bytes LLC.
+department: Snack Acquisition
 title: Professional Cutie
 emails:
   - geordi@notarealemail.com
@@ -179,7 +181,7 @@ Platforms not in this list will still display the handle as plain text without a
 
 ![Contact card](assets/screenshots/contact-card.png)
 
-In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, email addresses, phone numbers, and social media profiles.
+In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, department, email addresses, phone numbers, and social media profiles.
 
 ### Display Name Resolution
 
@@ -194,7 +196,7 @@ If the `photo` path is not set, the contact card displays a default person icon 
 
 ### Internal Links
 
-The `title` and `company` properties accept Obsidian internal links (`[[Some Note]]` or `[[some-note|Display Text]]`). When the linked note exists in the vault, the contact card renders the value as a clickable internal link with hover preview support. When the linked note does not exist, the card renders the display text as plain text.
+The `title`, `company`, and `department` properties accept Obsidian internal links (`[[Some Note]]` or `[[some-note|Display Text]]`). When the linked note exists in the vault, the contact card renders the value as a clickable internal link with hover preview support. When the linked note does not exist, the card renders the display text as plain text.
 
 ```yaml
 company: "[[Acme Corp]]"
