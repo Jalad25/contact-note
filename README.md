@@ -185,7 +185,7 @@ Platforms not in this list will still display the handle as plain text without a
 
 ![Contact card](assets/screenshots/contact-card.png)
 
-In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, department, birthday, email addresses, phone numbers, social media profiles, and the date of last interaction.
+In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, department, birthday, email addresses, phone numbers, social media profiles, the date of last interaction, and the date the note was last modified.
 
 ### Display Name Resolution
 
@@ -380,6 +380,12 @@ The simplest way to add a contacts view to an existing base is to run **Add cont
 | New base folder path | Folder where new contacts bases are created, relative to the vault root. Leave empty to place them in the vault root. | *(empty)* |
 
 > The base file name and the in-base view name are entered in the dialog opened by **Create new base with contacts view** or **Add contacts view to base**, not in settings.
+
+### Contact Card
+
+| Setting | Description | Default |
+|---|---|---|
+| Show last modified date | Show the date the contact note was last modified in the top-left corner of the contact card. Applies only to the card rendered inside a contact note, not the panel or base views. | Enabled |
 
 ### Frontmatter Properties Customization
 

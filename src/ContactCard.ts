@@ -52,6 +52,7 @@ interface ContactCardOptions {
   lastNameFirst?: boolean;
   showBirthday?: boolean;
   showLastInteraction?: boolean;
+  showLastModified?: boolean;
 }
 
 //#endregion
@@ -66,7 +67,7 @@ export function buildContactCard(
   contact: Contact,
   options: ContactCardOptions = {}
 ) {
-  const { condensed = false, clickable = false, showDetails = true, lastNameFirst: lastNameFirst = false, showBirthday = false, showLastInteraction = false } = options;
+  const { condensed = false, clickable = false, showDetails = true, lastNameFirst: lastNameFirst = false, showBirthday = false, showLastInteraction = false, showLastModified = false } = options;
   const displayName = resolveDisplayName(contact, lastNameFirst);
 
   const card = container.createDiv({ cls: `${pluginId}-card` });
@@ -93,13 +94,28 @@ export function buildContactCard(
 		return errorEl;
 	}
 
-  // Last Interaction
-  if (showLastInteraction && contact.lastInteraction) {
-    const lastInteractionEl = card.createDiv({ cls: `${pluginId}-card-last-interaction` });
-    const lastInteractionField = contactNote.getField("lastInteraction");
-    const iconEl = lastInteractionEl.createSpan({ cls: `${pluginId}-card-last-interaction-icon` });
-    setIcon(iconEl, contactNote.getIcon(lastInteractionField!) ?? "");
-    lastInteractionEl.createSpan({ text: contact.lastInteraction });
+  /* Last Interaction and Last Modified */
+  const showModified = showLastModified;
+  const showInteraction = showLastInteraction && contact.lastInteraction;
+  if (showModified || showInteraction) {
+    const stripEl = card.createDiv({ cls: `${pluginId}-card-top-strip` });
+
+		// Last Modified
+    if (showModified) {
+      const modifiedEl = stripEl.createDiv({ cls: `${pluginId}-card-last-modified` });
+      const iconEl = modifiedEl.createSpan({ cls: `${pluginId}-card-last-modified-icon` });
+      setIcon(iconEl, "file-clock");
+      modifiedEl.createSpan({ text: new Date(contact.file.stat.mtime).toLocaleString(undefined, { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) });
+    }
+
+		// Last Interaction
+    if (showInteraction) {
+      const interactionEl = stripEl.createDiv({ cls: `${pluginId}-card-last-interaction` });
+      const lastInteractionField = contactNote.getField("lastInteraction");
+      const iconEl = interactionEl.createSpan({ cls: `${pluginId}-card-last-interaction-icon` });
+      setIcon(iconEl, contactNote.getIcon(lastInteractionField!) ?? "");
+      interactionEl.createSpan({ text: contact.lastInteraction });
+    }
   }
 
   /* Photo */
