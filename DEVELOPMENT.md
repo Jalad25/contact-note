@@ -121,6 +121,8 @@ The plugin splits contact-note concerns across two files:
 - **[`ContactNote.ts`](src/ContactNote.ts)** — the on-disk schema and the `ContactNote` class. Holds the canonical list of built-in fields (their kinds, origins, and default icons) and exposes `getFields()`, `getField(key)`, `getReadKey(field)`, `getIcon(field)`, `applyCustomizations(...)`, and `buildContactNote(firstName, lastName, tag?)`. A single instance lives on the plugin as `plugin.contactNote`. Anything that needs to know *what a contact note looks like on disk*, or *what frontmatter key/icon to use for a built-in field*, should ask this instance.
 - **[`Contact.ts`](src/Contact.ts)** — the runtime model. `Contact.fromCache(file, frontmatter, frontmatterLinks, contactNote)` walks the field list, reads each value through `contactNote.getReadKey(field)`, and exposes typed fields (`firstName`, `emails`, `socials`, etc.) plus `isValid` and `getFieldLink(readKey)` for fields the user wrote as `[[Target]]` in frontmatter. The card renderer, panel view, and bases view all consume `Contact` instances rather than raw frontmatter.
 
+Frontmatter values that come through YAML as `Date` objects (e.g., bare ISO dates like `1990-04-15`) are coerced to `YYYY-MM-DD` strings by `trimStr` in `Contact.ts`. All scalar fields end up as strings regardless of source type. There is no `Date` kind, and downstream code can assume `string` everywhere.
+
 Adding or removing a built-in frontmatter field starts in `BUILTIN_FIELD_DEFS` (in `ContactNote.ts`). The `Contact.update()` loop, `ContactNote.buildContactNote()`, the bases view's per-entry read loop, and the settings-tab customization grid all iterate `contactNote.getFields()`.
 
 ## Frontmatter Customization

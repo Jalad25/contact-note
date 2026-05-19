@@ -23,6 +23,7 @@ export class Contact {
   department: string;
   emails: string[];
   phoneNumbers: string[];
+  birthday: string;
   photo: string;
   socials: SocialEntry[];
   rawFrontmatter: Record<string, unknown>;
@@ -40,6 +41,7 @@ export class Contact {
     this.photo = "";
     this.emails = [];
     this.phoneNumbers = [];
+    this.birthday = "";
     this.socials = [];
     this.rawFrontmatter = {};
     this.frontmatterLinks = [];
@@ -105,6 +107,7 @@ export class Contact {
 //#region Utilities
 
 function trimStr(v: unknown): string {
+  if (v instanceof Date) return v.toISOString().slice(0, 10);
   if (typeof v !== "string") return "";
   return v.trim();
 }
