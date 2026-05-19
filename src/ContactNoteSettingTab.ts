@@ -16,6 +16,7 @@ export interface ContactNoteSettings {
   tag: string;
   viewName: string;
   baseFolderPath: string;
+  showLastModified: boolean;
   frontmatterCustomizations: Record<string, FrontmatterCustomization>;
 }
 
@@ -29,6 +30,7 @@ export const DEFAULT_SETTINGS: ContactNoteSettings = {
   tag: "contact",
   viewName: "Contacts",
   baseFolderPath: "",
+  showLastModified: true,
   frontmatterCustomizations: {}
 };
 
@@ -138,6 +140,19 @@ export class ContactNoteSettingTab extends PluginSettingTab {
           });
         new FolderSuggest(this.app, text.inputEl);
       });
+
+    /* Contact Card */
+    new Setting(containerEl).setName("Contact card").setHeading();
+
+    new Setting(containerEl)
+      .setName("Show last modified date")
+      .setDesc("Show the date the contact note was last modified in the top-left corner of the contact card. Applies only to the card rendered inside a contact note, not the panel or base views.")
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.configuration.showLastModified).onChange((value) => {
+          this.plugin.configuration.showLastModified = value;
+          void this.plugin.saveConfiguration();
+        })
+      );
 
     /* Frontmatter Properties Customization */
     new Setting(containerEl).setName("Frontmatter properties customization").setHeading();
