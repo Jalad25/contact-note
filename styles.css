@@ -74,17 +74,27 @@
   line-height: 1.3;
 }
 
-/* Company */
-.contact-note-card-company {
+/* Company + Department row */
+.contact-note-card-company-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.contact-note-card-company,
+.contact-note-card-department {
   font-size: 1.1rem;
   font-weight: var(--font-medium);
   line-height: 1.3;
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
-.contact-note-card-company .contact-note-card-detail-icon svg {
+.contact-note-card-company .contact-note-card-detail-icon svg,
+.contact-note-card-department .contact-note-card-detail-icon svg {
   width: 16px;
   height: 16px;
 }
@@ -172,8 +182,10 @@
 
 .contact-note-view .contact-note-card-title,
 .contact-note-view .contact-note-card-company,
+.contact-note-view .contact-note-card-department,
 .contact-note-bases-view .contact-note-card-title,
-.contact-note-bases-view .contact-note-card-company {
+.contact-note-bases-view .contact-note-card-company,
+.contact-note-bases-view .contact-note-card-department {
   font-size: 0.79rem;
 }
 
