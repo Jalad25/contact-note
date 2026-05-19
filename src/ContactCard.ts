@@ -122,13 +122,26 @@ export function buildContactCard(
     renderLinkableValue(app, contactNote, contact, "title", contact.title, titleEl);
   }
 
-  if (!condensed && contact.company) {
-    const companyEl = infoEl.createDiv({ cls: `${pluginId}-card-company` });
-    const companyField = contactNote.getField("company");
-    const iconEl = companyEl.createSpan({ cls: `${pluginId}-card-detail-icon` });
-    setIcon(iconEl, contactNote.getIcon(companyField!) ?? "");
-    const valueEl = companyEl.createSpan();
-    renderLinkableValue(app, contactNote, contact, "company", contact.company, valueEl);
+  if (!condensed && (contact.company || contact.department)) {
+    const rowEl = infoEl.createDiv({ cls: `${pluginId}-card-company-row` });
+
+    if (contact.company) {
+      const companyEl = rowEl.createDiv({ cls: `${pluginId}-card-company` });
+      const companyField = contactNote.getField("company");
+      const iconEl = companyEl.createSpan({ cls: `${pluginId}-card-detail-icon` });
+      setIcon(iconEl, contactNote.getIcon(companyField!) ?? "");
+      const valueEl = companyEl.createSpan();
+      renderLinkableValue(app, contactNote, contact, "company", contact.company, valueEl);
+    }
+
+    if (contact.department) {
+      const departmentEl = rowEl.createDiv({ cls: `${pluginId}-card-department` });
+      const departmentField = contactNote.getField("department");
+      const iconEl = departmentEl.createSpan({ cls: `${pluginId}-card-detail-icon` });
+      setIcon(iconEl, contactNote.getIcon(departmentField!) ?? "");
+      const valueEl = departmentEl.createSpan();
+      renderLinkableValue(app, contactNote, contact, "department", contact.department, valueEl);
+    }
   }
 
   /* Details: Socials, Emails, and Phones */

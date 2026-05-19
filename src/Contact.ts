@@ -20,6 +20,7 @@ export class Contact {
   displayName: string;
   title: string;
   company: string;
+  department: string;
   emails: string[];
   phoneNumbers: string[];
   photo: string;
@@ -35,6 +36,7 @@ export class Contact {
     this.displayName = "";
     this.title = "";
     this.company = "";
+    this.department = "";
     this.photo = "";
     this.emails = [];
     this.phoneNumbers = [];
