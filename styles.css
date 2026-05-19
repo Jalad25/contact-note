@@ -74,6 +74,16 @@
   line-height: 1.3;
 }
 
+/* Birthday */
+.contact-note-card-birthday {
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* Company + Department row */
 .contact-note-card-company-row {
   display: flex;

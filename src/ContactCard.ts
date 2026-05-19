@@ -50,6 +50,7 @@ interface ContactCardOptions {
   clickable?: boolean;
   showDetails?: boolean;
   lastNameFirst?: boolean;
+  showBirthday?: boolean;
 }
 
 //#endregion
@@ -64,7 +65,7 @@ export function buildContactCard(
   contact: Contact,
   options: ContactCardOptions = {}
 ) {
-  const { condensed = false, clickable = false, showDetails = true, lastNameFirst: lastNameFirst = false } = options;
+  const { condensed = false, clickable = false, showDetails = true, lastNameFirst: lastNameFirst = false, showBirthday = false } = options;
   const displayName = resolveDisplayName(contact, lastNameFirst);
 
   const card = container.createDiv({ cls: `${pluginId}-card` });
@@ -142,6 +143,14 @@ export function buildContactCard(
       const valueEl = departmentEl.createSpan();
       renderLinkableValue(app, contactNote, contact, "department", contact.department, valueEl);
     }
+  }
+
+  if (!condensed && showBirthday && contact.birthday) {
+    const birthdayEl = infoEl.createDiv({ cls: `${pluginId}-card-birthday` });
+    const birthdayField = contactNote.getField("birthday");
+    const iconEl = birthdayEl.createSpan({ cls: `${pluginId}-card-detail-icon` });
+    setIcon(iconEl, contactNote.getIcon(birthdayField!) ?? "");
+    birthdayEl.createSpan({ text: contact.birthday });
   }
 
   /* Details: Socials, Emails, and Phones */
