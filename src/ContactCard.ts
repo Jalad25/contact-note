@@ -51,6 +51,7 @@ interface ContactCardOptions {
   showDetails?: boolean;
   lastNameFirst?: boolean;
   showBirthday?: boolean;
+  showLastInteraction?: boolean;
 }
 
 //#endregion
@@ -65,7 +66,7 @@ export function buildContactCard(
   contact: Contact,
   options: ContactCardOptions = {}
 ) {
-  const { condensed = false, clickable = false, showDetails = true, lastNameFirst: lastNameFirst = false, showBirthday = false } = options;
+  const { condensed = false, clickable = false, showDetails = true, lastNameFirst: lastNameFirst = false, showBirthday = false, showLastInteraction = false } = options;
   const displayName = resolveDisplayName(contact, lastNameFirst);
 
   const card = container.createDiv({ cls: `${pluginId}-card` });
@@ -91,6 +92,15 @@ export function buildContactCard(
 		errorEl.createEl("p", { text: "Add these properties to the frontmatter to display this contact." });
 		return errorEl;
 	}
+
+  // Last Interaction
+  if (showLastInteraction && contact.lastInteraction) {
+    const lastInteractionEl = card.createDiv({ cls: `${pluginId}-card-last-interaction` });
+    const lastInteractionField = contactNote.getField("lastInteraction");
+    const iconEl = lastInteractionEl.createSpan({ cls: `${pluginId}-card-last-interaction-icon` });
+    setIcon(iconEl, contactNote.getIcon(lastInteractionField!) ?? "");
+    lastInteractionEl.createSpan({ text: contact.lastInteraction });
+  }
 
   /* Photo */
   const photoContainer = card.createDiv({ cls: `${pluginId}-card-photo` });
@@ -145,6 +155,7 @@ export function buildContactCard(
     }
   }
 
+	// Birthday
   if (!condensed && showBirthday && contact.birthday) {
     const birthdayEl = infoEl.createDiv({ cls: `${pluginId}-card-birthday` });
     const birthdayField = contactNote.getField("birthday");

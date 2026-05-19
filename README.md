@@ -116,6 +116,7 @@ All fields are optional except `firstName` and `lastName`.
 | `company` | text or `[[wikilink]]` | Company or organization name. If set to an internal link, the contact card renders it as a clickable link. See [Internal Links](#internal-links). |
 | `department` | text or `[[wikilink]]` | Department, team, or division within the company. If set to an internal link, the contact card renders it as a clickable link. See [Internal Links](#internal-links). |
 | `birthday` | text | Birthday. Any format works (e.g. `1990-04-15`, `April 15`, `4/15`). Only displayed on the contact card in reading mode, not in the panel or base views. |
+| `lastInteraction` | text | Date you last interacted with the contact. Any format works (e.g. `2026-04-12`, `April 12`, `4/12`). Only displayed at the top-right of the contact card in reading mode, not in the panel or base views. |
 | `emails` | text or list | One or more email addresses. |
 | `phoneNumbers` | text or list | One or more phone numbers. |
 | `photo` | text | Vault path to a photo file (e.g. `Attachments/jane.jpg`). |
@@ -138,6 +139,7 @@ emails:
 phoneNumbers:
   - 123-456-7890
 birthday: 2013-05-23
+lastInteraction: 2026-05-18
 photo: Attachments/Geordi.jpg
 aliases:
   - Geordi
@@ -183,7 +185,7 @@ Platforms not in this list will still display the handle as plain text without a
 
 ![Contact card](assets/screenshots/contact-card.png)
 
-In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, department, birthday, email addresses, phone numbers, and social media profiles.
+In reading mode, any contact note with a valid `firstName` and `lastName` frontmatter renders a contact card in place of the frontmatter block. The card displays the contact's photo, name, title, company, department, birthday, email addresses, phone numbers, social media profiles, and the date of last interaction.
 
 ### Display Name Resolution
 

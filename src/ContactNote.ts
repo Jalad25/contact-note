@@ -35,6 +35,7 @@ const BUILTIN_FIELD_DEFS: readonly Omit<FieldDef, "keyOverride" | "icon">[] = [
   { key: "emails", kind: "list", origin: "builtin", defaultIcon: "mail" },
   { key: "phoneNumbers", kind: "list", origin: "builtin", defaultIcon: "phone" },
   { key: "birthday", kind: "scalar", origin: "builtin", defaultIcon: "cake" },
+  { key: "lastInteraction", kind: "scalar", origin: "builtin", defaultIcon: "calendar-clock" },
   { key: "photo", kind: "scalar", origin: "builtin" },
   { key: "socials", kind: "socials", origin: "builtin" }
 ];

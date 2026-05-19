@@ -84,6 +84,29 @@
   gap: 6px;
 }
 
+/* Last Interaction */
+.contact-note-card-last-interaction {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-ui-small);
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.contact-note-card-last-interaction-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.contact-note-card-last-interaction-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* Company + Department row */
 .contact-note-card-company-row {
   display: flex;

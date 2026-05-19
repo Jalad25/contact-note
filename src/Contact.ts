@@ -24,6 +24,7 @@ export class Contact {
   emails: string[];
   phoneNumbers: string[];
   birthday: string;
+  lastInteraction: string;
   photo: string;
   socials: SocialEntry[];
   rawFrontmatter: Record<string, unknown>;
@@ -42,6 +43,7 @@ export class Contact {
     this.emails = [];
     this.phoneNumbers = [];
     this.birthday = "";
+    this.lastInteraction = "";
     this.socials = [];
     this.rawFrontmatter = {};
     this.frontmatterLinks = [];
