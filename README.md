@@ -8,18 +8,6 @@
   <img src="https://img.shields.io/github/downloads/Jalad25/contact-note/total" alt="Assets downloaded">
 </p>
 
-> [!WARNING]
-> **Breaking change in 2.0.0:** The `email` and `phone` frontmatter
-> properties were renamed to `emails` and `phoneNumbers`. Existing
-> contact notes using the old keys will continue to load but their
-> emails and phone numbers will not appear on contact cards until
-> renamed. Update each note's frontmatter (or run a vault-wide
-> find-and-replace) to migrate.
->
-> **Workaround in 2.1.0**: If you'd rather keep using the old keys, you can rename the plugin's
-> built-in property names back to `email` and `phone` (or anything else)
-> in settings under [Frontmatter Properties Customization](#frontmatter-properties-customization).
-
 # Contact Note
 
 An [Obsidian](https://obsidian.md/) plugin that turns frontmatter in notes designated as contacts into visual contact cards. Browse them with a built-in searchable, filterable view or surface them through an Obsidian Bases view that adds sorting, grouping, and extensive filtering and search.
@@ -40,6 +28,13 @@ An [Obsidian](https://obsidian.md/) plugin that turns frontmatter in notes desig
 
 ## Installation
 
+### Obsidian Community Plugins
+
+1. Open Obsidian and go to **Settings → Community plugins**.
+2. If restricted mode is on, select **Turn on community plugins**.
+3. Select **Browse** and search for **Contact Note**.
+4. Select **Install**, then **Enable**.
+
 ### BRAT
 
 While Contact Note is awaiting inclusion in the Obsidian Community Plugins directory, [BRAT](https://github.com/TfTHacker/obsidian42-brat) is the recommended way to install and stay up to date. BRAT installs plugins directly from their GitHub repository and auto-updates them on each release.
@@ -58,16 +53,6 @@ To get future updates, run **BRAT: Check for updates to all beta plugins** from 
 2. In your vault, create the folder `.obsidian/plugins/contact-note/` if it does not already exist.
 3. Copy the downloaded files into that folder.
 4. Open Obsidian, go to **Settings → Community plugins**, and enable **Contact Note**.
-
-### Obsidian Community Plugins
-
-> *Coming soon! Currently pending listing in the directory.*
-
-1. Open Obsidian and go to **Settings → Community plugins**.
-2. If restricted mode is on, select **Turn on community plugins**.
-3. Select **Browse** and search for **Contact Note**.
-4. Select **Install**, then **Enable**.
-
 ## Usage
 
 ### Identifying Contact Notes
