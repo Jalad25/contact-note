@@ -48,9 +48,10 @@ jobs:
 
           badge = {
               "schemaVersion": 1,
-              "label": "Obsidian scorecard",
+              "label": "Obsidian Scorecard",
               "message": f"{pct_v}% • {health_v} • {review_v}",
               "color": color,
+							"logo": "Obsidian"
           }
 
           with open(f"{pid}.json", "w") as f:
