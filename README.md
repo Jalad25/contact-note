@@ -37,7 +37,7 @@ An [Obsidian](https://obsidian.md/) plugin that turns frontmatter in notes desig
 
 ### BRAT
 
-While Contact Note is awaiting inclusion in the Obsidian Community Plugins directory, [BRAT](https://github.com/TfTHacker/obsidian42-brat) is the recommended way to install and stay up to date. BRAT installs plugins directly from their GitHub repository and auto-updates them on each release.
+[BRAT](https://github.com/TfTHacker/obsidian42-brat) installs plugins directly from their GitHub repository and auto-updates them on each release.
 
 1. Install **BRAT** from **Settings → Community plugins → Browse** and enable it.
 2. Open the command palette (`Ctrl+P` (Windows) or `Command+P` (macOS)) and run **BRAT: Add a beta plugin for testing**.
