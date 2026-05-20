@@ -3,10 +3,15 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/v/release/Jalad25/contact-note" alt="GitHub release">
-  <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json" alt="Obsidian plugin">
-  <img src="https://img.shields.io/github/downloads/Jalad25/contact-note/total" alt="Assets downloaded">
-	<a href="https://obsidianpluginaudit.com/audit/contact-note/latest"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.obsidianpluginaudit.com%2Fbadge%2Fcontact-note%2Flatest.json&cacheSeconds=60"></a>
+  <a href="https://github.com/jalad25/contact-note/releases/latest"><img src="https://img.shields.io/github/v/release/Jalad25/contact-note?label=Latest%20Release&logo=Github" alt="GitHub release"></a>
+	<a href="obsidian://show-plugin?id=contact-note"><img src="https://img.shields.io/badge/Obsidian-Install-7c3aed?logo=obsidian&logoColor=white"></a>
+</p>
+<p align="center">
+  <a href="https://community.obsidian.md/plugins/contact-note"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json&label=Obsidian" alt="Obsidian plugin"></a>
+  <a href="https://github.com/jalad25/contact-note/releases"><img src="https://img.shields.io/github/downloads/Jalad25/contact-note/total?label=Assets%20Downloaded&logo=Github" alt="Assets downloaded"></a>
+</p>
+<p align="center">
+	<a href="https://obsidianpluginaudit.com/audit/contact-note/latest"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.obsidianpluginaudit.com%2Fbadge%2Fcontact-note%2Flatest.json&cacheSeconds=60&label=3rd%20Party%20Obsidian%20Plugin%20Audit"></a>
 </p>
 
 # Contact Note
