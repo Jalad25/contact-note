@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/jalad25/contact-note/releases/latest"><img src="https://img.shields.io/github/v/release/Jalad25/contact-note?label=Latest%20Release&logo=Github" alt="GitHub release"></a>
-	<a href="obsidian://show-plugin?id=contact-note"><img src="https://img.shields.io/badge/Obsidian-Install-7c3aed?logo=obsidian&logoColor=white"></a>
+	<a href="https://community.obsidian.md/plugins/contact-note"><img src="https://img.shields.io/badge/Obsidian-Install-7c3aed?logo=obsidian&logoColor=white"></a>
 </p>
 <p align="center">
   <a href="https://community.obsidian.md/plugins/contact-note"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json&label=Obsidian" alt="Obsidian plugin"></a>
