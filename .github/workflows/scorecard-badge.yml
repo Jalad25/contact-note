@@ -51,7 +51,7 @@ jobs:
               "label": "Obsidian Scorecard",
               "message": f"{pct_v}% • {health_v} • {review_v}",
               "color": color,
-							"logo": "Obsidian"
+              "namedLogo": "obsidian",
           }
 
           with open(f"{pid}.json", "w") as f:
