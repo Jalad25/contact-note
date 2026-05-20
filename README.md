@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/github/v/release/Jalad25/contact-note" alt="GitHub release">
   <img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fscambier.xyz%2Fobsidian-endpoints%2Fcontact-note.json" alt="Obsidian plugin">
   <img src="https://img.shields.io/github/downloads/Jalad25/contact-note/total" alt="Assets downloaded">
+	<a href="https://obsidianpluginaudit.com/audit/contact-note/latest"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fapi.obsidianpluginaudit.com%2Fbadge%2Fcontact-note%2Flatest.json&cacheSeconds=60"></a>
 </p>
 
 # Contact Note
