@@ -1,5 +1,5 @@
 # Roadmap
-> **Last updated: 2026-05-19**
+> **Last updated: 2026-05-28**
 
 High-level direction for this plugin.
 
@@ -19,6 +19,7 @@ Features being considered, but would like more feedback before pursuing. Order i
 
 - **VCF importing support** — bring contacts from another address book (phone, Google Contacts, iCloud, etc.) into the vault by importing a .vcf file. Each card lands as a standard contact note with the plugin's frontmatter shape, so imported contacts behave identically to ones created in-vault.
 - **Custom frontmatter properties** — let users define their own contact properties beyond the built-in set (e.g., relationship, nickname, pronouns), with the same first-class treatment built-ins get: appear in the new-contact template, render on the contact card, and respect the same renaming and icon customization.
+- **Templates** - let users define what properties (including possibly custom if done first) the template created by the New button populate.
 
 ## Recently Shipped
 
