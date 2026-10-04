@@ -13,12 +13,12 @@
   "license": "GNU AGPLv3",
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@typescript-eslint/parser": "^8.59.4",
     "esbuild": "0.28.0",
     "eslint": "^10.2.1",
-    "eslint-plugin-obsidianmd": "^0.3.0",
-    "obsidian": "latest",
+    "eslint-plugin-obsidianmd": "^0.4.2",
+    "obsidian": "^1.13.1",
     "tslib": "2.6.3",
-    "typescript": "5.5.4",
-    "@typescript-eslint/parser": "^8.59.4"
+    "typescript": "5.5.4"
   }
 }

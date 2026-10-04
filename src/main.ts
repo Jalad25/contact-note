@@ -19,12 +19,12 @@ import { ContactNote } from "./ContactNote";
 
 export const CONTACT_NOTE_LIST_VIEW_TYPE = "contact-note-list";
 
-export const CURRENT_SCHEMA_VERSION = 0;
+export const DATA_JSON_SCHEMA_VERSION = 0;
 
 export type ContactNoteConfiguration = { schemaVersion: number } & ContactNoteSettings & ContactsViewOptions;
 
 export const DEFAULT_CONFIGURATION: ContactNoteConfiguration = {
-	schemaVersion: CURRENT_SCHEMA_VERSION,
+	schemaVersion: DATA_JSON_SCHEMA_VERSION,
   ...DEFAULT_SETTINGS,
   ...DEFAULT_VIEW_OPTIONS,
 };

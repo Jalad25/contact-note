@@ -429,8 +429,3 @@ body:not(.is-phone) .vertical-tab-nav-item[data-setting-id="contact-note"] {
 }
 
 /* #endregion */
-
-/* Version */
-.contact-note-version {
-	text-align: end;
-}
