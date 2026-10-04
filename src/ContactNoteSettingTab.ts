@@ -44,6 +44,9 @@ export class ContactNoteSettingTab extends PluginSettingTab {
   constructor(app: App, plugin: ContactNotePlugin) {
     super(app, plugin);
     this.plugin = plugin;
+
+    // Icon for menu
+    this.icon = "file-user";
   }
 
   display(): void {

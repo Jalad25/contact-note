@@ -419,6 +419,17 @@
 
 /* #endregion */
 
+/* #region Setting Tab */
+
+/* Menu override */
+body:not(.is-phone) .vertical-tab-nav-item[data-setting-id="contact-note"] {
+  .vertical-tab-nav-item-icon {
+    display: flex;
+  }
+}
+
+/* #endregion */
+
 /* Version */
 .contact-note-version {
 	text-align: end;
