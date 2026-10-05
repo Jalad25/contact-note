@@ -5,7 +5,8 @@ import {
 	Setting,
 	apiVersion,
 	Notice,
-	requireApiVersion
+	requireApiVersion,
+	SettingDefinitionItem
 } from "obsidian";
 import ContactNotePlugin, { DATA_JSON_SCHEMA_VERSION } from "./main";
 import { FrontmatterCustomization } from "./ContactNote";
@@ -222,7 +223,106 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 
 	//#region Declarative Settings
 
+	//#region Obsidian Binding Hooks
 
+  // Declarative settings
+	getSettingDefinitions(): SettingDefinitionItem[] {
+    const items: SettingDefinitionItem[] = [];
+
+    // Obsidian version >= 1.13.0 styling
+    this.containerEl.addClass(`${this.plugin.manifest.id}-declarative-settings-tab`);
+
+    // Plugin and data schema version row w/ bug reporting copy
+		const pluginVersion = `Version ${this.plugin.manifest.version}`;
+		const dataJsonSchemaVersion = `Data schema version: ${DATA_JSON_SCHEMA_VERSION}`;
+		items.push({
+			name: " ",
+			render: (setting) => {
+				setting.setName(pluginVersion)
+					.setDesc(dataJsonSchemaVersion)
+					.addExtraButton((b) =>
+						b.setIcon("github").setTooltip("GitHub repository")
+						.onClick(() => window.open(`https://github.com/Jalad25/${this.plugin.manifest.id}`, "_blank"))
+					)
+					.addExtraButton((b) =>
+						b.setIcon("bug").setTooltip("Report a bug")
+						.onClick(() => window.open(`https://github.com/Jalad25/${this.plugin.manifest.id}/issues/new?template=bug_report.yml`, "_blank"))
+					)
+					.addButton((b) => {
+						b.setCta()
+						.setButtonText("Copy details for bug report")
+							.onClick(async () => {
+								const report = await this.buildBugReport();
+								await navigator.clipboard.writeText(this.formatBugReport(report));
+								new Notice("Copied bug report details");
+							});
+					});
+			}
+		});
+
+		// Contact File Identification
+		items.push({
+			type: "group",
+			heading: "Contact file identification",
+			items: [
+				{ name: " ",
+					render: (setting) => {
+						setting.settingEl.empty();
+						this.renderToggleSetting(setting.settingEl, "Identify contacts by folder", "When enabled, any note inside the specified folder is treated as a contact note. When disabled, notes tagged with the specified tag are used instead.", "useFolder", true);
+					}
+				},
+				{ name: "Contacts folder path", desc: 'Path to the folder containing contact notes, relative to the vault root (e.g. "contacts" or "people/contacts"). Notes in subfolders are included. Cannot be root of the vault.', visible: () => this.plugin.configuration.useFolder, control: { type: "folder", key: "folderPath", placeholder: "Contacts", includeRoot: false } },
+				{ name: "Contact tag", desc: 'Tag used to identify contact notes. Omit the leading "#" (e.g. "contact").', visible: () => !this.plugin.configuration.useFolder, control: { type: "text", key: "tag", placeholder: "Contact" } }
+			]
+		});
+
+		// Contacts view in a panel
+		items.push({
+			type: "group",
+			heading: "Contacts view in a panel",
+			items: [
+				{ name: "View name", desc: "Name displayed at the top of the contacts view in the panel.", control: { type: "text", key: "viewName", placeholder: "Contacts" } }
+			]
+		});
+
+		// Contacts view in a base
+		items.push({
+			type: "group",
+			heading: "Contacts view in a base",
+			items: [
+				{ name: "New base folder path", desc: "Folder where new contacts bases are created, relative to the vault root. Leave empty to place them in the vault root.", control: { type: "folder", key: "baseFolderPath", placeholder: "", includeRoot: true } }
+			]
+		});
+
+		// Contact card
+		items.push({
+			type: "group",
+			heading: "Contact card",
+			items: [
+				{ name: "Show last modified date", desc: "Show the date the contact note was last modified in the top-left corner of the contact card. Applies only to the card rendered inside a contact note, not the panel or base views.", control: { type: "toggle", key: "showLastModified" } }
+			]
+		});
+
+		// Frontmatter properties customization — bespoke grid rendered imperatively
+		items.push({
+			type: "group",
+			heading: "Frontmatter properties customization",
+			desc: "Override the frontmatter property names this plugin reads from and writes to, and the lucide icons displayed for properties that show one. Leave a field blank to use the default. Renaming a property does not rewrite existing notes or base files. Existing base files that reference old property names will need to be updated manually.",
+			items: [
+				{ name: " ",
+					render: (setting) => {
+						setting.settingEl.empty();
+						setting.settingEl.addClass(`${this.plugin.manifest.id}-settings-fm-grid-row`);
+						this.renderFrontmatterGrid(setting.settingEl);
+					}
+				}
+			]
+		});
+
+    return items;
+  }
+
+  //#endregion
 
 	//#endregion
 
