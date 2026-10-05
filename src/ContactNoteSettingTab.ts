@@ -181,7 +181,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       .setDesc(desc)
       .addText((t) => {
 				if (placeholder) t.setPlaceholder(placeholder);
-        t.setValue(String(this.getControlValue(key) ?? ""))
+        t.setValue(String(this.getControlValue(key)))
           .onChange(async (value) => {
             await this.setControlValue(key, value);
 						if (refreshOnChange) this.refresh();
@@ -197,7 +197,7 @@ export class ContactNoteSettingTab extends PluginSettingTab {
       .setDesc(desc)
       .addText((t) => {
 				if (placeholder) t.setPlaceholder(placeholder);
-        t.setValue(String(this.getControlValue(key) ?? ""))
+        t.setValue(String(this.getControlValue(key)))
           .onChange(async (value) => {
             await this.setControlValue(key, value);
 						if (refreshOnChange) this.refresh();
