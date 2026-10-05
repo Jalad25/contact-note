@@ -373,6 +373,15 @@
 
 /* #endregion */
 
+/* #region Setting Tab */
+
+/* Menu override */
+body:not(.is-phone) .vertical-tab-nav-item[data-setting-id="contact-note"] {
+  .vertical-tab-nav-item-icon {
+    display: flex;
+  }
+}
+
 /* #region Frontmatter Customization Grid */
 
 .contact-note-settings-fm-grid {
@@ -419,7 +428,4 @@
 
 /* #endregion */
 
-/* Version */
-.contact-note-version {
-	text-align: end;
-}
+/* #endregion */
