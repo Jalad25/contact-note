@@ -303,13 +303,13 @@ export class ContactNoteSettingTab extends PluginSettingTab {
 			]
 		});
 
-		// Frontmatter properties customization — bespoke grid rendered imperatively
+		// Frontmatter properties customization
 		items.push({
 			type: "group",
 			heading: "Frontmatter properties customization",
-			desc: "Override the frontmatter property names this plugin reads from and writes to, and the lucide icons displayed for properties that show one. Leave a field blank to use the default. Renaming a property does not rewrite existing notes or base files. Existing base files that reference old property names will need to be updated manually.",
 			items: [
 				{ name: " ",
+					desc: "Override the frontmatter property names this plugin reads from and writes to, and the lucide icons displayed for properties that show one. Leave a field blank to use the default. Renaming a property does not rewrite existing notes or base files. Existing base files that reference old property names will need to be updated manually.",
 					render: (setting) => {
 						setting.settingEl.empty();
 						setting.settingEl.addClass(`${this.plugin.manifest.id}-settings-fm-grid-row`);
